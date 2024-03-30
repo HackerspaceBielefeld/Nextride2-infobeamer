@@ -39,8 +39,19 @@ button[type="submit"]:hover {
     background-color: #2b4811;
 }
 
+footer {
+    text-align: center;
+    margin: 20px auto;
+}
+
 .head-container {
     text-align: center;
+}
+
+.info-container {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .custom-button-green {

@@ -10,14 +10,20 @@
         <a href="{{ url_for('upload_form') }}" class="custom-button-green">Go Back to Main Page</a>
     </div>
     {% if file %}
-        <p style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
-            <strong>Whats next?</strong><br>
-            You upload is currently under quarantine and will be checked by a moderator.
-            We try to approve your upload as quick as possible. 
-        </p>
+        <div class="info-container">
+            <p>
+                <strong>Whats next?</strong><br>
+                You upload is currently in the review queue and will be checked by a moderator.
+                We try to approve your upload as quick as possible.
+            </p>
+            <a href="{{ url_for('upload_form') }}">FAQ</a>
+        </div>
         <div class="image-container" style="margin-top: 20px;">
             <img src="{{ url_for('static', filename='uploads/' + file) }}" alt="{{ file }}" style="max-width: 33%;">
         </div>
     {% endif %}
 </body>
+<footer>
+    <p>Nextride2-infobeamer by Inflac | Hackerspace-Bielefeld e.V.</p>
+</footer>
 </html>

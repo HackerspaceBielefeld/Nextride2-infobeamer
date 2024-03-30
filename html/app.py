@@ -31,14 +31,15 @@ def upload_file():
         # Store the filename in the session
         session['uploaded_file'] = file.filename
         
-        return upload_result('File upload was successful')
+        return redirect(url_for('upload_result'))
 
 @app.route('/upload/result')
-def upload_result(status="911 How can I help you?"):
+def upload_result():
     # Get the filename from the session
-    uploaded_file = session.pop('uploaded_file', None)
-
-    return render_template('upload_result.html', file=uploaded_file, status=status)
+    uploaded_file = session.get('uploaded_file', None)
+    if uploaded_file is None:
+        return render_template('upload_result.html', file=uploaded_file, status="File upload wasn't successful")
+    return render_template('upload_result.html', file=uploaded_file, status="File upload was successful")
 
 if __name__ == '__main__':
     app.run(debug=True)
