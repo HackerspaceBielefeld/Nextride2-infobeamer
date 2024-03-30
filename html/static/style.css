@@ -39,34 +39,37 @@ button[type="submit"]:hover {
     background-color: #2b4811;
 }
 
-.image-table {
+.image-container {
     text-align: center;
     margin-left: 3%;
     margin-right: 3%;
 }
 
+.image-table {
+    width: 100%;
+}
+
+.image-row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .image-item {
-    text-align: center;
-    width: 100%; /* Set width to one-third of the container's width */
-    max-height: 100px;
-    margin-left: 20px; /* Add some bottom margin for spacing */
+    flex: 0 0 33%; /* Each item takes up 32% of the container width */
+    max-width: 33%; /* Limit maximum width of each item */
+    padding: 8px; /* Add spacing between images */
+    box-sizing: border-box; /* Include padding in the total width */
+    aspect-ratio: 1; /* Force aspect ratio to be 1:1 (square) */
 }
 
 /* Set the width of the images to fill their parent container */
 .image-item img {
-    height: 50%;
-    width: 100%; /* Set width to 100% to fill the image container */
+    width: 100%; /* Make sure images fill their parent container */
+    height: 100%; /* Make sure images fill their parent container */
+    object-fit: cover; /* Crop the image to cover the entire box */
 }
+
 
 .image-item:hover img {
     transform: scale(1.1);
-}
-
-/* Media query for mobile phones */
-@media screen and (max-width: 600px) {
-    .image-item {
-        width: calc(100% - 20px); /* Set width to 50% for smaller screens */
-    }
-
-
 }

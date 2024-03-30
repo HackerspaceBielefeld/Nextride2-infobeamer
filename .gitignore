@@ -1,5 +1,5 @@
 # Self added - folders
-html/static/uploads
+html/static/uploads/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

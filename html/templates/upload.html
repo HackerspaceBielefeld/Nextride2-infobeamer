@@ -13,19 +13,30 @@
     
     <h2>Uploaded Images:</h2>
     <div class="image-container">
-        <table class="image-table">
-            <tbody>
-                {% for image in uploaded_images %}
-                {% if loop.index % 3 == 1 %}<tr>{% endif %}
-                <td>
-                    <div class="image-item">
-                        <img src="{{ url_for('static', filename='uploads/' + image) }}" alt="{{ image }}">
-                    </div>
-                </td>
-                {% if loop.index % 3 == 0 or loop.last %}</tr>{% endif %}
-                {% endfor %}
-            </tbody>
-        </table>
+        {% for i in range(0, uploaded_images|length, 3) %}
+        <div class="image-table">
+            {% set image1 = uploaded_images[i] %}
+            {% set image2 = uploaded_images[i+1] if i+1 < uploaded_images|length else None %}
+            {% set image3 = uploaded_images[i+2] if i+2 < uploaded_images|length else None %}
+            <div class="image-row">
+                {% if image1 %}
+                <div class="image-item">
+                    <img src="{{ url_for('static', filename='uploads/' + image1) }}" alt="{{ image1 }}">
+                </div>
+                {% endif %}
+                {% if image2 %}
+                <div class="image-item">
+                    <img src="{{ url_for('static', filename='uploads/' + image2) }}" alt="{{ image2 }}">
+                </div>
+                {% endif %}
+                {% if image3 %}
+                <div class="image-item">
+                    <img src="{{ url_for('static', filename='uploads/' + image3) }}" alt="{{ image3 }}">
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
     </div>    
 </body>
 </html>
