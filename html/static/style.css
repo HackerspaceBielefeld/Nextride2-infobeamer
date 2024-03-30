@@ -1,0 +1,72 @@
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+h1, h2 {
+    color: #ffbb00;
+    text-align: center;
+}
+
+form {
+    margin: 20px auto;
+    width: 80%;
+    max-width: 400px;
+}
+
+input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 2px solid #fb6542;
+    border-radius: 5px;
+    background-color: #1f1f1f;
+    color: #ffffff;
+}
+
+button[type="submit"] {
+    background-color: #3f681c;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #2b4811;
+}
+
+.image-table {
+    text-align: center;
+    margin-left: 3%;
+    margin-right: 3%;
+}
+
+.image-item {
+    text-align: center;
+    width: 100%; /* Set width to one-third of the container's width */
+    max-height: 100px;
+    margin-left: 20px; /* Add some bottom margin for spacing */
+}
+
+/* Set the width of the images to fill their parent container */
+.image-item img {
+    height: 50%;
+    width: 100%; /* Set width to 100% to fill the image container */
+}
+
+.image-item:hover img {
+    transform: scale(1.1);
+}
+
+/* Media query for mobile phones */
+@media screen and (max-width: 600px) {
+    .image-item {
+        width: calc(100% - 20px); /* Set width to 50% for smaller screens */
+    }
+
+
+}
