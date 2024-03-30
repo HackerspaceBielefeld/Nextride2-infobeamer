@@ -6,6 +6,7 @@ from filehandler import sanitize_file, safe_file
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Set a secret key for session management
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['QUEUE_FOLDER'] = 'static/queue'
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5MB limit
 
 @app.route('/')
@@ -26,7 +27,7 @@ def upload_file():
         if file == False:
             return upload_result(status="File upload wasn't successful")
         
-        safe_file(file, app.config['UPLOAD_FOLDER'])
+        safe_file(file, app.config['QUEUE_FOLDER'])
         
         # Store the filename in the session
         session['uploaded_file'] = file.filename

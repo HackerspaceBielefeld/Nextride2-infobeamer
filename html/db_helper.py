@@ -37,7 +37,7 @@ def get_lowest_free_id():
     data = get_db_config()
     return data['lowest_free_id']
 
-def increase_lowest_free_id():
+def set_lowest_free_id():
     db_config = get_db_config()
     max_uploads = db_config['max_uploads']
 
@@ -60,8 +60,16 @@ def increase_lowest_free_id():
         return False
     return True
 
+def get_image(image_name:str, image_id:int):
+    db_data = get_db()
+    
+    for image in db_data['uploads']:
+        if image['image_name'] == image_name or image['id'] == image_id:
+            return image
+    logging("The requested image couldn't be found in the database")
+    return None
 
-def add_image(image_name, image_path, image_password):
+def add_image(image_name:str, image_path:str, image_password):
     lowest_free_id = get_lowest_free_id()
 
     upload_info = {
@@ -81,9 +89,27 @@ def add_image(image_name, image_path, image_password):
     if not set_db(db_data):
         return False
 
-    if not increase_lowest_free_id():
-        logging("An Error occured while increasing the lowest free id")
+    if not set_lowest_free_id():
         return False
 
     logging(f"Upload information for ID {lowest_free_id} has been saved to db.json.")
     return True
+
+def remove_image(image_name, image_id):
+    image_to_remove = get_image(image_name, image_id)
+    if not image_to_remove:
+        logging("No image or db entry removed")
+        return False
+
+    db_data = get_db()
+    db_data["uploads"].remove(image_to_remove)
+    if not set_db(db_data):
+        logging("No image or db entry removed")
+        return False
+
+    if not set_lowest_free_id():
+        logging("Couldn't set lowest free id but db entry was already removed")
+        return False
+    
+    return db_data
+    

@@ -5,7 +5,8 @@ from PIL import Image
 
 from helper import generate_random_string
 from helper import logging
-from db_helper import add_image
+from db_helper import add_image, remove_image
+from emailer import sent_email_approval_request
 
 def sanitize_filename(filename:str):
     pattern = r'a-zA-Z0-9_\-.' # RE pattern with whitelisted chars 
@@ -45,13 +46,42 @@ def sanitize_file(file, MAX_CONTENT_LENGTH):
         return False
     file.seek(0)
 
-    return file   
+    return file
 
 
-def safe_file(file, UPLOAD_FOLDER):
-    image_path = os.path.join(UPLOAD_FOLDER, file.filename)
+def safe_file(file, QUEUE_FOLDER):
+    image_path = os.path.join(QUEUE_FOLDER, file.filename)
     image_password = 123
+    
     if not add_image(file.filename, image_path, image_password):
         return False
-    file.save(os.path.join(UPLOAD_FOLDER, file.filename))
+    
+    file_path = os.path.join(QUEUE_FOLDER, file.filename)
+    file.save(file_path)
+
+    if not sent_email_approval_request(file_path):
+        return False
     return True
+
+
+def delete_file(image_name=None, image_id=None):
+    if not image_name and not image_id:
+        logging("Tried to remove an image but no image name or id was provided")
+        return False
+
+    file_data = remove_image(image_name, image_id)
+    if not file_data: return False
+    
+    file_path = file_data['image_path']
+
+    try:
+        os.remove(file_path)
+        logging(f"File '{file_path}' deleted successfully.")
+        return True
+    except FileNotFoundError:
+        logging(f"File '{file_path}' not found.")
+    except PermissionError:
+        logging(f"Permission denied to delete file '{file_path}'.")
+    except Exception as e:
+        logging(f"An error occurred while deleting file '{file_path}': {e}")
+    return False
