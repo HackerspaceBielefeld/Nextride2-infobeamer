@@ -39,6 +39,20 @@ button[type="submit"]:hover {
     background-color: #2b4811;
 }
 
+.head-container {
+    text-align: center;
+}
+
+.custom-button-green {
+    background-color: #3f681c;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none; /* Remove underline */
+}
+
 .image-container {
     text-align: center;
     margin-left: 3%;
@@ -71,5 +85,5 @@ button[type="submit"]:hover {
 
 
 .image-item:hover img {
-    transform: scale(1.1);
+    transform: scale(0.95);
 }

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Success</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="head-container">
+        <h1>{{status}}</h1>
+        <a href="{{ url_for('upload_form') }}" class="custom-button-green">Go Back to Main Page</a>
+    </div>
+    {% if file %}
+        <p style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
+            <strong>Whats next?</strong><br>
+            You upload is currently under quarantine and will be checked by a moderator.
+            We try to approve your upload as quick as possible. 
+        </p>
+        <div class="image-container" style="margin-top: 20px;">
+            <img src="{{ url_for('static', filename='uploads/' + file) }}" alt="{{ file }}" style="max-width: 33%;">
+        </div>
+    {% endif %}
+</body>
+</html>

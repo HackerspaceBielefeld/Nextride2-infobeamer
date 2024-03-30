@@ -50,8 +50,8 @@ def sanitize_file(file, MAX_CONTENT_LENGTH):
 
 def safe_file(file, UPLOAD_FOLDER):
     image_path = os.path.join(UPLOAD_FOLDER, file.filename)
-    file.save(os.path.join(UPLOAD_FOLDER, file.filename))
     image_password = 123
-    add_image(file.filename, image_path, image_password)
-    
-    return
+    if not add_image(file.filename, image_path, image_password):
+        return False
+    file.save(os.path.join(UPLOAD_FOLDER, file.filename))
+    return True

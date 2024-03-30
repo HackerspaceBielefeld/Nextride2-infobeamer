@@ -2,14 +2,16 @@
 <html>
 <head>
     <title>File Upload</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Upload a File</h1>
-    <form action="/upload" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <button type="submit">Upload</button>
-    </form>
+    <div class="head-container">
+        <h1>Upload a File</h1>
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file">
+            <button type="submit">Upload</button>
+        </form>
+    </div>
     
     <h2>Uploaded Images:</h2>
     <div class="image-container">
@@ -37,6 +39,6 @@
             </div>
         </div>
         {% endfor %}
-    </div>    
+    </div> 
 </body>
 </html>
