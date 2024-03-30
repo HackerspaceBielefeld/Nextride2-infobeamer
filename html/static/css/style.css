@@ -2,6 +2,7 @@ body {
     background-color: #121212;
     color: #ffffff;
     font-family: Arial, sans-serif;
+    min-height: 100vh; /* Set the minimum height of the body to the full viewport height */
 }
 
 h1, h2 {
@@ -40,7 +41,11 @@ button[type="submit"]:hover {
 }
 
 footer {
+    color: #fff;
     text-align: center;
+    position:relative;
+    bottom: 0;
+    width: 100%;
     margin: 20px auto;
 }
 

@@ -71,6 +71,12 @@
             "image_name": "QhG7GxXm_Screenshot_20240111_003633.png",
             "image_path": "static/uploads/QhG7GxXm_Screenshot_20240111_003633.png",
             "image_password": 123
+        },
+        {
+            "id": 12,
+            "image_name": "JVpPkNi7_Screenshot_20240111_003633.png",
+            "image_path": "static/uploads/JVpPkNi7_Screenshot_20240111_003633.png",
+            "image_password": 123
         }
     ]
 }

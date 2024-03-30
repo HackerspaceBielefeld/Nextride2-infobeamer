@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/faq.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Frequently Asked Questions</h1>
+        
+        <div class="faq-item">
+            <div class="faq-question">What is Nextride?</div>
+            <div class="faq-answer">
+                Nextride is a software that displays information about the departure times of streetcars.
+                There is now a new version, Nextride2, which can also display other information.
+                Nextride2 also has the ability to receive and display images.
+                You can find more information in the repository of <a href="https://github.com/HackerspaceBielefeld/Nextride2" target="_blank">Nextride2</a> 
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">What is Nextride2-infobeamer</div>
+            <div class="faq-answer">
+                Nextride2-infobeamer short N2i, is a extension for <a href="https://github.com/HackerspaceBielefeld/Nextride2" target="_blank">Nextride2</a>.
+                N2i in the first place allows you to display many images and ressources after each other on the screens running Nextride2.
+                You can either input a xml schedule in frab format or specify just a single image url.
+                For every url N2i itteratively sents it to the Nextride2 screens.
+                N2i also provide a CMS for user uploads. This is mostly used for events, where visitors should have the possibility to run ads or promote their spaces/projects.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">What filetypes can I upload?</div>
+            <div class="faq-answer">
+                Curently you can only upload images (png, jpg, jpeg, gif).
+                This restrictions comes from Nextride2 itself. Whenever Netride is able to play
+                file like mp4, N2i can react on this. 
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">What content can I upload?</div>
+            <div class="faq-answer">
+                First of all, thank you for reading this befor stupidly fire upload (background noises: *upload**upload**upload*..) 
+                You are allowed to upload images of your projects, hacker-/maker-spaces, or funny memes.
+                You are also allowed to have qr codes and links on/in the files.
+                <br><br>
+                You are <strong><b>NOT</b></strong> allowed to upload any kind of mallicious content.
+                Make sure your qr codes direct to websites or ressources that are safe for any kind of user to visit.
+                Use https for your urls and do not mess with people visiting your urls, websites etc.<br>
+                Your are <strong><b>NOT</b></strong> allowed to upload any kind of nudity!
+                No one wants to see that on this event so keep it away from our infrastructure.<br>
+                Your are <strong><b>NOT</b></strong> allowed to upload any kind of content that might offend other people.
+                We do not tolerate derogatory behavior towards people and animals.
+                <br><br>
+                This list isn't complete so turn on your head before uploading content.
+                In case we detect content thats strictly against our moral understanding we reserve the right to take further steps.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">I uploaded a file, whats next?</div>
+            <div class="faq-answer">
+                Your file is now in a queue of files that get reviewd by a moderator.
+                Because we can't allow to display whatever a user uploads, we need this step in between to
+                ensure your uploads respect our guidelines. 
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">File upload wasn't successful</div>
+            <div class="faq-answer">
+                So you are sure you haven't tried to upload something nasty?
+                Well, you are allowed to upload files that have fileextension of a supported filetype.
+                If your uploaded file had such an extension than it was rejected because it's content isn't an image.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Why don't you support SVG?</div>
+            <div class="faq-answer">
+                SVGs aren't nice to handle as they can contain <button onclick="javasript:alert('bad stuff')">bad stuff</button>.
+                Also you can convert every svg to a png and upload it so why are you stealing my time by asking those questions?
+                Oh you were just interest in why N2i does not support svgs? &quot;I don't know, leave me alone&quot;.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            faqQuestions.forEach(function(question) {
+                question.addEventListener('click', function() {
+                    const answer = this.nextElementSibling;
+                    answer.classList.toggle('show');
+                });
+            });
+        });
+    </script>
+</body>
+<footer>
+    <a href="{{ url_for('upload_form') }}">Home</a> | <a href="{{ url_for('faq') }}">FAQ</a>
+    <p>Nextride2-infobeamer by Inflac | Hackerspace-Bielefeld e.V. | </p>
+</footer>
+</html>

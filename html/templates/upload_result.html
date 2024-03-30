@@ -16,7 +16,6 @@
                 You upload is currently in the review queue and will be checked by a moderator.
                 We try to approve your upload as quick as possible.
             </p>
-            <a href="{{ url_for('upload_form') }}">FAQ</a>
         </div>
         <div class="image-container" style="margin-top: 20px;">
             <img src="{{ url_for('static', filename='uploads/' + file) }}" alt="{{ file }}" style="max-width: 33%;">
@@ -24,6 +23,7 @@
     {% endif %}
 </body>
 <footer>
-    <p>Nextride2-infobeamer by Inflac | Hackerspace-Bielefeld e.V.</p>
+    <a href="{{ url_for('upload_form') }}">Home</a> | <a href="{{ url_for('faq') }}">FAQ</a>
+    <p>Nextride2-infobeamer by Inflac | Hackerspace-Bielefeld e.V. | </p>
 </footer>
 </html>

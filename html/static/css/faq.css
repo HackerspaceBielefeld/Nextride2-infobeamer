@@ -1,0 +1,24 @@
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+}
+
+.faq-item {
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+.faq-question {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.faq-answer {
+    display: none;
+    margin-top: 10px;
+}
+
+.faq-answer.show {
+    display: block;
+}

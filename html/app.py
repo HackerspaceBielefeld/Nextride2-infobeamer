@@ -41,5 +41,9 @@ def upload_result():
         return render_template('upload_result.html', file=uploaded_file, status="File upload wasn't successful")
     return render_template('upload_result.html', file=uploaded_file, status="File upload was successful")
 
+@app.route('/faq')
+def faq():
+    return render_template('faq.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
