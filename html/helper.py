@@ -1,4 +1,5 @@
 import random
+import secrets
 import string
 import time
 
@@ -16,3 +17,7 @@ def generate_random_string(length):
     characters = string.ascii_letters + string.digits    
     # Generate the random string
     return ''.join(random.choice(characters) for _ in range(length))
+
+def generate_secret_token(length=32):
+    """Generate a secure random token."""
+    return secrets.token_urlsafe(length)

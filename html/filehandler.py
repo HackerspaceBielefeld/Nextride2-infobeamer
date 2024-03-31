@@ -3,7 +3,7 @@ import os
 
 from PIL import Image
 
-from helper import generate_random_string
+from helper import generate_random_string, generate_secret_token
 from helper import logging
 from db_helper import add_image, remove_image
 from emailer import sent_email_approval_request
@@ -51,16 +51,22 @@ def sanitize_file(file, MAX_CONTENT_LENGTH):
 
 def safe_file(file, QUEUE_FOLDER):
     image_path = os.path.join(QUEUE_FOLDER, file.filename)
-    image_password = 123
-    
+    image_password = generate_secret_token()
+
     if not add_image(file.filename, image_path, image_password):
         return False
     
     file_path = os.path.join(QUEUE_FOLDER, file.filename)
-    file.save(file_path)
-
-    if not sent_email_approval_request(file_path):
+    try:
+        file.save(file_path)
+    except Exception as e:
+        logging("Image couldn't be saved")
+        if not remove_image(file.filename, None):
+            logging("DB entry couldn't be removed for unsaved image")
         return False
+    
+    #if not sent_email_approval_request(file_path):
+    #    return False
     return True
 
 
