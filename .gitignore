@@ -1,7 +1,6 @@
 # Self added - folders and files
 html/static/uploads/*
-emailer.py
-testing
+html/static/queue/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
