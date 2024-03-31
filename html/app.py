@@ -63,8 +63,11 @@ def auth():
 
 @app.route('/logout')
 def logout():
-    session.clear()
-    return render_template('logout.html')
+    if session.get('token'):
+        session.clear()
+        return render_template('logout.html')
+    else:
+        return "Stop making weird requests"
 
 @app.route('/')
 def index():
@@ -87,15 +90,15 @@ def upload_file():
         file = request.files['file']
 
         file = sanitize_file(file, app.config['MAX_CONTENT_LENGTH'])
-        if file == False:
-            return upload_result(status="File upload wasn't successful")
-        
-        safe_file(file, app.config['QUEUE_FOLDER'])
-        
-        # Store the filename in the session
-        session['uploaded_file'] = file.filename
-        
+        if file != False:        
+            safe_file(file, app.config['QUEUE_FOLDER'])
+            
+            # Store the filename in the session
+            session['uploaded_file'] = file.filename
+
         return redirect(url_for('upload_result'))
+    else:
+        return 
 
 @app.route('/upload/result')
 @login_required
@@ -112,7 +115,11 @@ def faq():
 
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template('404.html'), 404
+    return render_template('errors/404.html'), 404
+
+@app.errorhandler(405)
+def page_not_found(error):
+    return render_template('errors/405.html'), 405
 
 if __name__ == '__main__':
     app.run(debug=True)

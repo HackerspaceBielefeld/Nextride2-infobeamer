@@ -133,7 +133,6 @@ footer {
     object-fit: cover; /* Crop the image to cover the entire box */
 }
 
-
 .image-item:hover img {
     transform: scale(0.95);
 }
