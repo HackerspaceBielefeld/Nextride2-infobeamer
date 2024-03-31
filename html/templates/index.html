@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Upload</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<header>
+    <div class="buttons-container">
+        <div class="dashboard-button">
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        </div>
+    </div>
+</header>
+<body> 
+    <h2>Active Images:</h2>
+    <div class="image-container">
+        {% for i in range(0, uploaded_images|length, 3) %}
+        <div class="image-table">
+            {% set image1 = uploaded_images[i] %}
+            {% set image2 = uploaded_images[i+1] if i+1 < uploaded_images|length else None %}
+            {% set image3 = uploaded_images[i+2] if i+2 < uploaded_images|length else None %}
+            <div class="image-row">
+                {% if image1 %}
+                <div class="image-item">
+                    <img src="{{ url_for('static', filename='uploads/' + image1) }}" alt="{{ image1 }}">
+                </div>
+                {% endif %}
+                {% if image2 %}
+                <div class="image-item">
+                    <img src="{{ url_for('static', filename='uploads/' + image2) }}" alt="{{ image2 }}">
+                </div>
+                {% endif %}
+                {% if image3 %}
+                <div class="image-item">
+                    <img src="{{ url_for('static', filename='uploads/' + image3) }}" alt="{{ image3 }}">
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div> 
+</body>
+<footer>
+    <a href="{{ url_for('index') }}">Home</a> | <a href="{{ url_for('faq') }}">FAQ</a>
+    <p>Nextride-infobeamer by Inflac | Hackerspace-Bielefeld e.V.</p>
+</footer>
+</html>

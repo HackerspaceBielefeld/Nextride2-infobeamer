@@ -7,7 +7,7 @@
 <body>
     <div class="head-container">
         <h1>{{status}}</h1>
-        <a href="{{ url_for('upload_form') }}" class="custom-button-green">Go Back to Main Page</a>
+        <a href="{{ url_for('dashboard') }}" class="custom-button-green">Go Back to dashboard</a>
     </div>
     {% if file %}
         <div class="info-container">
@@ -23,7 +23,7 @@
     {% endif %}
 </body>
 <footer>
-    <a href="{{ url_for('upload_form') }}">Home</a> | <a href="{{ url_for('faq') }}">FAQ</a>
+    <a href="{{ url_for('index') }}">Home</a> | <a href="{{ url_for('faq') }}">FAQ</a>
     <p>Nextride2-infobeamer by Inflac | Hackerspace-Bielefeld e.V.</p>
 </footer>
 </html>

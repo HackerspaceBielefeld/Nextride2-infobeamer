@@ -4,6 +4,16 @@
     <title>File Upload</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+<header>
+    <div class="buttons-container">
+        <div class="dashboard-button">
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        </div>
+        <div class="logout-button">
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+</header>
 <body>
     <div class="head-container">
         <h1>Upload a File</h1>
@@ -42,7 +52,7 @@
     </div> 
 </body>
 <footer>
-    <a href="{{ url_for('upload_form') }}">Home</a> | <a href="{{ url_for('faq') }}">FAQ</a>
+    <a href="{{ url_for('index') }}">Home</a> | <a href="{{ url_for('faq') }}">FAQ</a>
     <p>Nextride-infobeamer by Inflac | Hackerspace-Bielefeld e.V.</p>
 </footer>
 </html>

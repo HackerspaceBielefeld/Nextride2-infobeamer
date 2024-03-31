@@ -54,7 +54,7 @@ def auth():
             user_data = user.json()
             # You can use the user data to create or authenticate users in your system
             session['user_data'] = user_data
-            return f"Hello, {user_data['login']}! You are now logged in."
+            return render_template('dashboard.html')
         else:
             return "Failed to fetch user data from GitHub."
     else:
@@ -64,18 +64,21 @@ def auth():
 @app.route('/logout')
 def logout():
     session.clear()
-    return "You are now logged out"
+    return render_template('logout.html')
 
 @app.route('/')
-def upload_form():
-    # Clear session data related to uploaded file
-    #if session.get('uploaded_file'):
-    session.pop('uploaded_file', None)
+def index():
+    return render_template('index.html')
 
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    # Clear session data related to uploaded file
+    session.pop('uploaded_file', None)
 
     # Get list of uploaded images
     uploaded_images = os.listdir(app.config['UPLOAD_FOLDER'])    
-    return render_template('upload.html', uploaded_images=uploaded_images)
+    return render_template('dashboard.html', uploaded_images=uploaded_images)
 
 @app.route('/upload', methods=['POST'])
 @login_required
