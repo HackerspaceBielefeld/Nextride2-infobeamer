@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from functools import wraps
 
 from filehandler import sanitize_file, safe_file
+from queuehandler import approve_file
 
 # Load environment variables from .env file
 load_dotenv()
@@ -71,7 +72,8 @@ def logout():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    uploaded_images = os.listdir(app.config['UPLOAD_FOLDER'])    
+    return render_template('index.html', uploaded_images=uploaded_images)
 
 @app.route('/dashboard')
 @login_required
@@ -108,6 +110,16 @@ def upload_result():
     if uploaded_file is None:
         return render_template('upload_result.html', file=uploaded_file, status="File upload wasn't successful")
     return render_template('upload_result.html', file=uploaded_file, status="File upload was successful")
+
+@app.route('/upload/approve')
+@login_required
+def approve_upload():
+    file_name = request.args.get('file_name')
+    file_password = request.args.get('file_password')
+    if file_name and file_password:
+        approve_file(file_name, None, app.config['UPLOAD_FOLDER'], file_password)
+        return "File approved"
+    else: return "You are not allowed to approve files"
 
 @app.route('/faq')
 def faq():

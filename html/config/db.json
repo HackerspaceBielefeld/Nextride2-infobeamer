@@ -1,16 +1,10 @@
 {
     "uploads": [
         {
-            "id": 0,
-            "image_name": "o0qKDzQ8_Screenshot_20230816_171012.png",
-            "image_path": "static/queue/o0qKDzQ8_Screenshot_20230816_171012.png",
-            "image_password": "tbflcveXb25FOhW_nnJsyG5v3FCxj1TMZcEfseNCSPU"
-        },
-        {
-            "id": 1,
-            "image_name": "k77pTSJE_Screenshot_20230816_171012.png",
-            "image_path": "static/queue/k77pTSJE_Screenshot_20230816_171012.png",
-            "image_password": "M5tItHANDa8bYiBKfLdeacXkK3Dc4Mj1o59cyf3yRWA"
+            "id": 4,
+            "file_name": "5SfzvWIo_flyer.png",
+            "file_path": "static/queue/5SfzvWIo_flyer.png",
+            "file_password": "Jwij1WxgIzWLSZTgnfkDTDc-LLDhf4K00A27rMEy1r8"
         }
     ]
 }

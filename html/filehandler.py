@@ -1,3 +1,4 @@
+import shutil
 import re
 import os
 
@@ -5,14 +6,26 @@ from PIL import Image
 
 from helper import generate_random_string, generate_secret_token
 from helper import logging
-from db_helper import add_image, remove_image
-from emailer import sent_email_approval_request
+from db_helper import add_file, remove_file
+from emailhandler import sent_email_approval_request
 
-def sanitize_filename(filename:str):
+def sanitize_filename(file_name:str):
     pattern = r'a-zA-Z0-9_\-.' # RE pattern with whitelisted chars 
-    sanitized_filename = re.sub(f'[^{pattern}]', "", filename) # Replace chars that aren't whitelisted
+    sanitized_filename = re.sub(f'[^{pattern}]', "", file_name) # Replace chars that aren't whitelisted
     sanitized_filename_extended = generate_random_string(8) + "_" + sanitized_filename # Extend the sanitized filename with random chars to avoid colissions
     return sanitized_filename_extended
+
+def check_file_exist(file_path:str):
+    return os.path.exists(file_path)
+
+def move_file(source:str, destination:str):
+    try:
+        shutil.move(source, destination)
+        logging(f"File moved from {source} to {destination}")
+        return True
+    except Exception as e:
+        logging(f"Error while moving a file: {e}")
+        return False
 
 def check_image(file):
     # Check the file extension
@@ -50,35 +63,35 @@ def sanitize_file(file, MAX_CONTENT_LENGTH):
 
 
 def safe_file(file, QUEUE_FOLDER):
-    image_path = os.path.join(QUEUE_FOLDER, file.filename)
-    image_password = generate_secret_token()
+    file_path = os.path.join(QUEUE_FOLDER, file.filename)
+    file_password = generate_secret_token()
 
-    if not add_image(file.filename, image_path, image_password):
+    if not add_file(file.filename, file_path, file_password):
         return False
     
     file_path = os.path.join(QUEUE_FOLDER, file.filename)
     try:
         file.save(file_path)
     except Exception as e:
-        logging("Image couldn't be saved")
-        if not remove_image(file.filename, None):
-            logging("DB entry couldn't be removed for unsaved image")
+        logging("file couldn't be saved")
+        if not remove_file(file.filename, None):
+            logging("DB entry couldn't be removed for unsaved file")
         return False
     
-    #if not sent_email_approval_request(file_path):
-    #    return False
+    if not sent_email_approval_request(file.filename, file_password, file_path):
+        return False
     return True
 
 
-def delete_file(image_name=None, image_id=None):
-    if not image_name and not image_id:
-        logging("Tried to remove an image but no image name or id was provided")
+def delete_file(file_name=None, file_id=None):
+    if not file_name and not file_id:
+        logging("Tried to remove a file but no file name or id was provided")
         return False
 
-    file_data = remove_image(image_name, image_id)
+    file_data = remove_file(file_name, file_id)
     if not file_data: return False
     
-    file_path = file_data['image_path']
+    file_path = file_data['file_path']
 
     try:
         os.remove(file_path)

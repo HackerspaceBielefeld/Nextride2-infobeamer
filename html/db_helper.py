@@ -60,23 +60,23 @@ def set_lowest_free_id():
         return False
     return True
 
-def get_image(image_name:str, image_id:int):
+def get_file(file_name:str, file_id:int):
     db_data = get_db()
     
-    for image in db_data['uploads']:
-        if image['image_name'] == image_name or image['id'] == image_id:
-            return image
-    logging("The requested image couldn't be found in the database")
+    for file in db_data['uploads']:
+        if file['file_name'] == file_name or file['id'] == file_id:
+            return file
+    logging("The requested file couldn't be found in the database")
     return None
 
-def add_image(image_name:str, image_path:str, image_password):
+def add_file(file_name:str, file_path:str, file_password):
     lowest_free_id = get_lowest_free_id()
 
     upload_info = {
         "id": lowest_free_id,
-        "image_name": image_name,
-        "image_path": image_path,
-        "image_password": image_password
+        "file_name": file_name,
+        "file_path": file_path,
+        "file_password": file_password
     }
 
     db_data = get_db()
@@ -95,16 +95,16 @@ def add_image(image_name:str, image_path:str, image_password):
     logging(f"Upload information for ID {lowest_free_id} has been saved to db.json.")
     return True
 
-def remove_image(image_name, image_id):
-    image_to_remove = get_image(image_name, image_id)
-    if not image_to_remove:
-        logging("No image or db entry removed")
+def remove_file(file_name, file_id):
+    file_to_remove = get_file(file_name, file_id)
+    if not file_to_remove:
+        logging("No file or db entry removed")
         return False
 
     db_data = get_db()
-    db_data["uploads"].remove(image_to_remove)
+    db_data["uploads"].remove(file_to_remove)
     if not set_db(db_data):
-        logging("No image or db entry removed")
+        logging("No file or db entry removed")
         return False
 
     if not set_lowest_free_id():
