@@ -10,9 +10,8 @@ from filehandler import sanitize_file, safe_file
 # Load environment variables from .env file
 load_dotenv()
 
-
 app = Flask(__name__)
-os.environ.get('FLASK_SECRET_KEY')
+app.secret_key = os.environ.get('FLASK_SECRET_KEY')
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['QUEUE_FOLDER'] = 'static/queue'
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5MB limit
@@ -70,7 +69,9 @@ def logout():
 @app.route('/')
 def upload_form():
     # Clear session data related to uploaded file
+    #if session.get('uploaded_file'):
     session.pop('uploaded_file', None)
+
 
     # Get list of uploaded images
     uploaded_images = os.listdir(app.config['UPLOAD_FOLDER'])    

@@ -6,6 +6,9 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+from dotenv import load_dotenv
+
+
 def sent_mail(subject, body, filename):
     # Load environment variables from .env file
     load_dotenv()
