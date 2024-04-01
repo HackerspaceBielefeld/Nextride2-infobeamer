@@ -21,7 +21,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # initialize the app with Flask-SQLAlchemy
 db.init_app(app)
 
-
 # NOTHING BELOW THIS LINE NEEDS TO CHANGE
 # this route will test the database connection - and nothing more
 @app.route('/')
