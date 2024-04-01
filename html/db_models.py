@@ -9,3 +9,10 @@ class Uploads(db.Model):
     file_name = db.Column(db.String(100), nullable=False)
     file_path = db.Column(db.String(200), nullable=False)
     file_password = db.Column(db.String(100), nullable=False)
+
+class Queue(db.Model):
+    __tablename__ = 'queue'
+    id = db.Column(db.Integer, primary_key=True)
+    file_name = db.Column(db.String(100), nullable=False)
+    file_path = db.Column(db.String(200), nullable=False)
+    file_password = db.Column(db.String(100), nullable=False)

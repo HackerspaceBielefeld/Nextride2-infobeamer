@@ -6,7 +6,9 @@ from PIL import Image
 
 from helper import generate_random_string, generate_secret_token
 from helper import logging
-from db_helper import remove_file_from_db, check_global_upload_limit
+from db_helper import check_global_upload_limit
+from db_helper import remove_file_from_queue, remove_file_from_uploads
+from db_helper import add_file_to_queue
 from emailhandler import sent_email_approval_request
 
 def sanitize_filename(file_name:str):
@@ -70,11 +72,15 @@ def safe_file(file, QUEUE_FOLDER):
     file_path = os.path.join(QUEUE_FOLDER, file.filename)
     file_password = generate_secret_token()
     
+    if not add_file_to_queue(file.filename, file_path, file_password):
+        logging("File wasn't saved in the queue because no db entry could be created")
+        return False
+
     try:
         file.save(file_path)
     except Exception as e:
         logging("file couldn't be saved")
-        if not remove_file_from_db(file.filename, None):
+        if not remove_file_from_queue(file.filename, None):
             logging("DB entry couldn't be removed for unsaved file")
         return False
     
