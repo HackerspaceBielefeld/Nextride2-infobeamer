@@ -10,7 +10,7 @@ def get_time():
     return time.strftime("%H:%M:%S", current_time)
 
 def logging(message:str):
-    print(f"{get_time()}: {message}")
+    print(f"[{get_time()}]: {message}")
 
 def generate_random_string(length):
     # Define the characters allowed for the random string

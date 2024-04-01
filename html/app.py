@@ -2,18 +2,17 @@ import os
 
 from flask import Flask, render_template, request, redirect, url_for, session
 from authlib.integrations.flask_client import OAuth
-from flask_sqlalchemy import SQLAlchemy
+#from flask_sqlalchemy import SQLAlchemy
 
 from dotenv import load_dotenv
 from functools import wraps
 
 from filehandler import sanitize_file, safe_file
 from queuehandler import approve_file
+from db_models import db
 
 # Load environment variables from .env file
 load_dotenv()
-
-db = SQLAlchemy()
 
 app = Flask(__name__)
 
@@ -22,14 +21,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 # initialize the app with Flask-SQLAlchemy
 db.init_app(app)
-
-# initilize the collumns of table uploads in database
-class Uploads(db.Model):
-    __tablename__ = 'uploads'
-    id = db.Column(db.Integer, primary_key=True)
-    file_name = db.Column(db.String(100), nullable=False)
-    file_path = db.Column(db.String(200), nullable=False)
-    file_password = db.Column(db.String(100), nullable=False)
+# Create the database tables
+with app.app_context():
+    db.create_all()
 
 app.secret_key = os.environ.get('FLASK_SECRET_KEY')
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
@@ -112,10 +106,9 @@ def upload_file():
 
         file = sanitize_file(file, app.config['MAX_CONTENT_LENGTH'])
         if file != False:        
-            safe_file(file, app.config['QUEUE_FOLDER'])
-            
-            # Store the filename in the session
-            session['uploaded_file'] = file.filename
+            if safe_file(file, app.config['QUEUE_FOLDER']):
+                # Store the filename in the session if upload was successful
+                session['uploaded_file'] = file.filename
 
         return redirect(url_for('upload_result'))
     else:
