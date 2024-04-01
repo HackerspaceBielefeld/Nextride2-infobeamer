@@ -2,6 +2,8 @@ import os
 
 from flask import Flask, render_template, request, redirect, url_for, session
 from authlib.integrations.flask_client import OAuth
+from flask_sqlalchemy import SQLAlchemy
+
 from dotenv import load_dotenv
 from functools import wraps
 
@@ -11,7 +13,24 @@ from queuehandler import approve_file
 # Load environment variables from .env file
 load_dotenv()
 
+db = SQLAlchemy()
+
 app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.environ.get('DATABASE_NAME')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+
+# initialize the app with Flask-SQLAlchemy
+db.init_app(app)
+
+# initilize the collumns of table uploads in database
+class Uploads(db.Model):
+    __tablename__ = 'uploads'
+    id = db.Column(db.Integer, primary_key=True)
+    file_name = db.Column(db.String(100), nullable=False)
+    file_path = db.Column(db.String(200), nullable=False)
+    file_password = db.Column(db.String(100), nullable=False)
+
 app.secret_key = os.environ.get('FLASK_SECRET_KEY')
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['QUEUE_FOLDER'] = 'static/queue'

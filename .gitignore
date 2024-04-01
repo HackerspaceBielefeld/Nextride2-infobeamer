@@ -1,6 +1,7 @@
 # Self added - folders and files
 html/static/uploads/*
 html/static/queue/*
+*.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

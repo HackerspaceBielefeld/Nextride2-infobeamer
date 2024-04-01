@@ -69,7 +69,6 @@ def safe_file(file, QUEUE_FOLDER):
     if not add_file(file.filename, file_path, file_password):
         return False
     
-    file_path = os.path.join(QUEUE_FOLDER, file.filename)
     try:
         file.save(file_path)
     except Exception as e:

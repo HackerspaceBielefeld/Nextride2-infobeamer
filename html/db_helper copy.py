@@ -65,34 +65,56 @@ def set_lowest_free_id():
         return False
     return True
 
-def get_file(file_name: str, file_id: int):
-    try:
-        return Uploads.query.filter((Uploads.file_name == file_name) | (Uploads.id == file_id)).first()
-    except Exception as e:
-        logging(f"An error occurred while retrieving file from the database: {e}")
+def get_file(file_name:str, file_id:int):
+    db_data = get_db()
+    
+    for file in db_data['uploads']:
+        if file['file_name'] == file_name or file['id'] == file_id:
+            return file
+    logging("The requested file couldn't be found in the database")
+    return None
+
+def add_file(file_name:str, file_path:str, file_password):
+    lowest_free_id = get_lowest_free_id()
+
+    upload_info = {
+        "id": lowest_free_id,
+        "file_name": file_name,
+        "file_path": file_path,
+        "file_password": file_password
+    }
+
+    db_data = get_db()
+
+    # Add the new upload information to the uploads dictionary
+    #if lowest_free_id == 0:
+    db_data["uploads"].insert(lowest_free_id, upload_info)
+
+    # Save the updated data back to db.json
+    if not set_db(db_data):
         return False
 
-def add_file(file_name: str, file_path: str, file_password: str):
-    try:
-        upload = Uploads(file_name=file_name, file_path=file_path, file_password=file_password)
-        db.session.add(upload)
-        db.session.commit()
-        return True
-    except Exception as e:
-        logging(f"An error occurred while adding file to the database: {e}")
+    if not set_lowest_free_id():
         return False
 
-def remove_file(file_name: str, file_id: int):
-    try:
-        upload = get_file(file_name, file_id)
-        if upload:
-            db.session.delete(upload)
-            db.session.commit()
-            return upload
-        logging("File to delet wasn't found in the db")
+    logging(f"Upload information for ID {lowest_free_id} has been saved to db.json.")
+    return True
+
+def remove_file(file_name, file_id):
+    file_to_remove = get_file(file_name, file_id)
+    if not file_to_remove:
+        logging("No file or db entry removed")
         return False
-    except Exception as e:
-        # Handle exceptions (e.g., database errors)
-        print(f"An error occurred while removing file from the database: {e}")
+
+    db_data = get_db()
+    db_data["uploads"].remove(file_to_remove)
+    if not set_db(db_data):
+        logging("No file or db entry removed")
         return False
+
+    if not set_lowest_free_id():
+        logging("Couldn't set lowest free id but db entry was already removed")
+        return False
+    
+    return db_data
     
