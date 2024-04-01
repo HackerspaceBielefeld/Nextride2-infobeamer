@@ -4,66 +4,28 @@ import os
 from flask_sqlalchemy import SQLAlchemy
 from models import Uploads
 
+from dotenv import load_dotenv
+
 from helper import logging
+
+# Load environment variables from .env file
+load_dotenv()
 
 db = SQLAlchemy()
 
-def get_db_config():
-    with open('config/db_config.json', 'r') as file:
-        return json.load(file)
-
-def get_db():
-    with open('config/db.json', 'r') as file:
-        return json.load(file)
-
-def set_db_config(db_config):
+def check_global_upload_limit():
     try:
-        with open('config/db_config.json', 'w') as file:
-            json.dump(db_config, file, indent=4)
+        # Count the number of existing entries in the database
+        num_files = Uploads.query.count()
+
+        # Check if the count exceeds the limit (100)
+        if num_files >= os.environ.get('GLOBAL_UPLOAD_LIMIT'):
+            logging("Maximum file limit reached. Cannot add more files.")
+            return False
     except Exception as e:
-        logging(f"While writing to db_config.json an error occured: {e}")
+        logging("Error while retrieving amount of database entries")
         return False
-    return True
-
-def set_db(db_data):
-    if not os.path.exists('config/db.json'):
-        db_data = {"uploads": {}}
-
-    try:
-        with open('config/db.json', 'w') as file:
-            json.dump(db_data, file, indent=4)
-    except Exception as e:
-        logging(f"While writing to db.json an error occured: {e}")
-        return False
-    return True
-
-
-def get_lowest_free_id():
-    data = get_db_config()
-    return data['lowest_free_id']
-
-def set_lowest_free_id():
-    db_config = get_db_config()
-    max_uploads = db_config['max_uploads']
-
-    uploads = get_db()
-
-    if len(uploads['uploads']) == max_uploads:
-        logging(f"{len(uploads['uploads'])}/{max_uploads} uploads are stored - no more allowed")
-        return False
-
-    for i in range(max_uploads):
-        if i == len(uploads['uploads']):
-            db_config['lowest_free_id'] = i
-            break
-
-        elif i < uploads['uploads'][i]['id']:
-            db_config['lowest_free_id'] = i
-            break
-
-    if not set_db_config(db_config):
-        return False
-    return True
+    return True 
 
 def get_file(file_name: str, file_id: int):
     try:

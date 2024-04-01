@@ -6,7 +6,7 @@ from PIL import Image
 
 from helper import generate_random_string, generate_secret_token
 from helper import logging
-from db_helper import add_file, remove_file
+from db_helper import add_file, remove_file, check_global_upload_limit
 from emailhandler import sent_email_approval_request
 
 def sanitize_filename(file_name:str):
@@ -63,6 +63,10 @@ def sanitize_file(file, MAX_CONTENT_LENGTH):
 
 
 def safe_file(file, QUEUE_FOLDER):
+    if not check_global_upload_limit():
+        logging('Global upload limit restricted the upload')
+        return False
+
     file_path = os.path.join(QUEUE_FOLDER, file.filename)
     file_password = generate_secret_token()
 
