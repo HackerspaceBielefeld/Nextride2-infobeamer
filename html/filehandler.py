@@ -91,19 +91,16 @@ def safe_file(file, QUEUE_FOLDER, user_name):
         return False
     
     if not sent_email_approval_request(file.filename, file_password, file_path):
+        logging("Failed to sent a file approval email")
         return False
-    print(1)
-    user.add_user_file(file.filename)
-    print(3)
+    
+    if not user.add_user_file(file.filename):
+        logging("Failed adding file to users db")
     return True
+    
 
-
-def delete_file(file_name=None, file_id=None):
-    if not file_name and not file_id:
-        logging("Tried to remove a file but no file name or id was provided")
-        return False
-
-    file_data = remove_file_from_db(file_name, file_id)
+def delete_file(file_name:str):
+    file_data = remove_file_from_db(file_name, None)
     if not file_data: return False
     
     file_path = file_data['file_path']
