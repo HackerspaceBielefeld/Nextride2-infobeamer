@@ -18,6 +18,6 @@ def generate_random_string(length):
     # Generate the random string
     return ''.join(random.choice(characters) for _ in range(length))
 
-def generate_secret_token(length=32):
+def generate_secret_token(length=64):
     """Generate a secure random token."""
     return secrets.token_urlsafe(length)

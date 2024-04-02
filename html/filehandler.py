@@ -6,9 +6,9 @@ from PIL import Image
 
 from helper import generate_random_string, generate_secret_token
 from helper import logging
-from db_helper import check_global_upload_limit
-from db_helper import remove_file_from_queue, remove_file_from_uploads
-from db_helper import add_file_to_queue
+from db_file_helper import check_global_upload_limit
+from db_file_helper import remove_file_from_queue, remove_file_from_uploads
+from db_file_helper import add_file_to_queue
 from emailhandler import sent_email_approval_request
 
 def sanitize_filename(file_name:str):
