@@ -9,6 +9,7 @@ from helper import logging
 from db_file_helper import check_global_upload_limit
 from db_file_helper import remove_file_from_queue, remove_file_from_uploads
 from db_file_helper import add_file_to_queue
+from db_user_helper import get_user_from_users
 from emailhandler import sent_email_approval_request
 
 def sanitize_filename(file_name:str):
@@ -64,9 +65,14 @@ def sanitize_file(file, MAX_CONTENT_LENGTH):
     return file
 
 
-def safe_file(file, QUEUE_FOLDER):
+def safe_file(file, QUEUE_FOLDER, user_name):
     if not check_global_upload_limit():
         logging('Global upload limit restricted the upload')
+        return False
+
+    user = get_user_from_users(user_name)
+    if user.user_upload_amount == user.user_upload_limit:
+        logging('Personal upload limit restricted the upload')
         return False
 
     file_path = os.path.join(QUEUE_FOLDER, file.filename)
@@ -86,6 +92,9 @@ def safe_file(file, QUEUE_FOLDER):
     
     if not sent_email_approval_request(file.filename, file_password, file_path):
         return False
+    print(1)
+    user.add_user_file(file.filename)
+    print(3)
     return True
 
 

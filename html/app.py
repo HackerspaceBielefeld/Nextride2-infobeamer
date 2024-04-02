@@ -10,6 +10,7 @@ from functools import wraps
 from filehandler import sanitize_file, safe_file
 from queuehandler import approve_file
 from db_models import db
+from db_user_helper import add_user_to_users
 
 # Load environment variables from .env file
 load_dotenv()
@@ -66,8 +67,9 @@ def auth():
         user = github.get('https://api.github.com/user', token=token)
         if user.ok:
             user_data = user.json()
-            # You can use the user data to create or authenticate users in your system
             session['user_data'] = user_data
+            session['user_name'] = user_data['login']
+            add_user_to_users(user_data['login'])
             return render_template('dashboard.html')
         else:
             return "Failed to fetch user data from GitHub."
@@ -106,7 +108,7 @@ def upload_file():
 
         file = sanitize_file(file, app.config['MAX_CONTENT_LENGTH'])
         if file != False:        
-            if safe_file(file, app.config['QUEUE_FOLDER']):
+            if safe_file(file,app.config['QUEUE_FOLDER'], session['user_name']):
                 # Store the filename in the session if upload was successful
                 session['uploaded_file'] = file.filename
 

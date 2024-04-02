@@ -19,7 +19,10 @@ def get_user_from_users(user_name: str):
 
 def add_user_to_users(user_name: str, user_upload_amount=0, user_upload_limit=os.environ.get('DEFAULT_USER_UPLOAD_LIMIT'), user_role="default", user_files=[]):
     try:
-        user = Users(user_name=user_name, user_upload_amount=user_upload_amount, user_upload_limit=user_upload_limit, user_role=user_role, user_files=user_files)
+        user = Users(user_name=user_name, user_upload_amount=user_upload_amount, user_upload_limit=int(user_upload_limit), user_role=user_role, user_files=user_files)
+        if get_user_from_users(user_name) != None:
+            logging(f"User with the same username: {user_name} already exist in the users table")
+            return False
         db.session.add(user)
         db.session.commit()
         return True
