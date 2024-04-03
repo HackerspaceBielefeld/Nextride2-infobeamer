@@ -7,8 +7,8 @@ from filehandler import check_file_exist, move_file
 from emailhandler import sent_email_error_message
 from helper import logging
 
-def approve_file(file_name, file_id, uploads_path:str, file_password:str):
-    file_to_approve = get_file_from_queue(file_name, file_id)
+def approve_file(file_name, uploads_path:str, file_password:str):
+    file_to_approve = get_file_from_queue(file_name)
     print(file_to_approve.id)
     if not file_to_approve:
         logging("No db entry for requested file, nothing approved")

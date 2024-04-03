@@ -25,9 +25,9 @@ def check_global_upload_limit():
         return False
     return True 
 
-def get_file_from_queue(file_name: str, file_id: int):
+def get_file_from_queue(file_name: str):
     try:
-        return db.session.query(Queue).filter((Queue.file_name == file_name) | (Queue.id == file_id)).first()
+        return db.session.query(Queue).filter(Queue.file_name == file_name).first()
     except Exception as e:
         logging(f"An error occurred while retrieving file from the queue table: {e}")
         return False
@@ -42,9 +42,9 @@ def add_file_to_queue(file_name: str, file_path: str, file_password: str):
         logging(f"An error occurred while adding file to the queue table: {e}")
         return False
 
-def remove_file_from_queue(file_name: str, file_id: int):
+def remove_file_from_queue(file_name: str):
     try:
-        upload = get_file_from_queue(file_name, file_id)
+        upload = get_file_from_queue(file_name)
         if upload:
             db.session.delete(upload)
             db.session.commit()
@@ -52,14 +52,13 @@ def remove_file_from_queue(file_name: str, file_id: int):
         logging("File to delete wasn't found in the queue table")
         return False
     except Exception as e:
-        # Handle exceptions (e.g., database errors)
         print(f"An error occurred while removing file from the queue table: {e}")
         return False
 
 
-def get_file_from_uploads(file_name: str, file_id: int):
+def get_file_from_uploads(file_name: str):
     try:
-        return db.session.query(Uploads).filter((Uploads.file_name == file_name) | (Uploads.id == file_id)).first()
+        return db.session.query(Uploads).filter(Uploads.file_name == file_name).first()
     except Exception as e:
         logging(f"An error occurred while retrieving file from the uploads table: {e}")
         return False
@@ -74,9 +73,9 @@ def add_file_to_uploads(file_name: str, file_path: str, file_password: str):
         logging(f"An error occurred while adding file to the uploads table: {e}")
         return False
 
-def remove_file_from_uploads(file_name: str, file_id: int):
+def remove_file_from_uploads(file_name: str):
     try:
-        upload = get_file_from_uploads(file_name, file_id)
+        upload = get_file_from_uploads(file_name)
         if upload:
             db.session.delete(upload)
             db.session.commit()
