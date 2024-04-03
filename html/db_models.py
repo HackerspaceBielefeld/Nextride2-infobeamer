@@ -23,6 +23,7 @@ class Uploads(db.Model):
     file_name = db.Column(db.String(100), nullable=False)
     file_path = db.Column(db.String(200), nullable=False)
     file_password = db.Column(db.String(100), nullable=False)
+    file_owner = db.Column(db.String(100), nullable=False)
 
 class Queue(db.Model):
     __tablename__ = 'queue'
@@ -30,6 +31,7 @@ class Queue(db.Model):
     file_name = db.Column(db.String(100), nullable=False)
     file_path = db.Column(db.String(200), nullable=False)
     file_password = db.Column(db.String(100), nullable=False)
+    file_owner = db.Column(db.String(100), nullable=False)
 
 class Users(db.Model):
     __tablename__ = 'users'
@@ -52,6 +54,7 @@ class Users(db.Model):
 
     def set_user_files(self, files:list):
         if len(files) > self.user_upload_limit:
+            logging("Amount of files exceeds upload limit")
             return False
 
         self.user_upload_amount = len(files)
@@ -64,6 +67,7 @@ class Users(db.Model):
     def add_user_file(self, file:str):
         files = self.get_user_files()
         if len(files) >= self.user_upload_limit:
+            logging("Upload limit already reached")
             return False
         
         files.append(file)
@@ -79,6 +83,7 @@ class Users(db.Model):
     def remove_user_file(self, file:str):
         files = self.get_user_files()
         if file not in files:
+            logging("File to remove isn't present in the users files")
             return False
 
         files.remove(file)

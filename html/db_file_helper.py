@@ -6,6 +6,7 @@ from db_models import Uploads, Queue, db
 
 from dotenv import load_dotenv
 
+from db_user_helper import get_user_from_users
 from helper import logging
 
 # Load environment variables from .env file
@@ -32,9 +33,14 @@ def get_file_from_queue(file_name: str):
         logging(f"An error occurred while retrieving file from the queue table: {e}")
         return False
 
-def add_file_to_queue(file_name: str, file_path: str, file_password: str):
+def add_file_to_queue(file_name: str, file_path: str, file_password: str, file_owner: str):
     try:
-        upload = Queue(file_name=file_name, file_path=file_path, file_password=file_password)
+        upload = Queue(file_name=file_name, file_path=file_path, file_password=file_password, file_owner=file_owner)
+        
+        user = get_user_from_users(file_owner)
+        if not user.add_user_file(file_name):
+            logging("Failed adding file to users table")
+        
         db.session.add(upload)
         db.session.commit()
         return True
@@ -46,6 +52,16 @@ def remove_file_from_queue(file_name: str):
     try:
         upload = get_file_from_queue(file_name)
         if upload:
+            # Get user and delete the file from the queue table
+            user = get_user_from_users(upload.file_owner)
+            if not user:
+                logging("File owner couldn't be found")
+                return False
+
+            if not user.remove_user_file(file_name):
+                logging("Failed removing file from queue db")
+                return False
+
             db.session.delete(upload)
             db.session.commit()
             return upload
@@ -63,9 +79,14 @@ def get_file_from_uploads(file_name: str):
         logging(f"An error occurred while retrieving file from the uploads table: {e}")
         return False
 
-def add_file_to_uploads(file_name: str, file_path: str, file_password: str):
+def add_file_to_uploads(file_name: str, file_path: str, file_password: str, file_owner: str):
     try:
-        upload = Uploads(file_name=file_name, file_path=file_path, file_password=file_password)
+        upload = Uploads(file_name=file_name, file_path=file_path, file_password=file_password, file_owner=file_owner)
+
+        user = get_user_from_users(file_owner)
+        if not user.add_user_file(file_name):
+            logging("Failed adding file to users table")
+
         db.session.add(upload)
         db.session.commit()
         return True
@@ -77,6 +98,17 @@ def remove_file_from_uploads(file_name: str):
     try:
         upload = get_file_from_uploads(file_name)
         if upload:
+            # Get user and delete the file from the users table
+            user = get_user_from_users(upload.file_owner)
+            if not user:
+                logging("File owner couldn't be found")
+                return False
+
+            if not user.remove_user_file(file_name):
+                logging("Failed removing file from users db")
+                return False
+            
+            # Delete the file from uploads table
             db.session.delete(upload)
             db.session.commit()
             return upload
@@ -86,4 +118,14 @@ def remove_file_from_uploads(file_name: str):
         # Handle exceptions (e.g., database errors)
         print(f"An error occurred while removing file from the uploads table: {e}")
         return False
+
+def remove_file_from_db(file_name: str):
+    upload = remove_file_from_uploads(file_name)
+    if not upload:
+        upload = remove_file_from_queue(file_name)
+        if not upload:
+            logging("File couldn't be removed from db")
+            return False
+    return upload
+
     

@@ -24,10 +24,10 @@ def approve_file(file_name, uploads_path:str, file_password:str):
         logging("The files password wasn't correct")
         return False
 
-    if not add_file_to_uploads(file_to_approve.file_name, file_to_approve.file_path, file_to_approve.file_password):
+    if not add_file_to_uploads(file_to_approve.file_name, file_to_approve.file_path, file_to_approve.file_password, file_to_approve.file_owner):
         return False
     
-    if not remove_file_from_queue(file_to_approve.file_name, file_to_approve.id):
+    if not remove_file_from_queue(file_to_approve.file_name):
         logging("File couldn't be removed from queue table - Now trying to remove it from uploads again")
         if not remove_file_from_uploads(file_to_approve.file_name, file_to_approve.id):
             logging("The file couldn't be removed from the uploads table")

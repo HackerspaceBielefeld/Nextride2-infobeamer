@@ -70,15 +70,10 @@ def safe_file(file, QUEUE_FOLDER, user_name):
         logging('Global upload limit restricted the upload')
         return False
 
-    user = get_user_from_users(user_name)
-    if user.user_upload_amount == user.user_upload_limit:
-        logging('Personal upload limit restricted the upload')
-        return False
-
     file_path = os.path.join(QUEUE_FOLDER, file.filename)
     file_password = generate_secret_token()
     
-    if not add_file_to_queue(file.filename, file_path, file_password):
+    if not add_file_to_queue(file.filename, file_path, file_password, user_name):
         logging("File wasn't saved in the queue because no db entry could be created")
         return False
 
@@ -94,15 +89,15 @@ def safe_file(file, QUEUE_FOLDER, user_name):
         logging("Failed to sent a file approval email")
         return False
     
-    if not user.add_user_file(file.filename):
-        logging("Failed adding file to users db")
     return True
     
 
 def delete_file(file_name:str):
     file_data = remove_file_from_db(file_name, None)
-    if not file_data: return False
-    
+    if not file_data:
+        logging("File couldn't be removed from database")
+        return False
+
     file_path = file_data['file_path']
 
     try:
