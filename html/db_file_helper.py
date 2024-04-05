@@ -35,8 +35,13 @@ def get_file_from_queue(file_name: str):
 
 def add_file_to_queue(file_name: str, file_path: str, file_password: str, file_owner: str):
     user = get_user_from_users(file_owner)
+    if not user:
+        logging("File owner couldn't be found")
+        return False
+    
     if not user.add_user_file(file_name):
         logging("Failed adding file to users table")
+        return False
 
     try:
         upload = Queue(file_name=file_name, file_path=file_path, file_password=file_password, file_owner=file_owner)
@@ -81,8 +86,13 @@ def get_file_from_uploads(file_name: str):
 
 def add_file_to_uploads(file_name: str, file_path: str, file_password: str, file_owner: str):
     user = get_user_from_users(file_owner)
+    if not user:
+        logging("File owner couldn't be found")
+        return False
+    
     if not user.add_user_file(file_name):
         logging("Failed adding file to users table")
+        return False
 
     try:
         upload = Uploads(file_name=file_name, file_path=file_path, file_password=file_password, file_owner=file_owner)
