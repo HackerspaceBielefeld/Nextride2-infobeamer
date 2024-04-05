@@ -24,7 +24,7 @@ def check_global_upload_limit():
     except Exception as e:
         logging(f"Error while retrieving amount of database entries:\n{e}")
         return False
-    return True 
+    return True
 
 def get_file_from_queue(file_name: str):
     try:
