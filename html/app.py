@@ -10,7 +10,7 @@ from functools import wraps
 from filehandler import sanitize_file, safe_file
 from queuehandler import approve_file
 from db_models import db
-from db_user_helper import add_user_to_users
+from db_user_helper import add_user_to_users, get_user_from_users
 
 # Load environment variables from .env file
 load_dotenv()
@@ -96,8 +96,12 @@ def dashboard():
     # Clear session data related to uploaded file
     session.pop('uploaded_file', None)
 
+    user = get_user_from_users(session['user_name'])
+    if not user:
+        return redirect(url_for('login'))
+
     # Get list of uploaded images
-    uploaded_images = os.listdir(app.config['UPLOAD_FOLDER'])    
+    uploaded_images = user.get_user_files()    
     return render_template('dashboard.html', uploaded_images=uploaded_images)
 
 @app.route('/upload', methods=['POST'])

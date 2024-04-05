@@ -9,6 +9,7 @@ from helper import logging
 from db_file_helper import check_global_upload_limit
 from db_file_helper import remove_file_from_queue, remove_file_from_uploads
 from db_file_helper import add_file_to_queue
+from db_file_helper import check_file_exist_in_db
 from db_user_helper import get_user_from_users
 from emailhandler import sent_email_approval_request
 
@@ -70,7 +71,7 @@ def safe_file(file, QUEUE_FOLDER, user_name):
         logging('Global upload limit restricted the upload')
         return False
 
-    if check_existence_in_db(file_name):
+    if check_file_exist_in_db(file.filename):
         logging("A file with the same name is already in the db")
         return False
 
