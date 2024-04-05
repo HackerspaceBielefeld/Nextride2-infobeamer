@@ -44,19 +44,24 @@
                 {% endif %}
                 {% if image2 %}
                 <div class="image-item">
-                    <img src="{{ url_for('static', filename='uploads/' + image2) }}" alt="{{ image2 }}">
-                    <form action="{{ url_for('delete_image') }}" method="post">
-                        <input type="hidden" name="filename" value="{{ image2 }}">
-                        <button type="submit" class="delete-button">Delete</button>
-                    </form>
+                    <div class="image-wrapper">
+                        <img src="{{ url_for('static', filename='uploads/' + image1) }}" alt="{{ image1 }}">
+                        <form action="{{ url_for('delete_image') }}" method="post">
+                            <input type="hidden" name="filename" value="{{ image2 }}">
+                            <button type="submit" class="delete-button">Delete</button>
+                        </form>
+                    </div>                    
                 </div>
                 {% endif %}
                 {% if image3 %}
                 <div class="image-item">
-                    <img src="{{ url_for('static', filename='uploads/' + image3) }}" alt="{{ image3 }}">
-                    <form action="{{ url_for('delete_image') }}" method="post">
-                        <input type="hidden" name="filename" value="{{ image3 }}">
-                        <button type="submit" class="delete-button">Delete</button>                    </form>
+                    <div class="image-wrapper">
+                        <img src="{{ url_for('static', filename='uploads/' + image1) }}" alt="{{ image1 }}">
+                        <form action="{{ url_for('delete_image') }}" method="post">
+                            <input type="hidden" name="filename" value="{{ image3 }}">
+                            <button type="submit" class="delete-button">Delete</button>
+                        </form>
+                    </div>                    
                 </div>
                 {% endif %}
             </div>
