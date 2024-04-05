@@ -70,6 +70,10 @@ def safe_file(file, QUEUE_FOLDER, user_name):
         logging('Global upload limit restricted the upload')
         return False
 
+    if check_existence_in_db(file_name):
+        logging("A file with the same name is already in the db")
+        return False
+
     file_path = os.path.join(QUEUE_FOLDER, file.filename)
     file_password = generate_secret_token()
     

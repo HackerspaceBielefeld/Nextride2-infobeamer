@@ -137,3 +137,11 @@ def remove_file_from_db(file_name: str):
     return upload
 
     
+def check_file_exist_in_db(file_name:str):
+    if get_file_from_queue(file_name):
+        logging(f"File {file_name} exist in queue")
+        return True
+    if get_file_from_uploads(file_name):
+        logging(f"File {file_name} exist in uploads")
+        return True
+    return False
