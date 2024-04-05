@@ -139,6 +139,21 @@ def approve_upload():
         return "File approved"
     else: return "You are not allowed to approve files"
 
+@app.route('/delete_image', methods=['POST'])
+@login_required
+def delete_image():
+    if request.method == 'POST':
+        filename = request.form['filename']
+        # Check if the file exists
+        if os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
+            # Delete the file
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('dashboard'))   
+        else:
+            return "File not found."
+    else:
+        return "Invalid request method."
+
 @app.route('/faq')
 def faq():
     return render_template('faq.html')
