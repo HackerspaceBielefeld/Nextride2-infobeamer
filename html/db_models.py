@@ -40,59 +40,76 @@ class Users(db.Model):
     user_upload_amount = db.Column(db.Integer, nullable=False)
     user_upload_limit = db.Column(db.Integer, nullable=False)
     user_role = db.Column(db.String(100), nullable=False)
-    user_files = db.Column(db.String)  # Storing the array as a string
+    user_files_queue = db.Column(db.String)
+    user_files_uploads = db.Column(db.String)
 
     def __init__(self, user_name, user_upload_amount, user_upload_limit, user_role, user_files):
         self.user_name = user_name
         self.user_upload_amount = user_upload_amount
         self.user_upload_limit = user_upload_limit
         self.user_role = user_role
-        self.user_files = json.dumps(user_files)  # Convert array to JSON string
+        self.user_files_queue = json.dumps(user_files)
+        self.user_files_uploads = json.dumps('[]')
 
-    def get_user_files(self):
-        return json.loads(self.user_files) if self.user_files else []
+    def get_user_files_queue(self):
+        return json.loads(self.user_files) if self.user_files_queue else []
 
-    def set_user_files(self, files:list):
-        if len(files) > self.user_upload_limit:
-            logging("Amount of files exceeds upload limit")
-            return False
+    def get_user_files_uploads(self):
+        return json.loads(self.user_files) if self.user_files_uploads else []
 
-        self.user_upload_amount = len(files)
-        self.user_files = json.dumps(files)
+    def set_user_files(self, files:list, uploads=False):
+        # Check upload is in range of the maximum user upload limit
+        amount_queue = len(get_user_files_queue())
+        amount_uploads = len(get_user_files_uploads())
+        if uploads:
+            if len(files) + amount_queue > self.user_upload_limit:
+                logging("Amount of files exceeds upload limit")
+                return False
+
+            self.user_upload_amount = len(files) + amount_queue
+            self.user_files_uploads = json.dumps(files)
+        else:
+            if len(files) + amount_uploads > self.user_upload_limit:    
+                logging("Amount of files exceeds upload limit")
+                return False
+
+            self.user_upload_amount = len(files) + amount_uploads
+            self.user_files_queue = json.dumps(files)
 
         if not commit_db_changes():
             return False
         return True
 
-    def add_user_file(self, file:str):
-        files = self.get_user_files()
-        if len(files) >= self.user_upload_limit:
+    def add_user_file(self, file:str, uploads=False):
+        if self.user_upload_amount >= self.user_upload_limit:
             logging("Upload limit already reached")
             return False
         
+        if uploads:
+            files = self.get_user_files_uploads()
+        else:
+            files = self.get_user_files_queue()
         files.append(file)
-        self.user_upload_amount = len(files)
         
-        if not self.set_user_files(files):
+        if not self.set_user_files(files, uploads=uploads):
             return False
 
-        if not commit_db_changes():
-            return False
         return True
 
-    def remove_user_file(self, file:str):
-        files = self.get_user_files()
+    def remove_user_file(self, file:str, uploads=False):
+        if uploads:
+            files = self.get_user_files_uploads()
+        else:
+            files = self.get_user_files_queue()
+
         if file not in files:
             logging("File to remove isn't present in the users files")
             return False
 
         files.remove(file)
-        self.user_upload_amount = len(files)
         
-        if not self.set_user_files(files):
+        if not self.set_user_files(files, uploads=uploads):
             return False
-
-        if not commit_db_changes():
-            return False
+            
         return True
 
