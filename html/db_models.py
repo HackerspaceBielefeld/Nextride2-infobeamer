@@ -89,6 +89,7 @@ class Users(db.Model):
             files = self.get_user_files_uploads()
         else:
             files = self.get_user_files_queue()
+
         files.append(file)
         
         if not self.set_user_files(files, uploads=uploads):
@@ -101,6 +102,10 @@ class Users(db.Model):
             files = self.get_user_files_uploads()
         else:
             files = self.get_user_files_queue()
+
+        if not files:
+            logging("There aren't any files to delete")
+            return False
 
         if file not in files:
             logging("File to remove isn't present in the users files")
