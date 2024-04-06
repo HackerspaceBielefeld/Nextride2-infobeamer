@@ -39,7 +39,7 @@ def add_file_to_queue(file_name: str, file_path: str, file_password: str, file_o
         logging("File owner couldn't be found")
         return False
     
-    if not user.add_user_file(file_name):
+    if not user.add_user_file(file_name, uploads=False):
         logging("Failed adding file to users table")
         return False
 
@@ -64,7 +64,7 @@ def remove_file_from_queue(file_name: str):
         logging("File owner couldn't be found")
         return False
 
-    if not user.remove_user_file(file_name):
+    if not user.remove_user_file(file_name, uploads=False):
         logging("Failed removing file from queue db")
         return False
 
@@ -90,7 +90,7 @@ def add_file_to_uploads(file_name: str, file_path: str, file_password: str, file
         logging("File owner couldn't be found")
         return False
     
-    if not user.add_user_file(file_name):
+    if not user.add_user_file(file_name, uploads=True):
         logging("Failed adding file to users table")
         return False
 
@@ -115,7 +115,7 @@ def remove_file_from_uploads(file_name: str):
         logging("File owner couldn't be found")
         return False
 
-    if not user.remove_user_file(file_name):
+    if not user.remove_user_file(file_name, uploads=True):
         logging("Failed removing file from users db")
         return False
     
