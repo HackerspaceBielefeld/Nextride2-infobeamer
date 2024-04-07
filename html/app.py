@@ -54,6 +54,10 @@ def login_required(view):
         return view(*args, **kwargs)
     return decorated_view
 
+def admin_required(view):
+    # TODO check if user is admin
+    return
+
 @app.route('/login')
 def login():
     redirect_uri = url_for('auth', _external=True)
@@ -159,6 +163,12 @@ def delete_image():
     if not delete_file(file_name):
         return "Error while deleting image"
     return redirect(url_for('dashboard'))
+
+@app.route('admin/dashboard')
+@login_required
+@admin_required
+def admin_dashboard():
+    return
 
 @app.route('/faq')
 def faq():
