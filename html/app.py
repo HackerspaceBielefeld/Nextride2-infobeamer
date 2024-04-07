@@ -70,7 +70,7 @@ def auth():
             session['user_data'] = user_data
             session['user_name'] = user_data['login']
             add_user_to_users(user_data['login'])
-            return render_template('dashboard.html')
+            return redirect(url_for('dashboard'))
         else:
             return "Failed to fetch user data from GitHub."
     else:
@@ -101,8 +101,9 @@ def dashboard():
         return redirect(url_for('login'))
 
     # Get list of uploaded images
-    uploaded_images = user.get_user_files()    
-    return render_template('dashboard.html', uploaded_images=uploaded_images)
+    queued_images = user.get_user_files_queue()
+    uploaded_images = user.get_user_files_uploads()
+    return render_template('dashboard.html', uploaded_images=uploaded_images, queued_images=queued_images)
 
 @app.route('/upload', methods=['POST'])
 @login_required

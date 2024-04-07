@@ -49,18 +49,18 @@ class Users(db.Model):
         self.user_upload_limit = user_upload_limit
         self.user_role = user_role
         self.user_files_queue = json.dumps(user_files)
-        self.user_files_uploads = json.dumps('[]')
+        self.user_files_uploads = json.dumps([])
 
     def get_user_files_queue(self):
-        return json.loads(self.user_files) if self.user_files_queue else []
+        return json.loads(self.user_files_queue) if self.user_files_queue else []
 
     def get_user_files_uploads(self):
-        return json.loads(self.user_files) if self.user_files_uploads else []
+        return json.loads(self.user_files_uploads) if self.user_files_uploads else []
 
     def set_user_files(self, files:list, uploads=False):
         # Check upload is in range of the maximum user upload limit
-        amount_queue = len(get_user_files_queue())
-        amount_uploads = len(get_user_files_uploads())
+        amount_queue = len(self.get_user_files_queue())
+        amount_uploads = len(self.get_user_files_uploads())
         if uploads:
             if len(files) + amount_queue > self.user_upload_limit:
                 logging("Amount of files exceeds upload limit")

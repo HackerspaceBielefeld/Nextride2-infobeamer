@@ -22,6 +22,53 @@
             <button type="submit" class="green-button">Upload</button>
         </form>
     </div>
+
+    <h2>Queued Images:</h2>
+    <div class="image-container">
+        {% for i in range(0, queued_images|length, 3) %}
+        <div class="image-table">
+            {% set image1 = queued_images[i] %}
+            {% set image2 = queued_images[i+1] if i+1 < queued_images|length else None %}
+            {% set image3 = queued_images[i+2] if i+2 < queued_images|length else None %}
+            <div class="image-row">
+                {% if image1 %}
+                <div class="image-item">
+                    <div class="image-wrapper">
+                        <img src="{{ url_for('static', filename='queue/' + image1) }}" alt="{{ image1 }}">
+                        <form action="{{ url_for('delete_image') }}" method="post">
+                            <input type="hidden" name="filename" value="{{ image1 }}">
+                            <button type="submit" class="delete-button">Delete</button>
+                        </form>
+                    </div>                    
+                </div>
+                {% endif %}
+                {% if image2 %}
+                <div class="image-item">
+                    <div class="image-wrapper">
+                        <img src="{{ url_for('static', filename='queue/' + image2) }}" alt="{{ image2 }}">
+                        <form action="{{ url_for('delete_image') }}" method="post">
+                            <input type="hidden" name="filename" value="{{ image2 }}">
+                            <button type="submit" class="delete-button">Delete</button>
+                        </form>
+                    </div>                    
+                </div>
+                {% endif %}
+                {% if image3 %}
+                <div class="image-item">
+                    <div class="image-wrapper">
+                        <img src="{{ url_for('static', filename='queue/' + image3) }}" alt="{{ image3 }}">
+                        <form action="{{ url_for('delete_image') }}" method="post">
+                            <input type="hidden" name="filename" value="{{ image3 }}">
+                            <button type="submit" class="delete-button">Delete</button>
+                        </form>
+                    </div>                    
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div> 
+
     
     <h2>Uploaded Images:</h2>
     <div class="image-container">
@@ -45,7 +92,7 @@
                 {% if image2 %}
                 <div class="image-item">
                     <div class="image-wrapper">
-                        <img src="{{ url_for('static', filename='uploads/' + image1) }}" alt="{{ image1 }}">
+                        <img src="{{ url_for('static', filename='uploads/' + image2) }}" alt="{{ image2 }}">
                         <form action="{{ url_for('delete_image') }}" method="post">
                             <input type="hidden" name="filename" value="{{ image2 }}">
                             <button type="submit" class="delete-button">Delete</button>
@@ -56,7 +103,7 @@
                 {% if image3 %}
                 <div class="image-item">
                     <div class="image-wrapper">
-                        <img src="{{ url_for('static', filename='uploads/' + image1) }}" alt="{{ image1 }}">
+                        <img src="{{ url_for('static', filename='uploads/' + image3) }}" alt="{{ image3 }}">
                         <form action="{{ url_for('delete_image') }}" method="post">
                             <input type="hidden" name="filename" value="{{ image3 }}">
                             <button type="submit" class="delete-button">Delete</button>
