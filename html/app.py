@@ -7,7 +7,7 @@ from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
 from functools import wraps
 
-from filehandler import sanitize_file, safe_file
+from filehandler import sanitize_file, safe_file, delete_file
 from queuehandler import approve_file
 from db_models import db
 from db_user_helper import add_user_to_users, get_user_from_users
@@ -144,16 +144,21 @@ def approve_upload():
 @login_required
 def delete_image():
     if request.method == 'POST':
-        filename = request.form['filename']
-        # Check if the file exists
-        if os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
-            # Delete the file
-            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('dashboard'))   
-        else:
-            return "File not found."
-    else:
-        return "Invalid request method."
+        file_name = request.form['filename']
+        user_name = session['user_name']
+    
+    user = get_user_from_users(user_name)
+    if not user: return False
+
+    queue_files = user.get_user_files_queue()
+    if not file_name in queue_files:
+        uploads_files = user.get_user_files_uploads()
+        if not file_name in uploads_files:
+            return "User who sent the request to delete {file_name} isn't its owner"
+
+    if not delete_file(file_name):
+        return "Error while deleting image"
+    return redirect(url_for('dashboard'))
 
 @app.route('/faq')
 def faq():

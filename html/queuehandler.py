@@ -9,7 +9,6 @@ from helper import logging
 
 def approve_file(file_name, uploads_path:str, file_password:str):
     file_to_approve = get_file_from_queue(file_name)
-    print(file_to_approve.id)
     if not file_to_approve:
         logging("No db entry for requested file, nothing approved")
         return False
@@ -24,7 +23,8 @@ def approve_file(file_name, uploads_path:str, file_password:str):
         logging("The files password wasn't correct")
         return False
 
-    if not add_file_to_uploads(file_to_approve.file_name, file_to_approve.file_path, file_to_approve.file_password, file_to_approve.file_owner):
+    destination_path = os.path.join(uploads_path, file_to_approve.file_name)
+    if not add_file_to_uploads(file_to_approve.file_name, destination_path, file_to_approve.file_password, file_to_approve.file_owner):
         return False
     
     if not remove_file_from_queue(file_to_approve.file_name):
@@ -36,8 +36,6 @@ def approve_file(file_name, uploads_path:str, file_password:str):
             uploads table again failed.'''
         sent_email_error_message("Database inconsistence", error_message)       
         return False
-    
-    destination_path = os.path.join(uploads_path, file_to_approve.file_name)
 
     if not move_file(file_to_approve.file_path, destination_path):
         logging("Moving the file from queue to uploads went wrong - Database changes already done.")

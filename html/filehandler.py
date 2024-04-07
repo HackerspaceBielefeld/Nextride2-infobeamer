@@ -7,7 +7,7 @@ from PIL import Image
 from helper import generate_random_string, generate_secret_token
 from helper import logging
 from db_file_helper import check_global_upload_limit
-from db_file_helper import remove_file_from_queue, remove_file_from_uploads
+from db_file_helper import remove_file_from_queue, remove_file_from_uploads, remove_file_from_db
 from db_file_helper import add_file_to_queue
 from db_file_helper import check_file_exist_in_db
 from db_user_helper import get_user_from_users
@@ -98,12 +98,12 @@ def safe_file(file, QUEUE_FOLDER, user_name):
     
 
 def delete_file(file_name:str):
-    file_data = remove_file_from_db(file_name, None)
+    file_data = remove_file_from_db(file_name)
     if not file_data:
-        logging("File couldn't be removed from database")
+        logging("Fileremove_file_from_db couldn't be removed from database")
         return False
 
-    file_path = file_data['file_path']
+    file_path = file_data.file_path
 
     try:
         os.remove(file_path)
