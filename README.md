@@ -8,5 +8,4 @@ Please note! As N2i is currently under development not all features work reliabl
 Please use the latest release for a stable and secure version of N2i.
 
 ## Todos
-* Adjust the dashboard to only show users files
-* Add a button to each image which calls a delete function
+* Check why not every upload triggers an email
