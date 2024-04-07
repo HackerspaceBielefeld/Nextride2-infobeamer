@@ -10,7 +10,7 @@ from functools import wraps
 from filehandler import sanitize_file, safe_file, delete_file
 from queuehandler import approve_file
 from db_models import db
-from db_user_helper import add_user_to_users, get_user_from_users
+from db_user_helper import add_user_to_users, get_user_from_users, get_users_data_for_dashboard
 
 from user_roles import check_admin
 
@@ -173,7 +173,8 @@ def admin_dashboard():
     if not check_admin(session['user_name']):
         return redirect(url_for('index'))
     
-    return render_template('admin/dashboard.html')
+    users_data = get_users_data_for_dashboard()
+    return render_template('admin/dashboard.html', users_data=users_data)
 
 @app.route('/admin/approve')
 @login_required

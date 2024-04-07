@@ -23,6 +23,28 @@
     <div class="head-container">
     </div>
 
+    <h1>Users Table</h1>
+    <div class="user-data-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users_data %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.user_name }}</td>
+                    <td>{{ user.user_role }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
     <footer>
         <a href="{{ url_for('index') }}">Home</a> | <a href="{{ url_for('faq') }}">FAQ</a>
         <p>Nextride-infobeamer by Inflac | Hackerspace-Bielefeld e.V.</p>
