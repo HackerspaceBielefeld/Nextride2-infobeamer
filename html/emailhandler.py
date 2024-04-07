@@ -56,19 +56,22 @@ def sent_mail(subject, body, filename=False):
     with smtplib.SMTP_SSL(smtp_server, 465, context=context) as server:
         server.login(sender_email, password)
         server.sendmail(sender_email, receiver_email, text)
-
+    
+    return True
 
 def sent_email_approval_request(file_name:str, file_password:str, uploaded_file:str):
     subject = "[N2i] Approve new upload"
     body = "A new file was uploaded. It's currently in the approval queue and need to be allowed by you"
     body += f"\n\nFilename: {file_name}"
     body += f"\n\nApprove: http://127.0.0.1:5000/upload/approve?file_name={file_name}&file_password={file_password}"
-    sent_mail(subject, body, uploaded_file)
+    if not sent_mail(subject, body, uploaded_file):
+        return False
     return True
 
 def sent_email_error_message(subject:str, message:str):
     subject = "[N2i] Error: " + subject
     body = '''An error occured. This mail was sent because the error might
     be critical and need a fast review.\n\nError: ''' + message
-    sent_mail(subject, body)
+    if not sent_mail(subject, body):
+        return False
     return True
