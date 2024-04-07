@@ -12,6 +12,8 @@ from queuehandler import approve_file
 from db_models import db
 from db_user_helper import add_user_to_users, get_user_from_users
 
+from user_roles import check_admin
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -53,10 +55,6 @@ def login_required(view):
             return redirect(url_for('login', next=request.url))
         return view(*args, **kwargs)
     return decorated_view
-
-def admin_required(view):
-    # TODO check if user is admin
-    return
 
 @app.route('/login')
 def login():
@@ -123,7 +121,7 @@ def upload_file():
 
         return redirect(url_for('upload_result'))
     else:
-        return 
+        return
 
 @app.route('/upload/result')
 @login_required
@@ -142,6 +140,11 @@ def approve_upload():
     if file_name and file_password:
         approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password)
         return "File approved"
+    
+    if check_admin(session['user_name']) and not file_password:
+        approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password, admin=True)
+        return "File approved"
+
     else: return "You are not allowed to approve files"
 
 @app.route('/delete_image', methods=['POST'])
@@ -164,11 +167,27 @@ def delete_image():
         return "Error while deleting image"
     return redirect(url_for('dashboard'))
 
-@app.route('admin/dashboard')
+@app.route('/admin/dashboard')
 @login_required
-@admin_required
 def admin_dashboard():
-    return
+    if not check_admin(session['user_name']):
+        return redirect(url_for('index'))
+    
+    return render_template('admin/dashboard.html')
+
+@app.route('/admin/approve')
+@login_required
+def admin_approve():
+    user = get_user_from_users(session['user_name'])
+    if not user:
+        return redirect(url_for('login'))
+
+    if not check_admin(user.user_name):
+        return redirect(url_for('index'))
+    
+    queued_images = user.get_user_files_queue()
+    return render_template('admin/approve.html', queued_images=queued_images)
+
 
 @app.route('/faq')
 def faq():

@@ -12,20 +12,18 @@
             <div class="dashboard-button">
                 <a href="{{ url_for('index') }}">Home</a>
             </div>
+            <div class="dashboard-button">
+                <a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+            </div>
+            <div class="green-button">
+                <a href="{{ url_for('admin_approve') }}">Approve</a>
+            </div>
             <div class="logout-button">
                 <a href="{{ url_for('logout') }}">Logout</a>
             </div>
         </div>
     </header>
     <div class="head-container">
-        <div class="buttons-container">
-            <div class="dashboard-button">
-                <a href="{{ url_for('(admin/dashboard)') }}">Admin Dashboard</a>
-            </div>
-            <div class="logout-button">
-                <a href="{{ url_for('admin/approve') }}">Approve</a>
-            </div>
-        </div>
     </div>
 
     <h2>Queued Images:</h2>
@@ -40,9 +38,9 @@
                 <div class="image-item">
                     <div class="image-wrapper">
                         <img src="{{ url_for('static', filename='queue/' + image1) }}" alt="{{ image1 }}">
-                        <form action="{{ url_for('/upload/approve') }}" method="post">
-                            <input type="hidden" name="filename" value="{{ image1 }}">
-                            <button type="submit" class="green-button">Approve</button>
+                        <form action="{{ url_for('approve_upload') }}" method="GET">
+                            <input type="hidden" name="file_name" value="{{ image1 }}">
+                            <button type="submit" class="approve-button">Approve</button>
                         </form>
                     </div>                    
                 </div>
@@ -51,9 +49,9 @@
                 <div class="image-item">
                     <div class="image-wrapper">
                         <img src="{{ url_for('static', filename='queue/' + image2) }}" alt="{{ image2 }}">
-                        <form action="{{ url_for('/upload/approve') }}" method="post">
-                            <input type="hidden" name="filename" value="{{ image2 }}">
-                            <button type="submit" class="green-button">Approve</button>
+                        <form action="{{ url_for('approve_upload') }}" method="GET">
+                            <input type="hidden" name="file_name" value="{{ image2 }}">
+                            <button type="submit" class="approve-button">Approve</button>
                         </form>
                     </div>                    
                 </div>
@@ -62,9 +60,9 @@
                 <div class="image-item">
                     <div class="image-wrapper">
                         <img src="{{ url_for('static', filename='queue/' + image3) }}" alt="{{ image3 }}">
-                        <form action="{{ url_for('/upload/approve') }}" method="post">
-                            <input type="hidden" name="filename" value="{{ image3 }}">
-                            <button type="submit" class="green-button">Approve</button>
+                        <form action="{{ url_for('approve_upload') }}" method="GET">
+                            <input type="hidden" name="file_name" value="{{ image3 }}">
+                            <button type="submit" class="approve-button">Approve</button>
                         </form>
                     </div>                    
                 </div>
