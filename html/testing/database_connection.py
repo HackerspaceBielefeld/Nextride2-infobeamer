@@ -6,6 +6,7 @@ import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import SQLAlchemyError  # Imported SQLAlchemyError
 from sqlalchemy.sql import text
 
 from dotenv import load_dotenv
@@ -38,7 +39,7 @@ def testdb():
     try:
         db.session.query(text('1')).from_statement(text('SELECT 1')).all()
         return '<h1>It works.</h1>'
-    except SQLAlchemyError as e:
+    except SQLAlchemyError as e:  # Fixed undefined variable SQLAlchemyError
         # e holds description of the error
         error_text = "<p>The error:<br>" + str(e) + "</p>"
         hed = '<h1>Something is broken.</h1>'

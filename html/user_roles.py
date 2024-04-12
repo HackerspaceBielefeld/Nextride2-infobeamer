@@ -1,10 +1,9 @@
 """
 Module for user role management.
 """
+from db_user_helper import get_user_from_users
 
 from helper import logging
-
-from db_user_helper import get_user_from_users
 
 def check_admin(user_name: str):
     """
