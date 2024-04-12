@@ -1,3 +1,4 @@
+# pylint: disable=too-many-arguments
 """
 Database Models Module
 
@@ -16,6 +17,9 @@ Dependencies:
     - json: Provides functions for working with JSON data.
     - flask_sqlalchemy: Provides SQLAlchemy integration with Flask.
     - helper.logging: Custom logging function for error handling.
+
+Exceptions:
+    - SQLAlchemyError: Base class for all SQLAlchemy-related errors.
 """
 
 import json
@@ -35,7 +39,7 @@ def commit_db_changes():
     """
     try:
         db.session.commit()
-    except Exception as e:
+    except SQLAlchemyError as e:
         logging(f"Error committing changes: {e}")
         db.session.rollback()
         return False
