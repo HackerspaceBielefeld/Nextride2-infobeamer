@@ -1,3 +1,25 @@
+"""
+File Management Module
+
+This module provides functions for file management, including file sanitization, file existence checks,
+file movement, image validation, file upload handling, and file deletion.
+
+Functions:
+    - sanitize_filename(file_name): Sanitizes a file name by removing disallowed characters and adding random prefixes.
+    - check_file_exist(file_path): Checks if a file exists at the specified path.
+    - move_file(source, destination): Moves a file from the source path to the destination path.
+    - check_image(file): Checks if the uploaded file is an image with an accepted extension.
+    - sanitize_file(file, MAX_CONTENT_LENGTH): Sanitizes an uploaded file before further processing.
+    - safe_file(file, QUEUE_FOLDER, user_name): Safely handles the upload of a file to the queue folder.
+    - delete_file(file_name): Deletes a file from the filesystem and its corresponding entry from the database.
+
+Dependencies:
+    - shutil: Provides functions for file operations.
+    - re: Provides support for regular expressions.
+    - os: Provides functions for interacting with the operating system.
+    - PIL: Python Imaging Library for image processing.
+"""
+
 import shutil
 import re
 import os
@@ -17,7 +39,7 @@ def sanitize_filename(file_name:str):
     Sanitize a file name by removing all not explicitly allowed characters
     and setting random characters as a prefix to avoid collisions.
 
-    Allowerd characters are: [a-zA-Z0-9_\-.]
+    Allowerd characters are: [a-zA-Z0-9_-.]
 
     Args:
         file_name (str): The original file name to be sanitized.
@@ -137,7 +159,8 @@ def safe_file(file, QUEUE_FOLDER, user_name):
     """
     Safely handles the upload of a file to the queue folder.
 
-    This function checks various conditions before saving the file to ensure a safe and successful upload process.
+    This function checks various conditions before saving the file
+    to ensure a safe and successful upload process.
     
     Args:
         file (FileStorage): The file object to be saved.
@@ -145,7 +168,8 @@ def safe_file(file, QUEUE_FOLDER, user_name):
         user_name (str): The name of the user performing the upload.
 
     Returns:
-        bool: True if the file was successfully saved and an email approval request was sent, False otherwise.
+        bool: True if the file was successfully saved and
+        an email approval request was sent, False otherwise.
 
     Raises:
         FileNotFoundError: If the specified file path does not exist.
@@ -186,7 +210,7 @@ def safe_file(file, QUEUE_FOLDER, user_name):
     except Exception as e:
         logging(f"An unexpected error occurred while saving the file: {e}")
 
-    if not remove_file_from_queue(file.filename, None):
+    if not remove_file_from_queue(file.filename):
         logging("DB entry couldn't be removed for unsaved file")
     return False
 
@@ -195,7 +219,8 @@ def delete_file(file_name:str):
     """
     Deletes a file from the filesystem and its corresponding entry from the database.
 
-    This function attempts to delete the specified file from the filesystem and its corresponding entry from the database.
+    This function attempts to delete the specified file
+    from the filesystem and its corresponding entry from the database.
     
     Args:
         file_name (str): The name of the file to be deleted.
