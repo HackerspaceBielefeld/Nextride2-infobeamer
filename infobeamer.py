@@ -3,7 +3,7 @@ Module for infobeamer functionality.
 """
 
 from communication import Nextride2PacketSender
-from helper import get_urls
+from infobeamer_helper import get_urls
 
 
 def infobeamer_main(dest:str, seconds:int, uri:str, schedule:list):

@@ -34,7 +34,8 @@ def testdb():
     Test the database connection.
 
     Returns:
-        str: A message indicating whether the database connection test was successful or an error occurred.
+        str: A message indicating whether the database connection test was successful
+             or an error occurred.
     """
     try:
         db.session.query(text('1')).from_statement(text('SELECT 1')).all()

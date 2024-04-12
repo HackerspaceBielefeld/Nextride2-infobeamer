@@ -4,10 +4,10 @@ Module for the main functionality.
 
 import argparse
 
-from helper import fetch_schedule, get_local_schedule_content
+from infobeamer_helper import fetch_schedule, get_local_schedule_content
 from infobeamer import infobeamer_main
 
-def main(destination:str, seconds:int, content_uri:str, schedule_uri:str):
+def main(destination: str, seconds: int, content_uri: str, schedule_uri: str):
     """
     Main function to send content to infobeamer screens.
 
