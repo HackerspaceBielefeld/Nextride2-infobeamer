@@ -1,4 +1,5 @@
 # pylint: disable=line-too-long
+# pylint: disable=broad-exception-caught
 
 """
 Database User Helper Module
@@ -83,7 +84,7 @@ def add_user_to_users(user_name: str, user_upload_amount=0,
         bool: True if the user was added successfully, False otherwise.
 
     Raises:
-        SQLAlchemyError: If an error occurs while adding the user to the database.
+        Exception: If an error occurs while adding the user to the database.
     """
 
     try:
@@ -95,7 +96,7 @@ def add_user_to_users(user_name: str, user_upload_amount=0,
         db.session.add(user)
         db.session.commit()
         return True
-    except SQLAlchemyError as e:
+    except Exception as e:
         logging(f"An error occurred while adding an user to the users table: {e}")
         return False
 
@@ -110,7 +111,7 @@ def remove_user_from_users(user_name: str):
         Users: The user object if removed successfully, False otherwise.
     
     Raises:
-        SQLAlchemyError: If an error occurs while removing the user to the database.
+        Exception: If an error occurs while removing the user to the database.
     """
 
     try:
@@ -121,6 +122,6 @@ def remove_user_from_users(user_name: str):
             return user
         logging("User to delete wasn't found in the users table")
         return False
-    except SQLAlchemyError as e:
+    except Exception as e:
         logging(f"An error occurred while removing an user from the users table: {e}")
         return False
