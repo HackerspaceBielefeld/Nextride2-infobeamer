@@ -1,3 +1,19 @@
+"""
+File Management Module
+
+This module provides functions for managing files in the application, including adding files to the queue and uploads, removing files, and checking file existence.
+
+Dependencies:
+    - os: Provides functions for interacting with the operating system.
+    - db_models.Uploads: Model for the 'uploads' table.
+    - db_models.Queue: Model for the 'queue' table.
+    - db_models.db: SQLAlchemy database object.
+    - dotenv.load_dotenv: Loads environment variables from a .env file.
+    - sqlalchemy.exc.SQLAlchemyError: Base class for all SQLAlchemy-related errors.
+    - db_user_helper.get_user_from_users: Retrieves a user from the users table.
+    - helper.logging: Custom logging function for error handling.
+"""
+
 import os
 
 from db_models import Uploads, Queue, db
