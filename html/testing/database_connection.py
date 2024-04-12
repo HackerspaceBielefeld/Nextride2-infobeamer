@@ -1,4 +1,8 @@
-import os 
+"""
+Module for testing database connection.
+"""
+
+import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -24,11 +28,17 @@ db.init_app(app)
 # NOTHING BELOW THIS LINE NEEDS TO CHANGE
 # this route will test the database connection - and nothing more
 @app.route('/')
-def testdb():
+def testdb():    
+    """
+    Test the database connection.
+
+    Returns:
+        str: A message indicating whether the database connection test was successful or an error occurred.
+    """
     try:
         db.session.query(text('1')).from_statement(text('SELECT 1')).all()
         return '<h1>It works.</h1>'
-    except Exception as e:
+    except SQLAlchemyError as e:
         # e holds description of the error
         error_text = "<p>The error:<br>" + str(e) + "</p>"
         hed = '<h1>Something is broken.</h1>'

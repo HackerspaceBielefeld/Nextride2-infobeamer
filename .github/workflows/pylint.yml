@@ -22,6 +22,8 @@ jobs:
         pip install flask
         pip install authlib
         pip install python-dotenv
+        pip install Flask-SQLAlchemy
+        pip install SQLAlchemy
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')

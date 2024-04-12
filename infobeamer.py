@@ -23,6 +23,6 @@ def infobeamer_main(dest:str, seconds:int, uri:str, schedule:list):
     urls = get_urls(schedule)
     sender = Nextride2PacketSender()
     if uri and len(urls) == 0:
-       sender.send_packet(dest, seconds, uri) 
+        sender.send_packet(dest, seconds, uri)
     for url in urls:
         sender.send_packet(dest, seconds, url)
