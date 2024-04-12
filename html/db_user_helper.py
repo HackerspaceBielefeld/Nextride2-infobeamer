@@ -1,3 +1,5 @@
+# pylint: disable=line-too-long
+
 """
 Database User Helper Module
 
@@ -7,7 +9,8 @@ adding new users, and removing users.
 Functions:
     - get_user_from_users(user_name): Retrieve a user from the users table based on the username.
     - get_users_data_for_dashboard(): Retrieve user data for the dashboard.
-    - add_user_to_users(user_name, user_upload_amount=0, user_upload_limit=None, user_role="default", user_files=[]): Add a new user to the users table.
+    - add_user_to_users(user_name, user_upload_amount=0, user_upload_limit=None,
+        user_role="default", user_files=[]): Add a new user to the users table.
     - remove_user_from_users(user_name): Remove a user from the users table.
 
 Dependencies:
@@ -64,7 +67,8 @@ def get_users_data_for_dashboard():
     return users_data
 
 
-def add_user_to_users(user_name: str, user_upload_amount=0, user_upload_limit=os.environ.get('DEFAULT_USER_UPLOAD_LIMIT'), user_role="default", user_files=[]):
+def add_user_to_users(user_name: str, user_upload_amount=0,
+    user_upload_limit=os.environ.get('DEFAULT_USER_UPLOAD_LIMIT'), user_role="default", user_files=[]):
     """
     Add a new user to the users table.
 
@@ -83,7 +87,8 @@ def add_user_to_users(user_name: str, user_upload_amount=0, user_upload_limit=os
     """
 
     try:
-        user = Users(user_name=user_name, user_upload_amount=user_upload_amount, user_upload_limit=int(user_upload_limit), user_role=user_role, user_files=user_files)
+        user = Users(user_name=user_name, user_upload_amount=user_upload_amount,
+            user_upload_limit=int(user_upload_limit), user_role=user_role, user_files=user_files)
         if get_user_from_users(user_name) != None:
             logging(f"User with the same username: {user_name} already exist in the users table")
             return False
