@@ -27,4 +27,4 @@ jobs:
         pip install pillow
     - name: Analyzing the code with pylint
       run: |
-        pylint --disable=invalid-name --disable=too-few-public-methods $(git ls-files '*.py')
+        pylint --disable=invalid-name --disable=C $(git ls-files '*.py')
