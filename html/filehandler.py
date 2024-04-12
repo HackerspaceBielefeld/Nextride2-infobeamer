@@ -123,7 +123,7 @@ def check_image(file):
         return True
     except FileNotFoundError as e:
         logging(f"Error: File not found: {e}")
-    except PIL.UnidentifiedImageError as e:
+    except Image.UnidentifiedImageError as e:
         logging(f"Error: Unidentified image: {e}")
     except ValueError as e:
         logging(f"Error: Invalid mode or file pointer: {e}")
