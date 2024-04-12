@@ -13,6 +13,18 @@ from db_file_helper import check_file_exist_in_db
 from emailhandler import sent_email_approval_request
 
 def sanitize_filename(file_name:str):
+    """
+    Sanitize a file name by removing all not explicitly allowed characters
+    and setting random characters as a prefix to avoid collisions.
+
+    Allowerd characters are: [a-zA-Z0-9_\-.]
+
+    Args:
+        file_name (str): The original file name to be sanitized.
+
+    Returns:
+        str: The sanitized file name.
+    """
     pattern = r'a-zA-Z0-9_\-.' # RE pattern with whitelisted chars
     # Replace chars that aren't whitelisted
     sanitized_filename = re.sub(f'[^{pattern}]', "", file_name)
@@ -21,18 +33,51 @@ def sanitize_filename(file_name:str):
     return sanitized_filename_extended
 
 def check_file_exist(file_path:str):
+    """
+    Check if a file exists at the specified file path.
+
+    Args:
+        file_path (str): The path to the file to check.
+
+    Returns:
+        bool: True if the file exists, False otherwise.
+    """
     return os.path.exists(file_path)
 
-def move_file(source:str, destination:str):
+def move_file(source: str, destination: str):
+    """
+    Move a file from the source path to the destination path.
+
+    Args:
+        source (str): The path of the source file.
+        destination (str): The path of the destination file.
+
+    Returns:
+        bool: True if the file was moved successfully, False otherwise.
+    """
     try:
         shutil.move(source, destination)
         logging(f"File moved from {source} to {destination}")
         return True
-    except Exception as e:
-        logging(f"Error while moving a file: {e}")
-        return False
+    except FileNotFoundError as e:
+        logging(f"Error: Source file '{source}' not found: {e}")
+    except shutil.Error as e:
+        logging(f"Error: Failed to move file from '{source}' to '{destination}': {e}")
+    return False
 
 def check_image(file):
+    """
+    Checks if the uploaded file is an image and has an accepted file extension.
+
+    This function checks the file extension and attempts to open and verify the image file.
+
+    Args:
+        file: The uploaded file object.
+
+    Returns:
+        bool: True if the file is an image and has an accepted extension, False otherwise.
+    """
+
     # Check the file extension
     if not '.' in file.filename:
         logging("File extension not present")
@@ -51,6 +96,24 @@ def check_image(file):
     return False
 
 def sanitize_file(file, MAX_CONTENT_LENGTH):
+    """
+    Sanitizes an uploaded file.
+
+    This function performs several checks and sanitization steps
+    on an uploaded file before further processing:
+    * It checks the file size to be smaler than a maximum content length.
+    * The filenmae is sanitized
+    * The fileextensio is checked against a whitelist
+    * It's tested if the image can be opened to verify it's content is actually the one of an image
+
+    Args:
+        file: The uploaded file object.
+        MAX_CONTENT_LENGTH (int): The maximum allowed content length for the file.
+
+    Returns:
+        file or False: The sanitized file object if it passes all checks, False otherwise.
+    """
+
     if not file:
         logging("Upload pressed but no file was selected")
         return False
@@ -71,6 +134,26 @@ def sanitize_file(file, MAX_CONTENT_LENGTH):
 
 
 def safe_file(file, QUEUE_FOLDER, user_name):
+    """
+    Safely handles the upload of a file to the queue folder.
+
+    This function checks various conditions before saving the file to ensure a safe and successful upload process.
+    
+    Args:
+        file (FileStorage): The file object to be saved.
+        QUEUE_FOLDER (str): The path to the queue folder where the file will be stored.
+        user_name (str): The name of the user performing the upload.
+
+    Returns:
+        bool: True if the file was successfully saved and an email approval request was sent, False otherwise.
+
+    Raises:
+        FileNotFoundError: If the specified file path does not exist.
+        IsADirectoryError: If the specified file path points to a directory instead of a file.
+        PermissionError: If permission is denied while attempting to save the file.
+        Exception: If an unexpected error occurs during the file saving process.
+    """
+
     if not check_global_upload_limit():
         logging('Global upload limit restricted the upload')
         return False
@@ -89,20 +172,43 @@ def safe_file(file, QUEUE_FOLDER, user_name):
 
     try:
         file.save(file_path)
-    except Exception as e:
-        logging("file couldn't be saved")
-        if not remove_file_from_queue(file.filename, None):
-            logging("DB entry couldn't be removed for unsaved file")
-        return False
+        if not sent_email_approval_request(file.filename, file_password, file_path):
+            logging("Failed to sent a file approval email")
+            return False
+        return True
 
-    if not sent_email_approval_request(file.filename, file_password, file_path):
-        logging("Failed to sent a file approval email")
-        return False
-    
-    return True
+    except FileNotFoundError:
+        logging("The specified file path does not exist")
+    except IsADirectoryError:
+        logging("The specified file path is a directory")
+    except PermissionError:
+        logging("Permission denied while attempting to save the file")
+    except Exception as e:
+        logging(f"An unexpected error occurred while saving the file: {e}")
+
+    if not remove_file_from_queue(file.filename, None):
+        logging("DB entry couldn't be removed for unsaved file")
+    return False
 
 
 def delete_file(file_name:str):
+    """
+    Deletes a file from the filesystem and its corresponding entry from the database.
+
+    This function attempts to delete the specified file from the filesystem and its corresponding entry from the database.
+    
+    Args:
+        file_name (str): The name of the file to be deleted.
+
+    Returns:
+        bool: True if the file was successfully deleted, False otherwise.
+
+    Raises:
+        FileNotFoundError: If the specified file does not exist.
+        PermissionError: If permission is denied to delete the file.
+        Exception: If an unexpected error occurs during the file deletion process.
+    """
+
     file_data = remove_file_from_db(file_name)
     if not file_data:
         logging("Fileremove_file_from_db couldn't be removed from database")
