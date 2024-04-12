@@ -1,4 +1,5 @@
-import email, smtplib, ssl
+import smtplib
+import ssl
 import os
 
 from email import encoders
@@ -10,6 +11,18 @@ from dotenv import load_dotenv
 
 
 def sent_mail(subject, body, filename=False):
+    """
+    Sends an email.
+
+    Args:
+        subject (str): The subject of the email.
+        body (str): The body of the email.
+        filename (bool, optional): The filename to attach (default is False).
+
+    Returns:
+        bool: True if the email was sent successfully, False otherwise.
+    """
+
     # Load environment variables from .env file
     load_dotenv()
 
@@ -37,7 +50,7 @@ def sent_mail(subject, body, filename=False):
             part = MIMEBase("application", "octet-stream")
             part.set_payload(attachment.read())
 
-        # Encode file in ASCII characters to send by email    
+        # Encode file in ASCII characters to send by email
         encoders.encode_base64(part)
 
         # Add header as key/value pair to attachment part
@@ -56,19 +69,44 @@ def sent_mail(subject, body, filename=False):
     with smtplib.SMTP_SSL(smtp_server, 465, context=context) as server:
         server.login(sender_email, password)
         server.sendmail(sender_email, receiver_email, text)
-    
+
     return True
 
 def sent_email_approval_request(file_name:str, file_password:str, uploaded_file:str):
+    """
+    Sends an email approval request for a new upload.
+
+    Args:
+        file_name (str): The name of the uploaded file.
+        file_password (str): The password associated with the file.
+        uploaded_file (str): The path to the uploaded file.
+
+    Returns:
+        bool: True if the email was sent successfully, False otherwise.
+    """
+
     subject = "[N2i] Approve new upload"
-    body = "A new file was uploaded. It's currently in the approval queue and need to be allowed by you"
+    body = "A new file was uploaded. It's currently in the approval queue " \
+        "and needs to be allowed by you"    
     body += f"\n\nFilename: {file_name}"
-    body += f"\n\nApprove: http://127.0.0.1:5000/upload/approve?file_name={file_name}&file_password={file_password}"
+    body += f"\n\nApprove: http://127.0.0.1:5000/upload/approve?" \
+        f"file_name={file_name}&file_password={file_password}"
     if not sent_mail(subject, body, uploaded_file):
         return False
     return True
 
 def sent_email_error_message(subject:str, message:str):
+    """
+    Sends an email error message.
+
+    Args:
+        subject (str): The subject of the error message.
+        message (str): The error message.
+
+    Returns:
+        bool: True if the email was sent successfully, False otherwise.
+    """
+
     subject = "[N2i] Error: " + subject
     body = '''An error occured. This mail was sent because the error might
     be critical and need a fast review.\n\nError: ''' + message
