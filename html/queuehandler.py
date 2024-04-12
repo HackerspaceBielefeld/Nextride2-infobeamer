@@ -52,7 +52,7 @@ def approve_file(file_name, uploads_path:str, file_password:str, admin=False):
     if not remove_file_from_queue(file_name):
         logging("File couldn't be removed from the queue table -"
             "Now trying to remove it from uploads again")
-        if not remove_file_from_uploads(file_name, file_to_approve.id):
+        if not remove_file_from_uploads(file_name):
             logging("The file couldn't be removed from the uploads table")
             error_message = ("While trying to approve a file, it was added to the uploads table, "
                 "but while removing it from the queue table, an error occurred. "
@@ -61,7 +61,8 @@ def approve_file(file_name, uploads_path:str, file_password:str, admin=False):
         return False
 
     if not move_file(file_path, destination_path):
-        logging("Moving the file from the queue to uploads went wrong - Database changes already done.")
+        logging("Moving the file from the queue to uploads went wrong - "
+            "Database changes already done.")
         error_message = ("Moving an approved file failed."
             "Because the database entries were already made, "
             "the image now needs to be moved manually. Supervision is necessary to ensure "
@@ -69,4 +70,3 @@ def approve_file(file_name, uploads_path:str, file_password:str, admin=False):
         sent_email_error_message("Database inconsistency", error_message)
         return False
     return True
-

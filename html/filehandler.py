@@ -7,16 +7,17 @@ from PIL import Image
 from helper import generate_random_string, generate_secret_token
 from helper import logging, hash_sha_512
 from db_file_helper import check_global_upload_limit
-from db_file_helper import remove_file_from_queue, remove_file_from_uploads, remove_file_from_db
+from db_file_helper import remove_file_from_queue, remove_file_from_db
 from db_file_helper import add_file_to_queue
 from db_file_helper import check_file_exist_in_db
-from db_user_helper import get_user_from_users
 from emailhandler import sent_email_approval_request
 
 def sanitize_filename(file_name:str):
-    pattern = r'a-zA-Z0-9_\-.' # RE pattern with whitelisted chars 
-    sanitized_filename = re.sub(f'[^{pattern}]', "", file_name) # Replace chars that aren't whitelisted
-    sanitized_filename_extended = generate_random_string(8) + "_" + sanitized_filename # Extend the sanitized filename with random chars to avoid colissions
+    pattern = r'a-zA-Z0-9_\-.' # RE pattern with whitelisted chars
+    # Replace chars that aren't whitelisted
+    sanitized_filename = re.sub(f'[^{pattern}]', "", file_name)
+    # Extend the sanitized filename with random chars to avoid colissions
+    sanitized_filename_extended = generate_random_string(8) + "_" + sanitized_filename
     return sanitized_filename_extended
 
 def check_file_exist(file_path:str):
@@ -33,8 +34,11 @@ def move_file(source:str, destination:str):
 
 def check_image(file):
     # Check the file extension
-    if not '.' in file.filename or file.filename.rsplit('.', 1)[1].lower() not in ['jpg', 'jpeg', 'png', 'gif']:
-        logging("File extension is not allowed")
+    if not '.' in file.filename:
+        logging("File extension not present")
+        return False
+    if file.filename.rsplit('.', 1)[1].lower() not in ['jpg', 'jpeg', 'png', 'gif']:
+        logging("File extension not accepted")
         return False
 
     # Check if the file is actually an image
@@ -59,7 +63,7 @@ def sanitize_file(file, MAX_CONTENT_LENGTH):
     file.filename = sanitize_filename(file.filename)
 
     if not check_image(file):
-        logging("Uploaded file isn't an image or the extension is not allowed")    
+        logging("Uploaded file isn't an image or the extension is not allowed")
         return False
     file.seek(0)
 
@@ -90,13 +94,13 @@ def safe_file(file, QUEUE_FOLDER, user_name):
         if not remove_file_from_queue(file.filename, None):
             logging("DB entry couldn't be removed for unsaved file")
         return False
-    
+
     if not sent_email_approval_request(file.filename, file_password, file_path):
         logging("Failed to sent a file approval email")
         return False
     
     return True
-    
+
 
 def delete_file(file_name:str):
     file_data = remove_file_from_db(file_name)
