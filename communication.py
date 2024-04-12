@@ -1,3 +1,7 @@
+"""
+Module for communication with nextride2(screens).
+"""
+
 import socket
 
 class Nextride2PacketSender:
