@@ -7,7 +7,7 @@ import argparse
 from infobeamer_helper import fetch_schedule, get_local_schedule_content
 from infobeamer import infobeamer_main
 
-def main(destination: str, seconds: int, content_uri: str, schedule_uri: str):
+def main(destination: str, display_seconds: int, content_uri: str, schedule_uri: str):
     """
     Main function to send content to infobeamer screens.
 
@@ -39,13 +39,10 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--dest', default='255.255.255.255', help='Destination IP address')
     parser.add_argument('-s', '--seconds', required=True, type=int, help='Seconds')
     parser.add_argument('-u', '--uri',
-        default='https://hackerspace-bielefeld.de/wp-content/uploads/2024/03/flyer-325x325.png', help='URI')
-    parser.add_argument('-f', '--fahrplan', help='Specify the schedule URL in XML frab format')
+        default='https://hackerspace-bielefeld.de/wp-content/uploads/2024/03/flyer-325x325.png',
+        help='URI')
+    parser.add_argument('-f', '--schedule', help='Specify the schedule URL in XML frab format')
 
     args = parser.parse_args()
-    dest = args.dest
-    seconds = args.seconds
-    uri = args.uri
-    schedule_uri = args.fahrplan
 
-    main(dest, seconds, uri, schedule_uri)
+    main(args.dest, args.seconds, args.uri, args.schedule)
