@@ -105,9 +105,8 @@ def dashboard():
     # Get list of uploaded images
     queued_images = user.get_user_files_queue()
     uploaded_images = user.get_user_files_uploads()
-    return render_template('dashboard.html', 
-                            uploaded_images=uploaded_images, 
-                            queued_images=queued_images)
+    return render_template('dashboard.html',
+                            uploaded_images=uploaded_images, queued_images=queued_images)
 
 @app.route('/upload', methods=['POST'])
 @login_required
@@ -130,7 +129,7 @@ def upload_result():
     # Get the filename from the session
     uploaded_file = session.get('uploaded_file', None)
     if uploaded_file is None:
-        return render_template('upload_result.html', 
+        return render_template('upload_result.html',
                                 file=uploaded_file, status="File upload wasn't successful")
     return render_template('upload_result.html',
                             file=uploaded_file, status="File upload was successful")
@@ -156,7 +155,7 @@ def delete_image():
     if request.method == 'POST':
         file_name = request.form['filename']
         user_name = session['user_name']
-    
+
     user = get_user_from_users(user_name)
     if not user: return False
 
@@ -175,7 +174,7 @@ def delete_image():
 def admin_dashboard():
     if not check_admin(session['user_name']):
         return redirect(url_for('index'))
-    
+
     users_data = get_users_data_for_dashboard()
     return render_template('admin/dashboard.html', users_data=users_data)
 
@@ -188,7 +187,7 @@ def admin_approve():
 
     if not check_admin(user.user_name):
         return redirect(url_for('index'))
-    
+
     queued_images = user.get_user_files_queue()
     return render_template('admin/approve.html', queued_images=queued_images)
 
