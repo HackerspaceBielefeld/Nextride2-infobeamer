@@ -1,7 +1,8 @@
 """
 File Management Module
 
-This module provides functions for managing files in the application, including adding files to the queue and uploads, removing files, and checking file existence.
+This module provides functions for managing files in the application,
+including adding files to the queue and uploads, removing files, and checking file existence.
 
 Dependencies:
     - os: Provides functions for interacting with the operating system.
