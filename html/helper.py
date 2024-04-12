@@ -1,3 +1,4 @@
+import hashlib
 import random
 import secrets
 import string
@@ -21,3 +22,6 @@ def generate_random_string(length):
 def generate_secret_token(length=64):
     """Generate a secure random token."""
     return secrets.token_urlsafe(length)
+
+def hash_sha_512(to_hash:str):
+    return hashlib.sha512(to_hash.encode("utf-8")).hexdigest()

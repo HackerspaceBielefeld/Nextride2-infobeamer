@@ -138,12 +138,16 @@ def approve_upload():
     file_name = request.args.get('file_name')
     file_password = request.args.get('file_password')
     if file_name and file_password:
-        approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password)
-        return "File approved"
-    
-    if check_admin(session['user_name']) and not file_password:
-        approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password, admin=True)
-        return "File approved"
+        if approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password):
+            return "File approved"
+        else:
+            return "File not approved"
+            
+    elif check_admin(session['user_name']) and not file_password:
+        if approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password, admin=True):
+            return "File approved"
+        else:
+            return "File not approved"
 
     else: return "You are not allowed to approve files"
 

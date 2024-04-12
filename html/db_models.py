@@ -22,7 +22,6 @@ class Uploads(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     file_name = db.Column(db.String(100), nullable=False)
     file_path = db.Column(db.String(200), nullable=False)
-    file_password = db.Column(db.String(100), nullable=False)
     file_owner = db.Column(db.String(100), nullable=False)
 
 class Queue(db.Model):
@@ -30,8 +29,13 @@ class Queue(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     file_name = db.Column(db.String(100), nullable=False)
     file_path = db.Column(db.String(200), nullable=False)
-    file_password = db.Column(db.String(100), nullable=False)
+    file_password = db.Column(db.String(65), nullable=False)
     file_owner = db.Column(db.String(100), nullable=False)
+
+class Role(db.Model):
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(50), unique=True)
 
 class Users(db.Model):
     __tablename__ = 'users'
@@ -39,7 +43,7 @@ class Users(db.Model):
     user_name = db.Column(db.String(100), nullable=False)
     user_upload_amount = db.Column(db.Integer, nullable=False)
     user_upload_limit = db.Column(db.Integer, nullable=False)
-    user_role = db.Column(db.String(100), nullable=False)
+    user_role = db.relationship('Role', secondary='user_roles')
     user_files_queue = db.Column(db.String)
     user_files_uploads = db.Column(db.String)
 
@@ -117,4 +121,3 @@ class Users(db.Model):
             return False
             
         return True
-

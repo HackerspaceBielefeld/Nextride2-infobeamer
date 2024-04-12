@@ -5,7 +5,7 @@ import os
 from PIL import Image
 
 from helper import generate_random_string, generate_secret_token
-from helper import logging
+from helper import logging, hash_sha_512
 from db_file_helper import check_global_upload_limit
 from db_file_helper import remove_file_from_queue, remove_file_from_uploads, remove_file_from_db
 from db_file_helper import add_file_to_queue
@@ -77,8 +77,9 @@ def safe_file(file, QUEUE_FOLDER, user_name):
 
     file_path = os.path.join(QUEUE_FOLDER, file.filename)
     file_password = generate_secret_token()
-    
-    if not add_file_to_queue(file.filename, file_path, file_password, user_name):
+    file_password_hashed = hash_sha_512(file_password)
+
+    if not add_file_to_queue(file.filename, file_path, file_password_hashed, user_name):
         logging("File wasn't saved in the queue because no db entry could be created")
         return False
 
