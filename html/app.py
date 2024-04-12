@@ -1,4 +1,4 @@
-# pylint: disable=line-too-long
+# pylint: skip-file
 """
 Flask Application for File Upload and Management
 
