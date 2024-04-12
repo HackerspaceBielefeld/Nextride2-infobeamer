@@ -1,3 +1,23 @@
+"""
+Email Handling Module
+
+This module provides functions for sending various types of emails, including standard emails,
+approval requests for new uploads, and error messages.
+
+Functions:
+    - sent_mail(subject, body, filename=False): Sends an email.
+    - sent_email_approval_request(file_name, file_password, uploaded_file): Sends an
+        email approval request for a new upload.
+    - sent_email_error_message(subject, message): Sends an email error message.
+
+Dependencies:
+    - smtplib: Provides functions for sending emails.
+    - ssl: Provides support for secure socket layer (SSL) connections.
+    - os: Provides functions for interacting with the operating system.
+    - email: Provides functionality for constructing and formatting email messages.
+    - dotenv: Provides support for loading environment variables from .env files.
+"""
+
 import smtplib
 import ssl
 import os
