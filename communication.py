@@ -8,8 +8,6 @@ class Nextride2PacketSender:
     def send_packet(self, dest:str, sec:int, uri:str):
         urilen = len(uri)
         r = bytearray([sec, urilen]) + uri.encode('ascii')
-        
         r += bytearray(257 - len(r))
-        
         for _ in range(3):
             self.sock.sendto(r, (dest, 31337))
