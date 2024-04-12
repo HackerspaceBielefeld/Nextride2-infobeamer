@@ -1,17 +1,21 @@
 """
 File Management Module
 
-This module provides functions for file management, including file sanitization, file existence checks,
-file movement, image validation, file upload handling, and file deletion.
+This module provides functions for file management, including file sanitization,
+file existence checks, file movement, image validation, file upload handling, and file deletion.
 
 Functions:
-    - sanitize_filename(file_name): Sanitizes a file name by removing disallowed characters and adding random prefixes.
+    - sanitize_filename(file_name): Sanitizes a file name by removing disallowed characters
+        and adding random prefixes.
     - check_file_exist(file_path): Checks if a file exists at the specified path.
     - move_file(source, destination): Moves a file from the source path to the destination path.
     - check_image(file): Checks if the uploaded file is an image with an accepted extension.
-    - sanitize_file(file, MAX_CONTENT_LENGTH): Sanitizes an uploaded file before further processing.
-    - safe_file(file, QUEUE_FOLDER, user_name): Safely handles the upload of a file to the queue folder.
-    - delete_file(file_name): Deletes a file from the filesystem and its corresponding entry from the database.
+    - sanitize_file(file, MAX_CONTENT_LENGTH): Sanitizes an uploaded file
+        before further processing.
+    - safe_file(file, QUEUE_FOLDER, user_name): Safely handles the upload of
+        a file to the queue folder.
+    - delete_file(file_name): Deletes a file from the filesystem and
+        its corresponding entry from the database.
 
 Dependencies:
     - shutil: Provides functions for file operations.
@@ -76,6 +80,10 @@ def move_file(source: str, destination: str):
 
     Returns:
         bool: True if the file was moved successfully, False otherwise.
+
+    Raises:
+        FileNotFoundError: If the source file cannot be found.
+        shutil.Error: If an error occurs while moving the file.
     """
     try:
         shutil.move(source, destination)
@@ -113,8 +121,14 @@ def check_image(file):
         img = Image.open(file)
         img.verify()  # Attempt to open and verify the image file
         return True
-    except:
-        logging("Uploaded file isn't an image")
+    except FileNotFoundError as e:
+        logging(f"Error: File not found: {e}")
+    except PIL.UnidentifiedImageError as e:
+        logging(f"Error: Unidentified image: {e}")
+    except ValueError as e:
+        logging(f"Error: Invalid mode or file pointer: {e}")
+    except TypeError as e:
+        logging(f"Error: Invalid format types: {e}")
     return False
 
 def sanitize_file(file, MAX_CONTENT_LENGTH):
@@ -175,7 +189,6 @@ def safe_file(file, QUEUE_FOLDER, user_name):
         FileNotFoundError: If the specified file path does not exist.
         IsADirectoryError: If the specified file path points to a directory instead of a file.
         PermissionError: If permission is denied while attempting to save the file.
-        Exception: If an unexpected error occurs during the file saving process.
     """
 
     if not check_global_upload_limit():
@@ -207,8 +220,6 @@ def safe_file(file, QUEUE_FOLDER, user_name):
         logging("The specified file path is a directory")
     except PermissionError:
         logging("Permission denied while attempting to save the file")
-    except Exception as e:
-        logging(f"An unexpected error occurred while saving the file: {e}")
 
     if not remove_file_from_queue(file.filename):
         logging("DB entry couldn't be removed for unsaved file")
@@ -231,7 +242,6 @@ def delete_file(file_name:str):
     Raises:
         FileNotFoundError: If the specified file does not exist.
         PermissionError: If permission is denied to delete the file.
-        Exception: If an unexpected error occurs during the file deletion process.
     """
 
     file_data = remove_file_from_db(file_name)
@@ -249,6 +259,4 @@ def delete_file(file_name:str):
         logging(f"File '{file_path}' not found.")
     except PermissionError:
         logging(f"Permission denied to delete file '{file_path}'.")
-    except Exception as e:
-        logging(f"An error occurred while deleting file '{file_path}': {e}")
     return False
