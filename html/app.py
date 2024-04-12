@@ -1,3 +1,50 @@
+"""
+Flask Application for File Upload and Management
+
+This application allows users to upload files, manage file queues, and approve uploaded files. 
+It includes user authentication via GitHub OAuth, file upload with validation, and an admin dashboard 
+for managing user files and approvals.
+
+Routes:
+    - /login: Initiates GitHub OAuth authentication flow.
+    - /auth: Handles OAuth callback and user authentication.
+    - /logout: Logs out the user.
+    - /: Displays the index page with uploaded images.
+    - /dashboard: Displays the user's dashboard with uploaded and queued images.
+    - /upload: Handles file upload with validation and redirects to upload result.
+    - /upload/result: Displays the result of the file upload.
+    - /upload/approve: Approves the uploaded file.
+    - /delete_image: Deletes an uploaded image.
+    - /admin/dashboard: Displays the admin dashboard with user data.
+    - /admin/approve: Admin approval page for queued images.
+    - /faq: Displays the frequently asked questions page.
+    - Error Handlers: Handles 404 and 405 errors with custom error pages.
+
+Environment Variables:
+    - DATABASE_NAME: SQLite database file path.
+    - FLASK_SECRET_KEY: Secret key for Flask session management.
+    - GITHUB_CLIENT_ID: GitHub OAuth client ID.
+    - GITHUB_CLIENT_SECRET: GitHub OAuth client secret.
+
+Dependencies:
+    - flask: Flask web framework.
+    - authlib: Library for OAuth authentication.
+    - dotenv: Library for loading environment variables from .env file.
+    - filehandler: Custom module for file handling functions.
+    - queuehandler: Custom module for managing file queues.
+    - db_models: Module containing database models.
+    - db_user_helper: Module for database user operations.
+    - user_roles: Module for defining user roles.
+
+Usage:
+    - Install dependencies with `pip install -r requirements.txt`.
+    - Set up environment variables in a .env file.
+    - Run the application with `python app.py`.
+
+Author:
+    Inflac
+"""
+
 import os
 
 from flask import Flask, render_template, request, redirect, url_for, session

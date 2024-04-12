@@ -19,6 +19,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint
         pip install requests
+        pip install flask
+        pip install authlib
+        pip install python-dotenv
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')

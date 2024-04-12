@@ -1,9 +1,23 @@
+"""
+Module for the main functionality.
+"""
+
 import argparse
 
 from helper import fetch_schedule, get_local_schedule_content
 from infobeamer import infobeamer_main
 
 def main(dest:str, seconds:int, uri:str, schedule_uri:str):
+    """
+    Main function to send content to infobeamer screens.
+
+    Args:
+        dest (str): The destination IP address.
+        seconds (int): The time in seconds the content should be displayed.
+        uri (str): The URI of the content to be displayed.
+        schedule_uri (str): The URI of the schedule.
+
+    """
     print(f"Destination IP: {dest}")
     print(f"seconds{seconds}")
     print(f"uri{uri}")
