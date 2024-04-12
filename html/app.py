@@ -89,7 +89,7 @@ def logout():
 
 @app.route('/')
 def index():
-    uploaded_images = os.listdir(app.config['UPLOAD_FOLDER'])    
+    uploaded_images = os.listdir(app.config['UPLOAD_FOLDER'])
     return render_template('index.html', uploaded_images=uploaded_images)
 
 @app.route('/dashboard')
@@ -105,14 +105,15 @@ def dashboard():
     # Get list of uploaded images
     queued_images = user.get_user_files_queue()
     uploaded_images = user.get_user_files_uploads()
-    return render_template('dashboard.html', uploaded_images=uploaded_images, queued_images=queued_images)
+    return render_template('dashboard.html', 
+                            uploaded_images=uploaded_images, 
+                            queued_images=queued_images)
 
 @app.route('/upload', methods=['POST'])
 @login_required
 def upload_file():
     if request.method == 'POST':
         file = request.files['file']
-
         file = sanitize_file(file, app.config['MAX_CONTENT_LENGTH'])
         if file != False:        
             if safe_file(file,app.config['QUEUE_FOLDER'], session['user_name']):
@@ -129,8 +130,10 @@ def upload_result():
     # Get the filename from the session
     uploaded_file = session.get('uploaded_file', None)
     if uploaded_file is None:
-        return render_template('upload_result.html', file=uploaded_file, status="File upload wasn't successful")
-    return render_template('upload_result.html', file=uploaded_file, status="File upload was successful")
+        return render_template('upload_result.html', 
+                                file=uploaded_file, status="File upload wasn't successful")
+    return render_template('upload_result.html',
+                            file=uploaded_file, status="File upload was successful")
 
 @app.route('/upload/approve')
 @login_required
@@ -140,15 +143,11 @@ def approve_upload():
     if file_name and file_password:
         if approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password):
             return "File approved"
-        else:
-            return "File not approved"
-            
+        return "File not approved"
     elif check_admin(session['user_name']) and not file_password:
         if approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password, admin=True):
             return "File approved"
-        else:
-            return "File not approved"
-
+        return "File not approved"
     else: return "You are not allowed to approve files"
 
 @app.route('/delete_image', methods=['POST'])
@@ -199,11 +198,11 @@ def faq():
     return render_template('faq.html')
 
 @app.errorhandler(404)
-def page_not_found(error):
+def page_not_found():
     return render_template('errors/404.html'), 404
 
 @app.errorhandler(405)
-def page_not_found(error):
+def page_not_found():
     return render_template('errors/405.html'), 405
 
 if __name__ == '__main__':

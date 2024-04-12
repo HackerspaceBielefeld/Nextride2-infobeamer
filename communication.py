@@ -1,5 +1,4 @@
 import socket
-import sys
 
 class Nextride2PacketSender:
     def __init__(self):
