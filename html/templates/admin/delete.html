@@ -31,7 +31,7 @@
 
     <h2>All Images:</h2>
     {% for username, images in all_images.items() %}
-    <h2>{{ username }}</h2>
+    <h1 style="color: white;">{{ username }}</h1>
     {% if images.queue %}
     <h2>Queue Images:</h2>
     <div class="image-container">
@@ -92,7 +92,7 @@
                 {% if image1 %}
                 <div class="image-item">
                     <div class="image-wrapper">
-                        <img src="{{ url_for('static', filename='queue/' + image1) }}" alt="{{ image1 }}">
+                        <img src="{{ url_for('static', filename='uploads/' + image1) }}" alt="{{ image1 }}">
                         <form action="{{ url_for('delete_image') }}" method="post">
                             <input type="hidden" name="filename" value="{{ image1 }}">
                             <button type="submit" class="delete-button">Delete</button>
@@ -103,7 +103,7 @@
                 {% if image2 %}
                 <div class="image-item">
                     <div class="image-wrapper">
-                        <img src="{{ url_for('static', filename='queue/' + image2) }}" alt="{{ image2 }}">
+                        <img src="{{ url_for('static', filename='uploads/' + image2) }}" alt="{{ image2 }}">
                         <form action="{{ url_for('approve_upload') }}" method="GET">
                             <input type="hidden" name="file_name" value="{{ image2 }}">
                             <button type="submit" class="approve-button">Approve</button>
@@ -114,7 +114,7 @@
                 {% if image3 %}
                 <div class="image-item">
                     <div class="image-wrapper">
-                        <img src="{{ url_for('static', filename='queue/' + image3) }}" alt="{{ image3 }}">
+                        <img src="{{ url_for('static', filename='uploads/' + image3) }}" alt="{{ image3 }}">
                         <form action="{{ url_for('approve_upload') }}" method="GET">
                             <input type="hidden" name="file_name" value="{{ image3 }}">
                             <button type="submit" class="approve-button">Approve</button>

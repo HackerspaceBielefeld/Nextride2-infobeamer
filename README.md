@@ -9,7 +9,8 @@ Please use the latest release for a stable and secure version of N2i.
 
 ## Todos
 Admin dashboard:
-* Add method to ban users
+* move role "block" management to role_based_access
+  * Add ipban option
 Unit testing
 * Setup unittests
 * Create a CI pipeline

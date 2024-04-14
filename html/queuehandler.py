@@ -40,10 +40,11 @@ def approve_file(file_name, uploads_path:str, file_password:str, admin=False):
                          "The file requested to be approved has a database entry but does not "
                          "exist in the queue folder.")
         sent_email_error_message("Database inconsistence", error_message)
-
-    if file_to_approve.file_password != hash_sha_512(file_password) and not admin:
-        logging("The files password wasn't correct")
-        return False
+    
+    if not admin:
+        if file_to_approve.file_password != hash_sha_512(file_password):
+            logging("The files password wasn't correct")
+            return False
 
     destination_path = os.path.join(uploads_path, file_name)
     if not add_file_to_uploads(file_name, destination_path, file_owner):

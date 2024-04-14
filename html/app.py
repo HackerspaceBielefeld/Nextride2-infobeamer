@@ -167,7 +167,7 @@ def dashboard():
 @login_required
 def upload_file():
     user = get_user_from_users(session['user_name'])
-    if user.role.name != "block":
+    if user.role.name == "block":
         return render_template('blocked.html', support_url=os.environ.get('SUPPORT_URL'))
 
     if request.method == 'POST':
@@ -197,12 +197,14 @@ def upload_result():
 @login_required
 def approve_upload():
     file_name = sanitize_string(request.args.get('file_name'))
-    file_password = sanitize_string(request.args.get('file_password'))
-    if file_name and file_password:
+    file_password = request.args.get('file_password')
+    if file_password is not None: file_password = sanitize_string(file_password)
+
+    if file_name and file_password is not None:
         if approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password):
             return "File approved"
         return "File not approved"
-    elif check_admin(session['user_name']) and not file_password:
+    elif check_admin(session['user_name']) and file_password is None:
         if approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password, admin=True):
             return "File approved"
         return "File not approved"
@@ -315,4 +317,4 @@ def page_not_found():
     return render_template('errors/405.html'), 405
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
