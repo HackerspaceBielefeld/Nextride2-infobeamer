@@ -58,7 +58,7 @@
                         <img src="{{ url_for('static', filename='queue/' + image2) }}" alt="{{ image2 }}">
                         <form action="{{ url_for('approve_upload') }}" method="GET">
                             <input type="hidden" name="file_name" value="{{ image2 }}">
-                            <button type="submit" class="approve-button">Approve</button>
+                            <button type="submit" class="delete-button">Delete</button>
                         </form>
                     </div>                    
                 </div>
@@ -69,7 +69,7 @@
                         <img src="{{ url_for('static', filename='queue/' + image3) }}" alt="{{ image3 }}">
                         <form action="{{ url_for('approve_upload') }}" method="GET">
                             <input type="hidden" name="file_name" value="{{ image3 }}">
-                            <button type="submit" class="approve-button">Approve</button>
+                            <button type="submit" class="delete-button">Delete</button>
                         </form>
                     </div>                    
                 </div>
@@ -106,7 +106,7 @@
                         <img src="{{ url_for('static', filename='uploads/' + image2) }}" alt="{{ image2 }}">
                         <form action="{{ url_for('approve_upload') }}" method="GET">
                             <input type="hidden" name="file_name" value="{{ image2 }}">
-                            <button type="submit" class="approve-button">Approve</button>
+                            <button type="submit" class="delete-button">Delete</button>
                         </form>
                     </div>                    
                 </div>
@@ -117,7 +117,7 @@
                         <img src="{{ url_for('static', filename='uploads/' + image3) }}" alt="{{ image3 }}">
                         <form action="{{ url_for('approve_upload') }}" method="GET">
                             <input type="hidden" name="file_name" value="{{ image3 }}">
-                            <button type="submit" class="approve-button">Approve</button>
+                            <button type="submit" class="delete-button">Delete</button>
                         </form>
                     </div>                    
                 </div>
