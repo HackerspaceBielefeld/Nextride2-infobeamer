@@ -6,7 +6,6 @@ SENDER_EMAIL="example@example.com"
 EMAIL_PASSWORD="PasswordForMail"
 SMTP_SERVER="mail.example.com"
 RECEIVER_EMAIL="reciever@example.com"
-GITHUB_OAUTH_URL=""
 
 DATABASE_NAME="uploads.sqlite"
 GLOBAL_UPLOAD_LIMIT="100"
