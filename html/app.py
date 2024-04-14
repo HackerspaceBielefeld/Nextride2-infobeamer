@@ -113,20 +113,26 @@ def login():
 @app.route('/auth')
 def auth():
     token = github.authorize_access_token()
-    if token:
-        session['token'] = token
-        user = github.get('https://api.github.com/user', token=token)
-        if user.ok:
-            user_data = user.json()
-            session['user_data'] = user_data
-            session['user_name'] = user_data['login']
-            if add_user_to_users(user_data['login']):
-                return redirect(url_for('dashboard'))
-            return "User couldn't be added to the database"
-        else:
-            return "Failed to fetch user data from GitHub."
-    else:
+    if not token:
         return "Login failed."
+
+    session['token'] = token
+    user = github.get('https://api.github.com/user', token=token)
+    if not user.ok:
+        return "Failed to fetch user data from GitHub."
+    
+    user_data = user.json()
+    session['user_data'] = user_data
+    session['user_name'] = user_data['login']
+
+    if get_user_from_users(user_data['login']):
+        return redirect(url_for('dashboard'))
+
+    if add_user_to_users(user_data['login']):
+        return redirect(url_for('dashboard'))
+    return "User couldn't be added to the database"
+        
+
 
 
 @app.route('/logout')

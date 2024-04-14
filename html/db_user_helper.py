@@ -51,7 +51,8 @@ def get_user_from_users(user_name: str):
     """
 
     try:
-        return db.session.query(Users).filter(Users.name == user_name).first()
+        user = db.session.query(Users).filter(Users.name == user_name).first()
+        if user: return user
     except SQLAlchemyError as e:
         logging(f"An error occurred while retrieving an user from the users table: {e}")
     return False
@@ -88,7 +89,7 @@ def add_user_to_users(user_name: str, user_upload_amount=0,
         Exception: If an error occurs while adding the user to the database.
     """
 
-    if get_user_from_users(user_name) is not None:
+    if get_user_from_users(user_name):
         logging(f"User with the same username: {user_name} already exist in the users table")
         return False
 
@@ -101,6 +102,9 @@ def add_user_to_users(user_name: str, user_upload_amount=0,
     except SQLAlchemyError as e:
         logging(f"An error occurred while adding an user to the users table: {e}")
         return False
+
+    admin_users = os.getenv('ADMIN_USERS').split(',')
+    if user.name in admin_users: user.set_user_role("admin")
 
 def remove_user_from_users(user_name: str):
     """
