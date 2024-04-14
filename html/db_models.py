@@ -24,6 +24,7 @@ Exceptions:
 """
 
 import json
+import os
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
@@ -252,8 +253,14 @@ class Users(db.Model):
         Returns:
             bool: True if the role was set successfully, False otherwise.
         """
+
         # Check if the role exists in the database
         new_role = Role.query.filter_by(name=new_role_name).first()
+
+        admin_users = os.environ.get('ADMIN_USERS').split(',')
+        if self.name in admin_users:
+            new_role = Role.query.filter_by(name="admin").first()
+
         if not new_role:
             logging(f"Role '{new_role_name}' does not exist.")
             return False

@@ -91,6 +91,15 @@ th, td {
     margin: 5px;
 }
 
+.set-role-button a {
+    background-color: purple;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    margin: 5px;
+}
+
 .delete-button {
     position: absolute;
     top: 5px;

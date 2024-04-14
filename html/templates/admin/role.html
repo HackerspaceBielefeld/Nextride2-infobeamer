@@ -12,14 +12,14 @@
             <div class="dashboard-button">
                 <a href="{{ url_for('index') }}">Home</a>
             </div>
+            <div class="dashboard-button">
+                <a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+            </div>
             <div class="green-button">
                 <a href="{{ url_for('admin_approve') }}">Approve files</a>
             </div>
             <div class="logout-button">
                 <a href="{{ url_for('admin_delete') }}">Delete files</a>
-            </div>
-            <div class="set-role-button">
-                <a href="{{ url_for('admin_role') }}">Set role</a>
             </div>
             <div class="logout-button">
                 <a href="{{ url_for('logout') }}">Logout</a>
@@ -28,28 +28,29 @@
     </header>
     <div class="head-container">
     </div>
-
+    
     <h1>Users</h1>
     <div class="user-data-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Role</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users_data %}
-                <tr>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.user_name }}</td>
-                    <td>{{ user.user_role }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <center>
+        <form action="/admin/set_role" method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="user_name" name="target_user_name"><br><br>
+            
+            <label>Select Role:</label><br>
+            <input type="radio" id="admin" name="role_name" value="admin">
+            <label for="admin">admin</label><br>
+            
+            <input type="radio" id="default" name="role_name" value="default">
+            <label for="default">default</label><br>
+            
+            <input type="radio" id="block" name="role_name" value="block">
+            <label for="block">block</label><br><br>
+
+            <button type="submit" class="green-button">Change Role</button>
+        </form>
+        </center>
     </div>
+        
 
     <footer>
         <a href="{{ url_for('index') }}">Home</a> | <a href="{{ url_for('faq') }}">FAQ</a>

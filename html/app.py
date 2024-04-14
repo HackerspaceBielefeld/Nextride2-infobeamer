@@ -59,6 +59,7 @@ from filehandler import sanitize_file, safe_file, delete_file, get_all_images_fo
 from queuehandler import approve_file
 from db_models import db, create_roles
 from db_user_helper import add_user_to_users, get_user_from_users, get_users_data_for_dashboard
+from helper import sanitize_string
 
 from role_based_access import check_admin
 
@@ -246,7 +247,6 @@ def admin_approve():
     queued_images = user.get_user_files_queue()
     return render_template('admin/approve.html', queued_images=queued_images)
 
-
 @app.route('/admin/delete')
 @login_required
 def admin_delete():
@@ -261,6 +261,40 @@ def admin_delete():
     print(all_images)
     return render_template('admin/delete.html', all_images=all_images)
 
+@app.route('/admin/role')
+@login_required
+def admin_role():
+    user = get_user_from_users(session['user_name'])
+    if not user:
+        return redirect(url_for('login'))
+
+    if not check_admin(user.name):
+        return redirect(url_for('index'))
+
+    return render_template('admin/role.html')
+
+@app.route('/admin/set_role', methods=['POST'])
+@login_required
+def admin_set_role():
+    if request.method == 'POST':
+        try:
+            role_name = sanitize_string(request.form['role_name'])
+            target_user_name = sanitize_string(request.form['target_user_name'])
+        except KeyError as e:
+            loggin(f"KeyError for url parameters: {e}")
+            return render_template('index.html')
+    user_name = session['user_name']
+    user = get_user_from_users(user_name)
+    if not user:
+        return redirect(url_for('login'))
+
+    if not check_admin(user.name):
+        return redirect(url_for('index'))
+
+    if not user.set_user_role(role_name):
+        return "Role wasn't changed"
+
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/faq')
 def faq():

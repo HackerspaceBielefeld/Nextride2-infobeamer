@@ -7,6 +7,7 @@ import random
 import secrets
 import string
 import time
+import re
 
 def get_time():
     """
@@ -65,3 +66,19 @@ def hash_sha_512(to_hash:str):
         str: Hashed string in hex.
     """
     return hashlib.sha512(to_hash.encode("utf-8")).hexdigest()
+
+def sanitize_string(content:str):
+    """
+    Remove all characters that are not whitelisted.
+
+    Args:
+        content (str): The string to sanitize.
+
+    Returns:
+        str: sanitized string.
+    """
+    pattern = r'a-zA-Z0-9_\-.' # RE pattern with whitelisted chars
+    # Replace chars that aren't whitelisted
+    sanitized_content = re.sub(f'[^{pattern}]', "", content)
+    return sanitized_content
+
