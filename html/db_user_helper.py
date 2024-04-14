@@ -51,7 +51,7 @@ def get_user_from_users(user_name: str):
     """
 
     try:
-        return db.session.query(Users).filter(Users.user_name == user_name).first()
+        return db.session.query(Users).filter(Users.name == user_name).first()
     except SQLAlchemyError as e:
         logging(f"An error occurred while retrieving an user from the users table: {e}")
     return False
@@ -65,7 +65,7 @@ def get_users_data_for_dashboard():
     """
 
     users = db.session.query(Users).all()
-    users_data = [{'id': user.id, 'user_name': user.user_name, 'user_role': user.user_role} for user in users]
+    users_data = [{'id': user.id, 'user_name': user.name, 'user_role': user.role} for user in users]
     return users_data
 
 
@@ -88,12 +88,13 @@ def add_user_to_users(user_name: str, user_upload_amount=0,
         Exception: If an error occurs while adding the user to the database.
     """
 
+    if get_user_from_users(user_name) is not None:
+        logging(f"User with the same username: {user_name} already exist in the users table")
+        return False
+
     try:
         user = Users(user_name=user_name, user_upload_amount=user_upload_amount,
             user_upload_limit=int(user_upload_limit), user_role=user_role, user_files=user_files)
-        if get_user_from_users(user_name) is not None:
-            logging(f"User with the same username: {user_name} already exist in the users table")
-            return False
         db.session.add(user)
         db.session.commit()
         return True

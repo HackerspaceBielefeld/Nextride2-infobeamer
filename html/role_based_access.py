@@ -16,7 +16,7 @@ def check_admin(user_name: str):
         bool: True if the user is an admin, False otherwise.
     """
     user = get_user_from_users(user_name)
-    if not user.user_role == 'default':
+    if not user.role.name == 'admin':
         logging(f"User {user_name} isn't an admin")
         return False
     return True

@@ -57,10 +57,10 @@ from functools import wraps
 
 from filehandler import sanitize_file, safe_file, delete_file
 from queuehandler import approve_file
-from db_models import db
+from db_models import db, create_roles
 from db_user_helper import add_user_to_users, get_user_from_users, get_users_data_for_dashboard
 
-from user_roles import check_admin
+from role_based_access import check_admin
 
 # Load environment variables from .env file
 load_dotenv()
@@ -75,6 +75,7 @@ db.init_app(app)
 # Create the database tables
 with app.app_context():
     db.create_all()
+    create_roles()
 
 app.secret_key = os.environ.get('FLASK_SECRET_KEY')
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
