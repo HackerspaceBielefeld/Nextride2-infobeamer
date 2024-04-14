@@ -1,4 +1,5 @@
 # pylint: disable=too-many-arguments
+# pylint: too-many-instance-attributes
 """
 Database Models Module
 
@@ -140,7 +141,7 @@ class Users(db.Model):
         Returns:
             list: The list of files in the user's queue.
         """
-        return json.loads(self.user_files_queue) if self.user_files_queue else []
+        return json.loads(self.files_queue) if self.files_queue else []
 
     def get_user_files_uploads(self):
         """
@@ -149,7 +150,7 @@ class Users(db.Model):
         Returns:
             list: The list of files uploaded by the user.
         """
-        return json.loads(self.user_files_uploads) if self.user_files_uploads else []
+        return json.loads(self.files_uploads) if self.files_uploads else []
 
     def set_user_files(self, files:list, uploads=False):
         """
@@ -165,19 +166,19 @@ class Users(db.Model):
         amount_queue = len(self.get_user_files_queue())
         amount_uploads = len(self.get_user_files_uploads())
         if uploads:
-            if len(files) + amount_queue > self.user_upload_limit:
+            if len(files) + amount_queue > self.upload_limit:
                 logging("Amount of files exceeds upload limit")
                 return False
 
-            self.user_upload_amount = len(files) + amount_queue
-            self.user_files_uploads = json.dumps(files)
+            self.upload_amount = len(files) + amount_queue
+            self.files_uploads = json.dumps(files)
         else:
-            if len(files) + amount_uploads > self.user_upload_limit:
+            if len(files) + amount_uploads > self.upload_limit:
                 logging("Amount of files exceeds upload limit")
                 return False
 
-            self.user_upload_amount = len(files) + amount_uploads
-            self.user_files_queue = json.dumps(files)
+            self.upload_amount = len(files) + amount_uploads
+            self.files_queue = json.dumps(files)
 
         if not commit_db_changes():
             return False
@@ -194,7 +195,7 @@ class Users(db.Model):
         Returns:
             bool: True if the file was added successfully, False otherwise.
         """
-        if self.user_upload_amount >= self.user_upload_limit:
+        if self.upload_amount >= self.upload_limit:
             logging("Upload limit already reached")
             return False
 
