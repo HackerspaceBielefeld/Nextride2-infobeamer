@@ -213,11 +213,12 @@ def delete_image():
     user = get_user_from_users(user_name)
     if not user: return False
 
-    queue_files = user.get_user_files_queue()
-    if not file_name in queue_files:
-        uploads_files = user.get_user_files_uploads()
-        if not file_name in uploads_files:
-            return "User who sent the request to delete {file_name} isn't its owner"
+    if not check_admin(session['user_name']):
+        queue_files = user.get_user_files_queue()
+        if not file_name in queue_files:
+            uploads_files = user.get_user_files_uploads()
+            if not file_name in uploads_files:
+                return "User who sent the request to delete {file_name} isn't its owner"
 
     if not delete_file(file_name):
         return "Error while deleting image"

@@ -256,7 +256,7 @@ class Users(db.Model):
         new_role = Role.query.filter_by(name=new_role_name).first()
         if not new_role:
             logging(f"Role '{new_role_name}' does not exist.")
-            return False 
+            return False
 
         # Update the user's role
         self.role = new_role
