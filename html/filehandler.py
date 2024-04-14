@@ -36,6 +36,7 @@ from db_file_helper import check_global_upload_limit
 from db_file_helper import remove_file_from_queue, remove_file_from_db
 from db_file_helper import add_file_to_queue
 from db_file_helper import check_file_exist_in_db
+from db_models import Users
 from emailhandler import sent_email_approval_request
 
 def sanitize_filename(file_name:str):
@@ -260,3 +261,16 @@ def delete_file(file_name:str):
     except PermissionError:
         logging(f"Permission denied to delete file '{file_path}'.")
     return False
+
+
+def get_all_images_for_all_users():
+    all_images = {}
+    all_users = Users.query.all()
+
+    for user in all_users:
+        username = user.name
+        queue_images = user.get_user_files_queue()
+        upload_images = user.get_user_files_uploads()
+        all_images[username] = {'queue': queue_images, 'uploads': upload_images}
+
+    return all_images

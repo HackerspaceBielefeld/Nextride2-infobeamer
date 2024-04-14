@@ -55,7 +55,7 @@ from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
 from functools import wraps
 
-from filehandler import sanitize_file, safe_file, delete_file
+from filehandler import sanitize_file, safe_file, delete_file, get_all_images_for_all_users
 from queuehandler import approve_file
 from db_models import db, create_roles
 from db_user_helper import add_user_to_users, get_user_from_users, get_users_data_for_dashboard
@@ -240,11 +240,26 @@ def admin_approve():
     if not user:
         return redirect(url_for('login'))
 
-    if not check_admin(user.user_name):
+    if not check_admin(user.name):
         return redirect(url_for('index'))
 
     queued_images = user.get_user_files_queue()
     return render_template('admin/approve.html', queued_images=queued_images)
+
+
+@app.route('/admin/delete')
+@login_required
+def admin_delete():
+    user = get_user_from_users(session['user_name'])
+    if not user:
+        return redirect(url_for('login'))
+
+    if not check_admin(user.name):
+        return redirect(url_for('index'))
+
+    all_images = get_all_images_for_all_users()
+    print(all_images)
+    return render_template('admin/delete.html', all_images=all_images)
 
 
 @app.route('/faq')

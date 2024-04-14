@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="buttons-container">
+            <div class="dashboard-button">
+                <a href="{{ url_for('index') }}">Home</a>
+            </div>
+            <div class="dashboard-button">
+                <a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+            </div>
+            <div class="green-button">
+                <a href="{{ url_for('admin_approve') }}">Approve</a>
+            </div>
+            <div class="logout-button">
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </div>
+        </div>
+    </header>
+    <div class="head-container">
+    </div>
+
+    <h2>All Images:</h2>
+    {% for username, images in all_images.items() %}
+    <h2>{{ username }}</h2>
+    {% if images.queue %}
+    <h2>Queue Images:</h2>
+    <div class="image-container">
+        {% for i in range(0, images.queue|length, 3) %}
+        <div class="image-table">
+            {% set image1 = images.queue[i] %}
+            {% set image2 = images.queue[i+1] if i+1 < images.queue|length else None %}
+            {% set image3 = images.queue[i+2] if i+2 < images.queue|length else None %}
+            <div class="image-row">
+                {% if image1 %}
+                <div class="image-item">
+                    <div class="image-wrapper">
+                        <img src="{{ url_for('static', filename='queue/' + image1) }}" alt="{{ image1 }}">
+                        <form action="{{ url_for('delete_image') }}" method="post">
+                            <input type="hidden" name="filename" value="{{ image1 }}">
+                            <button type="submit" class="delete-button">Delete</button>
+                        </form>
+                    </div>                    
+                </div>
+                {% endif %}
+                {% if image2 %}
+                <div class="image-item">
+                    <div class="image-wrapper">
+                        <img src="{{ url_for('static', filename='queue/' + image2) }}" alt="{{ image2 }}">
+                        <form action="{{ url_for('approve_upload') }}" method="GET">
+                            <input type="hidden" name="file_name" value="{{ image2 }}">
+                            <button type="submit" class="approve-button">Approve</button>
+                        </form>
+                    </div>                    
+                </div>
+                {% endif %}
+                {% if image3 %}
+                <div class="image-item">
+                    <div class="image-wrapper">
+                        <img src="{{ url_for('static', filename='queue/' + image3) }}" alt="{{ image3 }}">
+                        <form action="{{ url_for('approve_upload') }}" method="GET">
+                            <input type="hidden" name="file_name" value="{{ image3 }}">
+                            <button type="submit" class="approve-button">Approve</button>
+                        </form>
+                    </div>                    
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div> 
+    {% endif %}
+
+    {% if images.uploads %}
+    <h2>Queue Images:</h2>
+    <div class="image-container">
+        {% for i in range(0, images.uploads|length, 3) %}
+        <div class="image-table">
+            {% set image1 = images.uploads[i] %}
+            {% set image2 = images.uploads[i+1] if i+1 < images.uploads|length else None %}
+            {% set image3 = images.uploads[i+2] if i+2 < images.uploads|length else None %}
+            <div class="image-row">
+                {% if image1 %}
+                <div class="image-item">
+                    <div class="image-wrapper">
+                        <img src="{{ url_for('static', filename='queue/' + image1) }}" alt="{{ image1 }}">
+                        <form action="{{ url_for('delete_image') }}" method="post">
+                            <input type="hidden" name="filename" value="{{ image1 }}">
+                            <button type="submit" class="delete-button">Delete</button>
+                        </form>
+                    </div>                    
+                </div>
+                {% endif %}
+                {% if image2 %}
+                <div class="image-item">
+                    <div class="image-wrapper">
+                        <img src="{{ url_for('static', filename='queue/' + image2) }}" alt="{{ image2 }}">
+                        <form action="{{ url_for('approve_upload') }}" method="GET">
+                            <input type="hidden" name="file_name" value="{{ image2 }}">
+                            <button type="submit" class="approve-button">Approve</button>
+                        </form>
+                    </div>                    
+                </div>
+                {% endif %}
+                {% if image3 %}
+                <div class="image-item">
+                    <div class="image-wrapper">
+                        <img src="{{ url_for('static', filename='queue/' + image3) }}" alt="{{ image3 }}">
+                        <form action="{{ url_for('approve_upload') }}" method="GET">
+                            <input type="hidden" name="file_name" value="{{ image3 }}">
+                            <button type="submit" class="approve-button">Approve</button>
+                        </form>
+                    </div>                    
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div> 
+    {% endif %}
+    {% endfor %}
+    <footer>
+        <a href="{{ url_for('index') }}">Home</a> | <a href="{{ url_for('faq') }}">FAQ</a>
+        <p>Nextride-infobeamer by Inflac | Hackerspace-Bielefeld e.V.</p>
+    </footer>
+</body>
+</html>
