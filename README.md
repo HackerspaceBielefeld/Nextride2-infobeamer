@@ -8,7 +8,6 @@ Please note! As N2i is currently under development not all features work reliabl
 Please use the latest release for a stable and secure version of N2i.
 
 ## Todos
-General:
 Admin dashboard:
 * Add method to ban users
 Unit testing

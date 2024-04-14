@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLOCKED</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-    <title>404 Not Found</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/faq.css') }}">
 </head>
 <body>
     <div class="info-container">
-        <h1>404 - Page Not Found</h1>
-        <p class="error-message">Oops! The page you're looking for does not exist.</p>
-        <a href="/" class="custom-button-green">Back to Home</a>
+        <h1 style="color: red;">Oops! You're Blocked</h1>
+        <p>We're sorry, but your access to Nextcloud2-Infobeamer has been restricted</p>
+        <p>If you belive this is a mistake you can contact the support.</p>
+        <a href="{{support_url}}" class="custom-button-green">Contact Support</a>
     </div>
 </body>
 <footer>

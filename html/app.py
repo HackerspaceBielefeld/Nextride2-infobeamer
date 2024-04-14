@@ -166,6 +166,10 @@ def dashboard():
 @app.route('/upload', methods=['POST'])
 @login_required
 def upload_file():
+    user = get_user_from_users(session['user_name'])
+    if user.role.name != "block":
+        return render_template('blocked.html', support_url=os.environ.get('SUPPORT_URL'))
+
     if request.method == 'POST':
         file = request.files['file']
         file = sanitize_file(file, app.config['MAX_CONTENT_LENGTH'])
@@ -213,6 +217,8 @@ def delete_image():
 
     user = get_user_from_users(user_name)
     if not user: return False
+    if user.role.name != "block":
+        return render_template('blocked.html', support_url=os.environ.get('SUPPORT_URL'))
 
     if not check_admin(session['user_name']):
         queue_files = user.get_user_files_queue()
