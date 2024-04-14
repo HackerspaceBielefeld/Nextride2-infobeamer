@@ -81,4 +81,3 @@ def sanitize_string(content:str):
     # Replace chars that aren't whitelisted
     sanitized_content = re.sub(f'[^{pattern}]', "", content)
     return sanitized_content
-
