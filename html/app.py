@@ -192,8 +192,8 @@ def upload_result():
 @app.route('/upload/approve')
 @login_required
 def approve_upload():
-    file_name = request.args.get('file_name')
-    file_password = request.args.get('file_password')
+    file_name = sanitize_string(request.args.get('file_name'))
+    file_password = sanitize_string(request.args.get('file_password'))
     if file_name and file_password:
         if approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password):
             return "File approved"
@@ -208,8 +208,8 @@ def approve_upload():
 @login_required
 def delete_image():
     if request.method == 'POST':
-        file_name = request.form['filename']
-        user_name = session['user_name']
+        file_name = sanitize_string(request.form['filename'])
+        user_name = sanitize_string(session['user_name'])
 
     user = get_user_from_users(user_name)
     if not user: return False
