@@ -70,7 +70,7 @@ def get_users_data_for_dashboard():
 
 
 def add_user_to_users(user_name: str, user_upload_amount=0,
-    user_upload_limit=os.environ.get('DEFAULT_USER_UPLOAD_LIMIT'), user_role="default", user_files=[]):
+    user_upload_limit=os.environ.get('DEFAULT_USER_UPLOAD_LIMIT'), user_files=[]):
     """
     Add a new user to the users table.
 
@@ -94,7 +94,7 @@ def add_user_to_users(user_name: str, user_upload_amount=0,
 
     try:
         user = Users(user_name=user_name, user_upload_amount=user_upload_amount,
-            user_upload_limit=int(user_upload_limit), user_role=user_role, user_files=user_files)
+            user_upload_limit=int(user_upload_limit), user_files=user_files)
         db.session.add(user)
         db.session.commit()
         return True

@@ -120,8 +120,9 @@ def auth():
             user_data = user.json()
             session['user_data'] = user_data
             session['user_name'] = user_data['login']
-            add_user_to_users(user_data['login'])
-            return redirect(url_for('dashboard'))
+            if add_user_to_users(user_data['login']):
+                return redirect(url_for('dashboard'))
+            return "User couldn't be added to the database"
         else:
             return "Failed to fetch user data from GitHub."
     else:

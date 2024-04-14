@@ -1,5 +1,5 @@
 # pylint: disable=too-many-arguments
-# pylint: too-many-instance-attributes
+# pylint: disable=too-many-instance-attributes
 """
 Database Models Module
 
@@ -111,12 +111,12 @@ class Users(db.Model):
     name = db.Column(db.String(100), nullable=False)
     upload_amount = db.Column(db.Integer, nullable=False)
     upload_limit = db.Column(db.Integer, nullable=False)
-    name = db.Column(db.Integer, db.ForeignKey('roles.name'))
+    role_name = db.Column(db.Integer, db.ForeignKey('roles.name'))
     role = db.relationship("Role", backref="users")
     files_queue = db.Column(db.String)
     files_uploads = db.Column(db.String)
 
-    def __init__(self, user_name, user_upload_amount, user_upload_limit, user_role, user_files):
+    def __init__(self, user_name, user_upload_amount, user_upload_limit, user_files):
         """
         Initialize a new User.
 
@@ -130,9 +130,9 @@ class Users(db.Model):
         self.name = user_name
         self.upload_amount = user_upload_amount
         self.upload_limit = user_upload_limit
-        self.role = set_user_role(user_role)
+        self.role = Role.query.filter_by(name='default').first()
         self.files_queue = json.dumps(user_files)
-        self.files_uploads = json.dumps([])
+        self.files_uploads = json.dumps(user_files)
 
     def get_user_files_queue(self):
         """
