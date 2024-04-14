@@ -3,8 +3,6 @@ Module for user role management.
 """
 from db_user_helper import get_user_from_users
 
-from dotenv import load_dotenv
-
 from helper import logging
 
 def check_admin(user_name: str):
