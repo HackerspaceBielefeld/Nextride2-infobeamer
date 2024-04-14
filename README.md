@@ -9,7 +9,6 @@ Please use the latest release for a stable and secure version of N2i.
 
 ## Todos
 General:
-* Implement more general string sanitization for user content arriving in app.py sink
 Admin dashboard:
 * Add method to ban users
 Unit testing
