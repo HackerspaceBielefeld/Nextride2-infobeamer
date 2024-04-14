@@ -66,7 +66,7 @@ def get_users_data_for_dashboard():
     """
 
     users = db.session.query(Users).all()
-    users_data = [{'id': user.id, 'user_name': user.name, 'user_role': user.role} for user in users]
+    users_data = [{'id': user.id, 'user_name': user.name, 'user_role': user.role.name} for user in users]
     return users_data
 
 
@@ -98,13 +98,13 @@ def add_user_to_users(user_name: str, user_upload_amount=0,
             user_upload_limit=int(user_upload_limit), user_files=user_files)
         db.session.add(user)
         db.session.commit()
-        return True
     except SQLAlchemyError as e:
         logging(f"An error occurred while adding an user to the users table: {e}")
         return False
 
     admin_users = os.getenv('ADMIN_USERS').split(',')
     if user.name in admin_users: user.set_user_role("admin")
+    return True
 
 def remove_user_from_users(user_name: str):
     """
