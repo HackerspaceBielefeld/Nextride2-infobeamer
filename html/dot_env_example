@@ -12,3 +12,7 @@ DATABASE_NAME="uploads.sqlite"
 GLOBAL_UPLOAD_LIMIT="100"
 
 DEFAULT_USER_UPLOAD_LIMIT="5"
+
+ADMIN_USERS=adminuser1, adminuser2
+
+SUPPORT_URL="https://hackerspace-bielefeld.de"
