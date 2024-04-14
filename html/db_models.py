@@ -288,7 +288,7 @@ def create_roles():
     if not existing_default:
         default = Role(name='default')
         db.session.add(default)
-    
+
     if not existing_default:
         block = Role(name='block')
         db.session.add(block)
