@@ -19,8 +19,10 @@ def infobeamer_main(dest:str, seconds:int, uri:str, schedule:list):
         uri (str): The URI of the content to be displayed.
         schedule (list): List of scheduled content URIs.
     """
-
-    urls = get_urls(schedule)
+    if len(schedule) > 0:
+        urls = get_urls(schedule)
+    else:
+        urls = []
     sender = Nextride2PacketSender()
     if uri and len(urls) == 0:
         sender.send_packet(dest, seconds, uri)

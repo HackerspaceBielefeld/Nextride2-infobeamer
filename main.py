@@ -30,7 +30,7 @@ def main(destination: str, seconds: int, content_uri: str, schedule_uri: str):
         else:
             schedule = get_local_schedule_content(schedule_uri)
     else:
-        schedule = []
+        schedule = ""
 
     infobeamer_main(destination, seconds, content_uri, schedule)
 
