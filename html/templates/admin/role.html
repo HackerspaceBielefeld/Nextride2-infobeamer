@@ -14,7 +14,7 @@
                 <a href="{{ url_for('admin_approve') }}" {% if request.path == url_for('admin_approve') %}class="selected"{% endif %}>Approve</a>
                 <a href="{{ url_for('admin_delete') }}" {% if request.path == url_for('admin_delete') %}class="selected"{% endif %}>Delete files</a>
                 <a href="{{ url_for('admin_role') }}" {% if request.path == url_for('admin_role') %}class="selected"{% endif %}>Set role</a>
-                <a class="logout-button" "{{ url_for('logout') }}">Logout</a>
+                <a class="logout-button" href="{{ url_for('logout') }}">Logout</a>
             </nav>
         </div>
     </header>
@@ -31,6 +31,9 @@
             <label>Select Role:</label><br>
             <input type="radio" id="admin" name="role_name" value="admin">
             <label for="admin">admin</label><br>
+
+            <input type="radio" id="moderator" name="role_name" value="moderator">
+            <label for="moderator">moderator</label><br>
             
             <input type="radio" id="default" name="role_name" value="default">
             <label for="default">default</label><br>

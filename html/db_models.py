@@ -284,6 +284,10 @@ def create_roles():
     if not existing_admin:
         admin = Role(id=9, name='admin')
         db.session.add(admin)
+    
+    if not existing_admin:
+        moderator = Role(id=6, name='moderator')
+        db.session.add(moderator)
 
     if not existing_default:
         default = Role(id=1, name='default')

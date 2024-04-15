@@ -61,7 +61,7 @@ from db_models import db, create_roles
 from db_user_helper import add_user_to_users, get_user_from_users, get_users_data_for_dashboard
 from helper import sanitize_string
 
-from role_based_access import check_admin
+from role_based_access import check_access
 
 # Load environment variables from .env file
 load_dotenv()
@@ -166,21 +166,23 @@ def dashboard():
 @app.route('/upload', methods=['POST'])
 @login_required
 def upload_file():
-    user = get_user_from_users(session['user_name'])
-    if user.role.name == "block":
+    if request.method != 'POST':
+        return redirect(url_for('index'))
+
+    if not check_access(session['user_name'], 1):
         return render_template('error/blocked.html', support_url=os.environ.get('SUPPORT_URL'))
 
-    if request.method == 'POST':
-        file = request.files['file']
-        file = sanitize_file(file, app.config['MAX_CONTENT_LENGTH'])
-        if file != False:        
-            if safe_file(file,app.config['QUEUE_FOLDER'], session['user_name']):
-                # Store the filename in the session if upload was successful
-                session['uploaded_file'] = file.filename
+    file = request.files['file']
+    if not file:
+        return redirect(url_for('index'))
 
-        return redirect(url_for('upload_result'))
-    else:
-        return
+    file = sanitize_file(file, app.config['MAX_CONTENT_LENGTH'])
+    if file != False:        
+        if safe_file(file,app.config['QUEUE_FOLDER'], session['user_name']):
+            # Store the filename in the session if upload was successful
+            session['uploaded_file'] = file.filename
+
+    return redirect(url_for('upload_result'))
 
 @app.route('/upload/result')
 @login_required
@@ -198,13 +200,14 @@ def upload_result():
 def approve_upload():
     file_name = sanitize_string(request.args.get('file_name'))
     file_password = request.args.get('file_password')
-    if file_password is not None: file_password = sanitize_string(file_password)
+    if not file_name: return redirect(url_for('index'))
 
-    if file_name and file_password is not None:
+    if file_password is not None:
+        file_password = sanitize_string(file_password)
         if approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password):
             return "File approved"
         return "File not approved"
-    elif check_admin(session['user_name']) and file_password is None:
+    elif check_access(session['user_name'], 9) and file_password is None:
         if approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password, admin=True):
             return "File approved"
         return "File not approved"
@@ -213,16 +216,19 @@ def approve_upload():
 @app.route('/delete_image', methods=['POST'])
 @login_required
 def delete_image():
-    if request.method == 'POST':
-        file_name = sanitize_string(request.form['filename'])
-        user_name = sanitize_string(session['user_name'])
+    if request.method != 'POST':
+        return redirect(url_for('index'))
+
+    if not check_access(session['user_name'], 1):
+        return render_template('error/blocked.html', support_url=os.environ.get('SUPPORT_URL'))
+
+    file_name = sanitize_string(request.form['filename'])
+    user_name = sanitize_string(session['user_name'])
 
     user = get_user_from_users(user_name)
     if not user: return False
-    if user.role.name == "block":
-        return render_template('error/blocked.html', support_url=os.environ.get('SUPPORT_URL'))
 
-    if not check_admin(session['user_name']):
+    if not check_access(session['user_name'], 9):
         queue_files = user.get_user_files_queue()
         if not file_name in queue_files:
             uploads_files = user.get_user_files_uploads()
@@ -236,7 +242,7 @@ def delete_image():
 @app.route('/admin/dashboard')
 @login_required
 def admin_dashboard():
-    if not check_admin(session['user_name']):
+    if not check_access(session['user_name'], 6):
         return redirect(url_for('index'))
 
     users_data = get_users_data_for_dashboard()
@@ -245,11 +251,7 @@ def admin_dashboard():
 @app.route('/admin/approve')
 @login_required
 def admin_approve():
-    user = get_user_from_users(session['user_name'])
-    if not user:
-        return redirect(url_for('login'))
-
-    if not check_admin(user.name):
+    if not check_access(user.name, 6):
         return redirect(url_for('index'))
 
     queued_images = user.get_user_files_queue()
@@ -258,11 +260,7 @@ def admin_approve():
 @app.route('/admin/delete')
 @login_required
 def admin_delete():
-    user = get_user_from_users(session['user_name'])
-    if not user:
-        return redirect(url_for('login'))
-
-    if not check_admin(user.name):
+    if not check_access(session['user_name'], 6):
         return redirect(url_for('index'))
 
     all_images = get_all_images_for_all_users()
@@ -272,11 +270,7 @@ def admin_delete():
 @app.route('/admin/role')
 @login_required
 def admin_role():
-    user = get_user_from_users(session['user_name'])
-    if not user:
-        return redirect(url_for('login'))
-
-    if not check_admin(user.name):
+    if not check_access(session['user_name'], 9):
         return redirect(url_for('index'))
 
     return render_template('admin/role.html')
@@ -284,20 +278,22 @@ def admin_role():
 @app.route('/admin/set_role', methods=['POST'])
 @login_required
 def admin_set_role():
-    if request.method == 'POST':
-        try:
-            role_name = sanitize_string(request.form['role_name'])
-            target_user_name = sanitize_string(request.form['target_user_name'])
-        except KeyError as e:
-            loggin(f"KeyError for url parameters: {e}")
-            return render_template('index.html')
-    user_name = session['user_name']
-    user = get_user_from_users(user_name)
+    if request.method != 'POST':
+        return redirect(url_for('index'))
+
+    if not check_access(session['user_name'], 9):
+        return redirect(url_for('index'))
+
+    try:
+        role_name = sanitize_string(request.form['role_name'])
+        target_user_name = sanitize_string(request.form['target_user_name'])
+    except KeyError as e:
+        loggin(f"KeyError for url parameters: {e}")
+        return render_template('index.html')
+
+    user = get_user_from_users(session['user_name'])
     if not user:
         return redirect(url_for('login'))
-
-    if not check_admin(user.name):
-        return redirect(url_for('index'))
 
     if not user.set_user_role(role_name):
         return "Role wasn't changed"
