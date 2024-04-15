@@ -19,7 +19,7 @@ def check_admin(user_name: str):
     if not user:
         logging("User couldn't be found")
         return False
-    
+
     if not user.role.name == 'admin':
         logging(f"User {user_name} isn't an admin")
         return False
@@ -62,9 +62,7 @@ def check_access(user_name: str, min_req_role_id: int):
     if not user:
         logging("User couldn't be found")
         return False
-    
+
     if user.role.id >= min_req_role_id:
         return True
     return False
-
-    
