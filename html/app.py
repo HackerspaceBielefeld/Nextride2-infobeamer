@@ -3,7 +3,7 @@
 Flask Application for File Upload and Management
 
 This application allows users to upload files, manage file queues, and approve uploaded files. 
-It includes user authentication via GitHub OAuth, file upload with validation, and an admin dashboard 
+It includes user authentication via GitHub OAuth, file upload with validation, and an management dashboard 
 for managing user files and approvals.
 
 Routes:
@@ -16,8 +16,8 @@ Routes:
     - /upload/result: Displays the result of the file upload.
     - /upload/approve: Approves the uploaded file.
     - /delete_image: Deletes an uploaded image.
-    - /admin/dashboard: Displays the admin dashboard with user data.
-    - /admin/approve: Admin approval page for queued images.
+    - /management/dashboard: Displays the management dashboard with user data.
+    - /management/approve: management approval page for queued images.
     - /faq: Displays the frequently asked questions page.
     - Error Handlers: Handles 404 and 405 errors with custom error pages.
 
@@ -239,45 +239,45 @@ def delete_image():
         return "Error while deleting image"
     return redirect(url_for('dashboard'))
 
-@app.route('/admin/dashboard')
+@app.route('/management/dashboard')
 @login_required
-def admin_dashboard():
+def management_dashboard():
     if not check_access(session['user_name'], 6):
         return redirect(url_for('index'))
 
     users_data = get_users_data_for_dashboard()
-    return render_template('admin/dashboard.html', users_data=users_data)
+    return render_template('management/dashboard.html', users_data=users_data)
 
-@app.route('/admin/approve')
+@app.route('/management/approve')
 @login_required
-def admin_approve():
+def management_approve():
     if not check_access(user.name, 6):
         return redirect(url_for('index'))
 
     queued_images = user.get_user_files_queue()
-    return render_template('admin/approve.html', queued_images=queued_images)
+    return render_template('management/approve.html', queued_images=queued_images)
 
-@app.route('/admin/delete')
+@app.route('/management/delete')
 @login_required
-def admin_delete():
+def management_delete():
     if not check_access(session['user_name'], 6):
         return redirect(url_for('index'))
 
     all_images = get_all_images_for_all_users()
     print(all_images)
-    return render_template('admin/delete.html', all_images=all_images)
+    return render_template('management/delete.html', all_images=all_images)
 
-@app.route('/admin/role')
+@app.route('/management/role')
 @login_required
-def admin_role():
+def management_role():
     if not check_access(session['user_name'], 9):
         return redirect(url_for('index'))
 
-    return render_template('admin/role.html')
+    return render_template('management/role.html')
 
-@app.route('/admin/set_role', methods=['POST'])
+@app.route('/management/set_role', methods=['POST'])
 @login_required
-def admin_set_role():
+def management_set_role():
     if request.method != 'POST':
         return redirect(url_for('index'))
 
@@ -298,7 +298,7 @@ def admin_set_role():
     if not user.set_user_role(role_name):
         return "Role wasn't changed"
 
-    return redirect(url_for('admin_dashboard'))
+    return redirect(url_for('management_dashboard'))
 
 @app.route('/faq')
 def faq():

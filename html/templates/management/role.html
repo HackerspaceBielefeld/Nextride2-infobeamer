@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Management Dashboard</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -11,9 +11,9 @@
         <div class="menu-container">
             <nav class="menu">
                 <a href="{{ url_for('index') }}" {% if request.path == url_for('index') %}class="selected"{% endif %}>Home</a>
-                <a href="{{ url_for('admin_approve') }}" {% if request.path == url_for('admin_approve') %}class="selected"{% endif %}>Approve</a>
-                <a href="{{ url_for('admin_delete') }}" {% if request.path == url_for('admin_delete') %}class="selected"{% endif %}>Delete files</a>
-                <a href="{{ url_for('admin_role') }}" {% if request.path == url_for('admin_role') %}class="selected"{% endif %}>Set role</a>
+                <a href="{{ url_for('management_approve') }}" {% if request.path == url_for('management_approve') %}class="selected"{% endif %}>Approve</a>
+                <a href="{{ url_for('management_delete') }}" {% if request.path == url_for('management_delete') %}class="selected"{% endif %}>Delete files</a>
+                <a href="{{ url_for('management_role') }}" {% if request.path == url_for('management_role') %}class="selected"{% endif %}>Set role</a>
                 <a class="logout-button" href="{{ url_for('logout') }}">Logout</a>
             </nav>
         </div>
@@ -24,7 +24,7 @@
     <h1>Users</h1>
     <div class="user-data-container">
         <center>
-        <form action="/admin/set_role" method="post">
+        <form action="/management/set_role" method="post">
             <label for="username">Username:</label>
             <input type="text" id="user_name" name="target_user_name"><br><br>
             
