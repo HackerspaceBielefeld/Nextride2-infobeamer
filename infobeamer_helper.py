@@ -67,7 +67,7 @@ def get_urls(schedule:str) -> list:
     """
     try:
         root = ET.fromstring(schedule)
-    except xml.etree.ElementTree.ParseError as e:
+    except ET.ParseError as e:
         print(f"An Error occured while parsing the schedule: {e}")
 
     urls = []

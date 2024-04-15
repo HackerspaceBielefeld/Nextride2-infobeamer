@@ -3,8 +3,8 @@ Nextride2-infobeamer is an extension for [Nextride2](https://github.com/Hackersp
 N2i allows you to fetch a schedule and create a queue from the url elements. Those ressources are than itteratively displayed on the Nextride screens.
 N2i also implements a CMS for user uploaded date. This can be used to allow guests and visitors to upload slides/ads thay want to share.
 
-## Setup
-1. Clone the repository.
+## CMS Setup 
+1. Clone the repository
 2. Create a new github OAuth application [here](https://github.com/settings/applications/new)
 3. Choose a name, the url to the index page and a description
 4. As Authorization callback URL use http://yourdomain.tld/auth
@@ -15,6 +15,16 @@ N2i also implements a CMS for user uploaded date. This can be used to allow gues
 9. Activate the venv with: `source .venv/bin/activate`(linux)
 10. Install the necessary requirements with `pip install -r requirements.txt`
 11. Enter the html folder again and start the application with `python app.py`
+
+## Nextride2 Setup(for development)
+In order to setup nextride2 for testing and development, do the following steps:
+1. Clone the repository
+2. Open it with Android Studio
+3. Rename the file constants.example.dart > constants.dart
+4. configure the constants.
+5. Run the application e.g. for linux
+
+
 
 ## Restrictions
 Please note! As N2i is currently under development not all features work reliable.
