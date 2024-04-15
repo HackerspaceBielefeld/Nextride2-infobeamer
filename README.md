@@ -32,9 +32,12 @@ Please use the latest release for a stable and secure version of N2i.
 
 
 ## Todos
+General:
 Admin dashboard:
-* move role "block" management to role_based_access
-  * Add ipban option
+* move role management for "block" and "admin" to role_based_access
+* Add moderator role
+* Adjust admin dashboard to be accessible for mdoerators but exclude access for role managment
+* Implement method to increase users upload limit
 Unit testing
 * Setup unittests
 * Create a CI pipeline

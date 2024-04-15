@@ -282,15 +282,15 @@ def create_roles():
 
     # Create new roles only if they don't exist
     if not existing_admin:
-        admin = Role(name='admin')
+        admin = Role(id=9, name='admin')
         db.session.add(admin)
 
     if not existing_default:
-        default = Role(name='default')
+        default = Role(id=1, name='default')
         db.session.add(default)
 
     if not existing_default:
-        block = Role(name='block')
+        block = Role(id=0, name='block')
         db.session.add(block)
 
     db.session.commit()
