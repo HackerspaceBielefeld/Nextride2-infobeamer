@@ -7,10 +7,10 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <header>
-    <div class="buttons-container">
-        <div class="dashboard-button">
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        </div>
+    <div class="menu-container">
+        <nav class="menu">
+            <a href="{{ url_for('dashboard') }}" {% if request.path == url_for('dashboard') %}class="selected"{% endif %}>Dashboard</a>
+        </nav>
     </div>
 </header>
 <body> 

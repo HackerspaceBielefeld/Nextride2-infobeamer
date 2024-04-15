@@ -168,7 +168,7 @@ def dashboard():
 def upload_file():
     user = get_user_from_users(session['user_name'])
     if user.role.name == "block":
-        return render_template('blocked.html', support_url=os.environ.get('SUPPORT_URL'))
+        return render_template('error/blocked.html', support_url=os.environ.get('SUPPORT_URL'))
 
     if request.method == 'POST':
         file = request.files['file']
@@ -219,8 +219,8 @@ def delete_image():
 
     user = get_user_from_users(user_name)
     if not user: return False
-    if user.role.name != "block":
-        return render_template('blocked.html', support_url=os.environ.get('SUPPORT_URL'))
+    if user.role.name == "block":
+        return render_template('error/blocked.html', support_url=os.environ.get('SUPPORT_URL'))
 
     if not check_admin(session['user_name']):
         queue_files = user.get_user_files_queue()
@@ -317,4 +317,4 @@ def page_not_found():
     return render_template('errors/405.html'), 405
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

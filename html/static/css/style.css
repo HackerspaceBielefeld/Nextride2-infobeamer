@@ -47,6 +47,42 @@ th, td {
     text-align: left;
 }
 
+
+.menu-container {
+    width: 100%;
+}
+
+.menu {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px 10px;
+    margin-left: 3%;
+    margin-right: 3%;
+}
+
+.menu a {
+    display: block;
+    border-radius: 5px;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #ffffff; /* Dark gray text color */
+}
+
+.menu a:hover {
+    background-color: #747474; /* Light gray background on hover */
+}
+
+.menu a.selected {
+    background-color: #8e44ad; /* Purple background for selected item */
+    color: #fff; /* White text color */
+}
+
+.menu a.logout-button {
+    background-color: red; /* Purple background for selected item */
+    color: #fff; /* White text color */
+}
+
 .head-container {
     text-align: center;
 }
@@ -191,6 +227,10 @@ th, td {
 }
 
 @media (max-width: 600px) {
+    .menu {
+        display: block;
+    }
+
     .buttons-container {
         flex-direction: column;
         align-items: center;

@@ -8,22 +8,14 @@
 </head>
 <body>
     <header>
-        <div class="buttons-container">
-            <div class="dashboard-button">
-                <a href="{{ url_for('index') }}">Home</a>
-            </div>
-            <div class="dashboard-button">
-                <a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
-            </div>
-            <div class="green-button">
-                <a href="{{ url_for('admin_approve') }}">Approve files</a>
-            </div>
-            <div class="set-role-button">
-                <a href="{{ url_for('admin_role') }}">Set role</a>
-            </div>
-            <div class="logout-button">
-                <a href="{{ url_for('logout') }}">Logout</a>
-            </div>
+        <div class="menu-container">
+            <nav class="menu">
+                <a href="{{ url_for('index') }}" {% if request.path == url_for('index') %}class="selected"{% endif %}>Home</a>
+                <a href="{{ url_for('admin_approve') }}" {% if request.path == url_for('admin_approve') %}class="selected"{% endif %}>Approve</a>
+                <a href="{{ url_for('admin_delete') }}" {% if request.path == url_for('admin_delete') %}class="selected"{% endif %}>Delete files</a>
+                <a href="{{ url_for('admin_role') }}" {% if request.path == url_for('admin_role') %}class="selected"{% endif %}>Set role</a>
+                <a class="logout-button" "{{ url_for('logout') }}">Logout</a>
+            </nav>
         </div>
     </header>
     <div class="head-container">
