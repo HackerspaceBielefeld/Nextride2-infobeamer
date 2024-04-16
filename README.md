@@ -31,7 +31,6 @@ Please use the latest release for a stable and secure version of N2i.
 ## Todos
 General:
 Admin dashboard:
-* Rename admin area to management dashboard etc.
 * Implement method to increase users upload limit
 Unit testing
 * Setup unittests

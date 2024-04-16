@@ -256,7 +256,7 @@ def management_approve():
     if not check_access(session['user_name'], 6):
         return redirect(url_for('index'))
 
-    user = get_user_from_users(user_name)
+    user = get_user_from_users(session['user_name'])
     if not user: return False
 
     queued_images = user.get_user_files_queue()
