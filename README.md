@@ -30,6 +30,8 @@ Please use the latest release for a stable and secure version of N2i.
 
 ## Todos
 General:
+* return errorpage with good errormessages
+  * IMPORTANT: DONT REFLECT USER INPUT IN NO CASE; NEVER; EVER; NONONO
 Admin dashboard:
 Unit testing
 * Setup unittests
