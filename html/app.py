@@ -103,11 +103,11 @@ def login_required(view):
         if 'token' not in session:
             # Redirect to the login route if the user is not authenticated
             return redirect(url_for('login', next=request.url))
-       
+
         user = get_user_from_users(session['user_name'])
         if not user:
             return redirect(url_for('index'))
-    
+
         session['user_role'] = user.role.id
         return view(*args, **kwargs)
     return decorated_view
@@ -287,10 +287,10 @@ def management_delete():
 @login_required
 def management_set_role():
     if request.method != 'POST':
-        return redirect(url_for('index'))
+        return render_template('errors/error.html', error_message=f"Wrong HTTP Method")
 
     if not check_access(session['user_name'], 9):
-        return redirect(url_for('index'))
+        return render_template('errors/error.html', error_message=f"You aren't allowed to access this page")
 
     try:
         role_name = sanitize_string(request.form['role_name'])
@@ -303,7 +303,7 @@ def management_set_role():
     if not user: return redirect(url_for('login'))
 
     if not user.set_user_role(role_name):
-        return "Role wasn't changed"
+        return render_template('errors/error.html', error_message=f"Role wasn't changed")
 
     return redirect(url_for('management_users'))
 
@@ -311,23 +311,23 @@ def management_set_role():
 @login_required
 def management_update_upload_limit():
     if request.method != 'POST':
-        return redirect(url_for('index'))
+        return render_template('errors/error.html', error_message=f"Wrong HTTP Method")
 
     if not check_access(session['user_name'], 9):
-        return redirect(url_for('index'))
+        return render_template('errors/error.html', error_message=f"You aren't allowed to access this page")
 
     try:
         upload_limit = int(sanitize_string(request.form['upload_limit']))
         target_user_name = sanitize_string(request.form['target_user_name'])
     except (KeyError, ValueError) as e:
-        logging(f"An error occured while trying to make url parameters usable: {e}")
-        return redirect(url_for('index'))
+        return render_template('errors/error.html', error_message=f"Specified upload limit isn't valid")
 
     user = get_user_from_users(session['user_name'])
-    if not user: return redirect(url_for('login'))
+    if not user:
+        return render_template('errors/error.html', error_message=f"Your user couldn't be found in the database")
 
     if not user.set_user_upload_limit(upload_limit):
-        return "Upload limit wasn't changed"
+        return render_template('errors/error.html', error_message=f"Upload limit {upload_limit} isn't valid")
 
     return redirect(url_for('management_users'))
 

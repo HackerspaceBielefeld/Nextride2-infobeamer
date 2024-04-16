@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Success</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="head-container">
+        <h1>{{error_message}}</h1>
+        <a href="{{ url_for('index') }}" class="green-button">Go Back to home</a>
+    </div>
+    {% if file %}
+        <div class="info-container">
+        </div>
+    {% endif %}
+</body>
+<footer>
+    <a href="{{ url_for('index') }}">Home</a> | <a href="{{ url_for('faq') }}">FAQ</a>
+    <p>Nextride2-infobeamer by Inflac | Hackerspace-Bielefeld e.V.</p>
+</footer>
+</html>
