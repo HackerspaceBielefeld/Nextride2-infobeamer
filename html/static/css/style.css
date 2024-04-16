@@ -108,25 +108,6 @@ th, td {
     background-color: #2b4811;
 }
 
-.dashboard-button a {
-    background-color: gray;
-    color: #ffffff;
-    padding: 10px 20px;
-    border-radius: 5px;
-    text-decoration: none;
-    margin: 5px;
-
-}
-
-.logout-button a {
-    background-color: red;
-    color: #ffffff;
-    padding: 10px 20px;
-    border-radius: 5px;
-    text-decoration: none;
-    margin: 5px;
-}
-
 .set-role-button a {
     background-color: purple;
     color: #ffffff;
@@ -168,17 +149,6 @@ th, td {
     text-align: center;
     margin-top: 20px;
     margin-bottom: 20px;
-}
-
-.custom-button-green {
-    background-color: #3f681c;
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    text-decoration: none; /* Remove underline */
-    margin: 5px;
 }
 
 .image-container {

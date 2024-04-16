@@ -16,7 +16,7 @@ Routes:
     - /upload/result: Displays the result of the file upload.
     - /upload/approve: Approves the uploaded file.
     - /delete_image: Deletes an uploaded image.
-    - /management/dashboard: Displays the management dashboard with user data.
+    - /management/users: Displays the management page for users.
     - /management/approve: management approval page for queued images.
     - /faq: Displays the frequently asked questions page.
     - Error Handlers: Handles 404 and 405 errors with custom error pages.
@@ -257,7 +257,7 @@ def management_users():
         return redirect(url_for('index'))
 
     users_data = get_users_data_for_dashboard()
-    return render_template('management/dashboard.html', users_data=users_data)
+    return render_template('management/users.html', users_data=users_data)
 
 @app.route('/management/approve')
 @login_required
@@ -305,7 +305,7 @@ def management_set_role():
     if not user.set_user_role(role_name):
         return "Role wasn't changed"
 
-    return redirect(url_for('management_dashboard'))
+    return redirect(url_for('management_users'))
 
 @app.route('/faq')
 def faq():

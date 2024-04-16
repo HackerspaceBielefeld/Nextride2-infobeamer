@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Management Dashboard</title>
+    <title>Management Users</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -54,18 +54,29 @@
                     <th>ID</th>
                     <th>Username</th>
                     <th>Role</th>
+                    <th>Upload Statistic</th>
                 </tr>
             </thead>
             <tbody>
                 {% for user in users_data %}
                 <tr>
                     <td>{{ user.id }}</td>
-                    <td>{{ user.user_name }}</td>
+                    <td><button onclick="copyToClipboard('{{ user.user_name }}')">{{ user.user_name }}</button></td>
                     <td>{{ user.user_role }}</td>
+                    <td>{{ user.user_upload_amount }} / {{ user.user_upload_limit }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        <script>
+            const copyToClipboard = async (text) => {
+              try {
+                await navigator.clipboard.writeText(text);
+              } catch (err) {
+                console.error('Failed to copy: ', err);
+              }
+            }
+        </script>
     </div>
 
     <footer>

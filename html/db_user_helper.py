@@ -66,7 +66,9 @@ def get_users_data_for_dashboard():
     """
 
     users = db.session.query(Users).all()
-    users_data = [{'id': user.id, 'user_name': user.name, 'user_role': user.role.name} for user in users]
+    users_data = [{'id': user.id, 'user_name': user.name, 'user_role': user.role.name,
+        'user_upload_limit': user.upload_limit, 'user_upload_amount': user.upload_amount}
+        for user in users]
     return users_data
 
 
