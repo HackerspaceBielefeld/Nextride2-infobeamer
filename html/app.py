@@ -222,10 +222,12 @@ def delete_image():
     if not check_access(session['user_name'], 1):
         return render_template('error/blocked.html', support_url=os.environ.get('SUPPORT_URL'))
 
-    file_name = sanitize_string(request.form['filename'])
-    user_name = sanitize_string(session['user_name'])
+    if not request.form['filename']:
+        return redirect(url_for('index'))
 
-    user = get_user_from_users(user_name)
+    file_name = sanitize_string(request.form['filename'])
+
+    user = get_user_from_users(session['user_name'])
     if not user: return False
 
     if not check_access(session['user_name'], 9):
@@ -251,8 +253,11 @@ def management_dashboard():
 @app.route('/management/approve')
 @login_required
 def management_approve():
-    if not check_access(user.name, 6):
+    if not check_access(session['user_name'], 6):
         return redirect(url_for('index'))
+
+    user = get_user_from_users(user_name)
+    if not user: return False
 
     queued_images = user.get_user_files_queue()
     return render_template('management/approve.html', queued_images=queued_images)
