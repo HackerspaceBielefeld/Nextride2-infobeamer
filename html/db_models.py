@@ -278,7 +278,7 @@ class Users(db.Model):
     def set_user_upload_limit(self, new_upload_limit: int):
         if not new_upload_limit >=0:
             return False
-        
+
         self.upload_limit = new_upload_limit
 
         if not commit_db_changes():
