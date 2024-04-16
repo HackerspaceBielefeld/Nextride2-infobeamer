@@ -9,6 +9,7 @@
 <header>
     <div class="menu-container">
         <nav class="menu">
+            <a href="{{ url_for('index') }}" {% if request.path == url_for('index') %}class="selected"{% endif %}>Home</a>
             <a href="{{ url_for('dashboard') }}" {% if request.path == url_for('dashboard') %}class="selected"{% endif %}>Dashboard</a>
         </nav>
     </div>

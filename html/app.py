@@ -103,6 +103,12 @@ def login_required(view):
         if 'token' not in session:
             # Redirect to the login route if the user is not authenticated
             return redirect(url_for('login', next=request.url))
+       
+        user = get_user_from_users(session['user_name'])
+        if not user:
+            return redirect(url_for('index'))
+    
+        session['user_role'] = user.role.id
         return view(*args, **kwargs)
     return decorated_view
 
@@ -126,7 +132,9 @@ def auth():
     session['user_data'] = user_data
     session['user_name'] = user_data['login']
 
-    if get_user_from_users(user_data['login']):
+    user = get_user_from_users(user_data['login'])
+    if user:
+        session['user_role'] = user.role.id
         return redirect(url_for('dashboard'))
 
     if add_user_to_users(user_data['login']):
@@ -160,8 +168,9 @@ def dashboard():
     # Get list of uploaded images
     queued_images = user.get_user_files_queue()
     uploaded_images = user.get_user_files_uploads()
-    return render_template('dashboard.html',
-                            uploaded_images=uploaded_images, queued_images=queued_images)
+
+    return render_template('dashboard.html', uploaded_images=uploaded_images,
+        queued_images=queued_images)
 
 @app.route('/upload', methods=['POST'])
 @login_required
@@ -228,7 +237,7 @@ def delete_image():
     file_name = sanitize_string(request.form['filename'])
 
     user = get_user_from_users(session['user_name'])
-    if not user: return False
+    if not user: return redirect(url_for('login'))
 
     if not check_access(session['user_name'], 9):
         queue_files = user.get_user_files_queue()
@@ -257,7 +266,7 @@ def management_approve():
         return redirect(url_for('index'))
 
     user = get_user_from_users(session['user_name'])
-    if not user: return False
+    if not user: return redirect(url_for('login'))
 
     queued_images = user.get_user_files_queue()
     return render_template('management/approve.html', queued_images=queued_images)
@@ -268,8 +277,10 @@ def management_delete():
     if not check_access(session['user_name'], 6):
         return redirect(url_for('index'))
 
+    user = get_user_from_users(session['user_name'])
+    if not user: return redirect(url_for('login'))
+
     all_images = get_all_images_for_all_users()
-    print(all_images)
     return render_template('management/delete.html', all_images=all_images)
 
 @app.route('/management/role')
@@ -297,8 +308,7 @@ def management_set_role():
         return render_template('index.html')
 
     user = get_user_from_users(session['user_name'])
-    if not user:
-        return redirect(url_for('login'))
+    if not user: return redirect(url_for('login'))
 
     if not user.set_user_role(role_name):
         return "Role wasn't changed"
