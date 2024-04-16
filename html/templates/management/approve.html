@@ -12,12 +12,11 @@
             <nav class="menu">
                 <a href="{{ url_for('index') }}" {% if request.path == url_for('index') %}class="selected"{% endif %}>Home</a>
                 <a href="{{ url_for('dashboard') }}" {% if request.path == url_for('dashboard') %}class="selected"{% endif %}>Dashboard</a>
-                <a href="{{ url_for('management_dashboard') }}" {% if request.path == url_for('management_dashboard') %}class="selected"{% endif %}>Users</a>
                 <a href="{{ url_for('management_approve') }}" {% if request.path == url_for('management_approve') %}class="selected"{% endif %}>Approve</a>
                 <a href="{{ url_for('management_delete') }}" {% if request.path == url_for('management_delete') %}class="selected"{% endif %}>Delete files</a>
                 {% if session['user_role'] >= 9 %}
-                <a href="{{ url_for('management_role') }}" {% if request.path == url_for('management_role') %}class="selected"{% endif %}>Set role</a>
-                {% endif %}
+                <a href="{{ url_for('management_users') }}" {% if request.path == url_for('management_users') %}class="selected"{% endif %}>Users</a>
+                    {% endif %}
                 <a class="logout-button" href="{{ url_for('logout') }}">Logout</a>
             </nav>
         </div>

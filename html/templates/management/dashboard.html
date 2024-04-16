@@ -12,11 +12,10 @@
             <nav class="menu">
                 <a href="{{ url_for('index') }}" {% if request.path == url_for('index') %}class="selected"{% endif %}>Home</a>
                 <a href="{{ url_for('dashboard') }}" {% if request.path == url_for('dashboard') %}class="selected"{% endif %}>Dashboard</a>
-                <a href="{{ url_for('management_dashboard') }}" {% if request.path == url_for('management_dashboard') %}class="selected"{% endif %}>Users</a>
                 <a href="{{ url_for('management_approve') }}" {% if request.path == url_for('management_approve') %}class="selected"{% endif %}>Approve</a>
                 <a href="{{ url_for('management_delete') }}" {% if request.path == url_for('management_delete') %}class="selected"{% endif %}>Delete files</a>
                 {% if session['user_role'] >= 9 %}
-                <a href="{{ url_for('management_role') }}" {% if request.path == url_for('management_role') %}class="selected"{% endif %}>Set role</a>
+                <a href="{{ url_for('management_users') }}" {% if request.path == url_for('management_users') %}class="selected"{% endif %}>Users</a>
                 {% endif %}
                 <a class="logout-button" href="{{ url_for('logout') }}">Logout</a>
             </nav>
@@ -27,6 +26,28 @@
 
     <h1>Users</h1>
     <div class="user-data-container">
+        <center>
+        <form action="/management/set_role" method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="user_name" name="target_user_name"><br><br>
+            
+            <label>Select Role:</label><br>
+            <input type="radio" id="admin" name="role_name" value="admin">
+            <label for="admin">admin</label><br>
+
+            <input type="radio" id="moderator" name="role_name" value="moderator">
+            <label for="moderator">moderator</label><br>
+            
+            <input type="radio" id="default" name="role_name" value="default">
+            <label for="default">default</label><br>
+            
+            <input type="radio" id="block" name="role_name" value="block">
+            <label for="block">block</label><br><br>
+
+            <button type="submit" class="green-button">Change Role</button>
+        </form>
+        </center>
+
         <table>
             <thead>
                 <tr>

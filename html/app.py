@@ -127,7 +127,7 @@ def auth():
     user = github.get('https://api.github.com/user', token=token)
     if not user.ok:
         return "Failed to fetch user data from GitHub."
-    
+
     user_data = user.json()
     session['user_data'] = user_data
     session['user_name'] = user_data['login']
@@ -250,10 +250,10 @@ def delete_image():
         return "Error while deleting image"
     return redirect(url_for('dashboard'))
 
-@app.route('/management/dashboard')
+@app.route('/management/users')
 @login_required
-def management_dashboard():
-    if not check_access(session['user_name'], 6):
+def management_users():
+    if not check_access(session['user_name'], 9):
         return redirect(url_for('index'))
 
     users_data = get_users_data_for_dashboard()
@@ -282,14 +282,6 @@ def management_delete():
 
     all_images = get_all_images_for_all_users()
     return render_template('management/delete.html', all_images=all_images)
-
-@app.route('/management/role')
-@login_required
-def management_role():
-    if not check_access(session['user_name'], 9):
-        return redirect(url_for('index'))
-
-    return render_template('management/role.html')
 
 @app.route('/management/set_role', methods=['POST'])
 @login_required
