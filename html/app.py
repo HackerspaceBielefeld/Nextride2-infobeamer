@@ -48,7 +48,7 @@ Author:
 
 import os
 
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
 from authlib.integrations.flask_client import OAuth
 #from flask_sqlalchemy import SQLAlchemy
 
@@ -59,7 +59,7 @@ from filehandler import sanitize_file, safe_file, delete_file, get_all_images_fo
 from queuehandler import approve_file
 from db_models import db, create_roles
 from db_user_helper import add_user_to_users, get_user_from_users, get_users_data_for_dashboard
-from helper import sanitize_string
+from helper import logging, sanitize_string
 
 from role_based_access import check_access
 
@@ -296,7 +296,7 @@ def management_set_role():
         role_name = sanitize_string(request.form['role_name'])
         target_user_name = sanitize_string(request.form['target_user_name'])
     except KeyError as e:
-        loggin(f"KeyError for url parameters: {e}")
+        logging(f"KeyError for url parameters: {e}")
         return render_template('index.html')
 
     user = get_user_from_users(session['user_name'])
@@ -307,9 +307,37 @@ def management_set_role():
 
     return redirect(url_for('management_users'))
 
+@app.route('/management/update_upload_limit', methods=['POST'])
+@login_required
+def management_update_upload_limit():
+    if request.method != 'POST':
+        return redirect(url_for('index'))
+
+    if not check_access(session['user_name'], 9):
+        return redirect(url_for('index'))
+
+    try:
+        upload_limit = int(sanitize_string(request.form['upload_limit']))
+        target_user_name = sanitize_string(request.form['target_user_name'])
+    except (KeyError, ValueError) as e:
+        logging(f"An error occured while trying to make url parameters usable: {e}")
+        return redirect(url_for('index'))
+
+    user = get_user_from_users(session['user_name'])
+    if not user: return redirect(url_for('login'))
+
+    if not user.set_user_upload_limit(upload_limit):
+        return "Upload limit wasn't changed"
+
+    return redirect(url_for('management_users'))
+
 @app.route('/faq')
 def faq():
     return render_template('faq.html')
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(app.root_path, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.errorhandler(404)
 def page_not_found():

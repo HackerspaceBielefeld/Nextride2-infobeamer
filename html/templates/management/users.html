@@ -26,27 +26,41 @@
 
     <h1>Users</h1>
     <div class="user-data-container">
-        <center>
-        <form action="/management/set_role" method="post">
-            <label for="username">Username:</label>
-            <input type="text" id="user_name" name="target_user_name"><br><br>
-            
-            <label>Select Role:</label><br>
-            <input type="radio" id="admin" name="role_name" value="admin">
-            <label for="admin">admin</label><br>
+        <div class="user-management">
+            <div class="user-role-management">
+                <form action="/management/set_role" method="post">
+                    <label for="username">Username:</label><br>
+                    <input type="text" id="user_name" name="target_user_name"><br><br>
+                    
+                    <label>Select Role:</label><br>
+                    <input type="radio" id="admin" name="role_name" value="admin">
+                    <label for="admin">admin</label><br>
 
-            <input type="radio" id="moderator" name="role_name" value="moderator">
-            <label for="moderator">moderator</label><br>
-            
-            <input type="radio" id="default" name="role_name" value="default">
-            <label for="default">default</label><br>
-            
-            <input type="radio" id="block" name="role_name" value="block">
-            <label for="block">block</label><br><br>
+                    <input type="radio" id="moderator" name="role_name" value="moderator">
+                    <label for="moderator">moderator</label><br>
+                    
+                    <input type="radio" id="default" name="role_name" value="default">
+                    <label for="default">default</label><br>
+                    
+                    <input type="radio" id="block" name="role_name" value="block">
+                    <label for="block">block</label><br><br>
 
-            <button type="submit" class="green-button">Change Role</button>
-        </form>
-        </center>
+                    <button type="submit" class="green-button">Change Role</button>
+                </form>
+            </div>
+            <div class="user-upload-management">
+                <form action="/management/update_upload_limit" method="post">
+                    <label for="username">Username:</label><br>
+                    <input type="text" id="user_name" name="target_user_name"><br><br>
+                    
+                    <label>Upload Limit:</label><br>
+                    <input type="text" id="upload_limit" name="upload_limit"><br><br>
+
+
+                    <button type="submit" class="green-button">Change Upload limit</button>
+                </form>
+            </div>
+        </div>
 
         <table>
             <thead>

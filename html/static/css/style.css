@@ -196,6 +196,18 @@ th, td {
     width: 80%;
 }
 
+.user-management {
+    display: flex;
+    flex-wrap: wrap; /* Allow flex items to wrap to the next line */
+    text-align: start;
+}
+
+.user-role-management,
+.user-upload-management {
+    text-align: start;
+    width: 50%; /* Both forms will take 50% of the width by default */
+}
+
 @media (max-width: 600px) {
     .menu {
         display: block;
@@ -207,9 +219,12 @@ th, td {
         justify-content: center; /* Align items horizontally in the center */
     }
 
-    .dashboard-button,
-    .logout-button {
-        margin-left: 10px;
-        margin-top: 30px; /* Reduce margin-top further for mobile view */
+    .user-management {
+        text-align: center;
+    }
+
+    .user-role-management,
+    .user-upload-management {
+        width: 100%; /* Both forms will take full width on smaller devices */
     }
 }

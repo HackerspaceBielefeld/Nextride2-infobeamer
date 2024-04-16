@@ -275,6 +275,17 @@ class Users(db.Model):
 
         return True
 
+    def set_user_upload_limit(self, new_upload_limit: int):
+        if not new_upload_limit >=0:
+            return False
+        
+        self.upload_limit = new_upload_limit
+
+        if not commit_db_changes():
+            logging("Error committing changes to the database.")
+            return False
+        return True
+
 def create_roles():
     # Check if the roles already exist
     existing_admin = Role.query.filter_by(name='admin').first()
