@@ -19,13 +19,11 @@ Functions:
 
 Dependencies:
     - shutil: Provides functions for file operations.
-    - re: Provides support for regular expressions.
     - os: Provides functions for interacting with the operating system.
     - PIL: Python Imaging Library for image processing.
 """
 
 import shutil
-import re
 import os
 
 from PIL import Image

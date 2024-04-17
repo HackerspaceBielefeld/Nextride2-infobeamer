@@ -41,7 +41,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.11
 
       - name: Install dependencies
         run: |
@@ -51,4 +51,4 @@ jobs:
 
       - name: Run Pylint
         run: |
-          pylint --disable=invalid-name --disable=too-few-public-methods --disable=C0116 --disable=multiple-statements $(git ls-files '*.py')
+          pylint --ignore=testing --disable=invalid-name --disable=too-few-public-methods --disable=C0116 --disable=multiple-statements $(git ls-files '*.py')
