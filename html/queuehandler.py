@@ -6,7 +6,7 @@ import os
 
 from db_file_helper import (get_file_from_queue,add_file_to_uploads,
     remove_file_from_queue, remove_file_from_uploads)
-from filehandler import check_file_exist, move_file
+from filehandler import move_file
 from emailhandler import sent_email_error_message
 from helper import logging, hash_sha_512, check_file_exist
 
