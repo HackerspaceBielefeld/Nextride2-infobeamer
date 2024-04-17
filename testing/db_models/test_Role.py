@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 import unittest
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
