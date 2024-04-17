@@ -30,8 +30,8 @@ import os
 
 from PIL import Image
 
-from helper import generate_random_string, generate_secret_token
-from helper import logging, hash_sha_512
+from helper import generate_random_string, generate_secret_token, sanitize_string
+from helper import logging, hash_sha_512, check_file_exist
 from db_file_helper import check_global_upload_limit
 from db_file_helper import remove_file_from_queue, remove_file_from_db
 from db_file_helper import add_file_to_queue
@@ -40,36 +40,11 @@ from db_models import Users
 from emailhandler import sent_email_approval_request
 
 def sanitize_filename(file_name:str):
-    """
-    Sanitize a file name by removing all not explicitly allowed characters
-    and setting random characters as a prefix to avoid collisions.
+    sanitized_filename = sanitize_string(file_name)
 
-    Allowerd characters are: [a-zA-Z0-9_-.]
-
-    Args:
-        file_name (str): The original file name to be sanitized.
-
-    Returns:
-        str: The sanitized file name.
-    """
-    pattern = r'a-zA-Z0-9_\-.' # RE pattern with whitelisted chars
-    # Replace chars that aren't whitelisted
-    sanitized_filename = re.sub(f'[^{pattern}]', "", file_name)
     # Extend the sanitized filename with random chars to avoid colissions
     sanitized_filename_extended = generate_random_string(8) + "_" + sanitized_filename
     return sanitized_filename_extended
-
-def check_file_exist(file_path:str):
-    """
-    Check if a file exists at the specified file path.
-
-    Args:
-        file_path (str): The path to the file to check.
-
-    Returns:
-        bool: True if the file exists, False otherwise.
-    """
-    return os.path.exists(file_path)
 
 def move_file(source: str, destination: str):
     """

@@ -81,3 +81,15 @@ def sanitize_string(content:str):
     # Replace chars that aren't whitelisted
     sanitized_content = re.sub(f'[^{pattern}]', "", content)
     return sanitized_content
+
+def check_file_exist(file_path:str):
+    """
+    Check if a file exists at the specified file path.
+
+    Args:
+        file_path (str): The path to the file to check.
+
+    Returns:
+        bool: True if the file exists, False otherwise.
+    """
+    return os.path.exists(file_path)
