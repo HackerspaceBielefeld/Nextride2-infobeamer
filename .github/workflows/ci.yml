@@ -51,4 +51,4 @@ jobs:
 
       - name: Run Pylint
         run: |
-          pylint --ignore=testing --disable=invalid-name --disable=too-few-public-methods --disable=C0116 --disable=multiple-statements $(git ls-files '*.py')
+          pylint --disable=invalid-name --disable=too-few-public-methods --disable=C0116 --disable=multiple-statements $(git ls-files '*.py')

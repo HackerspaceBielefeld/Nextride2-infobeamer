@@ -7,7 +7,6 @@ file existence checks, file movement, image validation, file upload handling, an
 Functions:
     - sanitize_filename(file_name): Sanitizes a file name by removing disallowed characters
         and adding random prefixes.
-    - check_file_exist(file_path): Checks if a file exists at the specified path.
     - move_file(source, destination): Moves a file from the source path to the destination path.
     - check_image(file): Checks if the uploaded file is an image with an accepted extension.
     - sanitize_file(file, MAX_CONTENT_LENGTH): Sanitizes an uploaded file
@@ -29,7 +28,7 @@ import os
 from PIL import Image
 
 from helper import generate_random_string, generate_secret_token, sanitize_string
-from helper import logging, hash_sha_512, check_file_exist
+from helper import logging, hash_sha_512
 from db_file_helper import check_global_upload_limit
 from db_file_helper import remove_file_from_queue, remove_file_from_db
 from db_file_helper import add_file_to_queue
