@@ -2,6 +2,7 @@
 html/static/uploads/*
 html/static/queue/*
 *.db
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
