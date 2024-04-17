@@ -166,5 +166,14 @@ class TestUsersModel(unittest.TestCase):
         admin_user.set_user_role("default")
         self.assertEqual(admin_user.role.name, admin.name)
 
+    def test_set_user_upload_limit(self):
+        user = self.create_user()
+        set_upload_limit = user.set_user_upload_limit(-5)
+        self.assertFalse(set_upload_limit)
+
+        set_upload_limit = user.set_user_upload_limit(5)
+        self.assertTrue(set_upload_limit)
+        self.assertEqual(user.upload_limit, 5)
+
 if __name__ == "__main__":
     unittest.main()
