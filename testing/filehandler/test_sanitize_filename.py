@@ -5,7 +5,6 @@ from unittest.mock import MagicMock, patch
 
 import sys
 sys.path.append('html')
-
 from filehandler import sanitize_filename
 
 class TestSanitizeFilename(unittest.TestCase):
