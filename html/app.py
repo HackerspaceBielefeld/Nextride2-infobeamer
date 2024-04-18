@@ -287,23 +287,26 @@ def management_delete():
 @login_required
 def management_set_role():
     if request.method != 'POST':
-        return render_template('errors/error.html', error_message=f"Wrong HTTP Method")
+        return render_template('errors/error.html', error_message="Wrong HTTP Method")
 
     if not check_access(session['user_name'], 9):
-        return render_template('errors/error.html', error_message=f"You aren't allowed to access this page")
+        return render_template('errors/error.html', error_message="You aren't allowed to access this page")
 
     try:
         role_name = sanitize_string(request.form['role_name'])
-        target_user_name = sanitize_string(request.form['target_user_name'])
+        target_user_name = sanitize_string(request.form['target_user_name'])    
     except KeyError as e:
         logging(f"KeyError for url parameters: {e}")
         return render_template('index.html')
+    
+    if len(role_name) > 10 or len(target_user_name) > 100:
+        return render_template('errors/error.html', error_message="Specified parameters are too large")
 
-    user = get_user_from_users(session['user_name'])
+    user = get_user_from_users(target_user_name)
     if not user: return redirect(url_for('login'))
 
     if not user.set_user_role(role_name):
-        return render_template('errors/error.html', error_message=f"Role wasn't changed")
+        return render_template('errors/error.html', error_message="Role wasn't changed")
 
     return redirect(url_for('management_users'))
 
@@ -311,31 +314,31 @@ def management_set_role():
 @login_required
 def management_update_upload_limit():
     if request.method != 'POST':
-        return render_template('errors/error.html', error_message=f"Wrong HTTP Method")
+        return render_template('errors/error.html', error_message="Wrong HTTP Method")
 
     if not check_access(session['user_name'], 9):
-        return render_template('errors/error.html', error_message=f"You aren't allowed to access this page")
-      
+        return render_template('errors/error.html', error_message="You aren't allowed to access this page")
+    
     try:
         upload_limit = sanitize_string(request.form['upload_limit'])
         target_user_name = sanitize_string(request.form['target_user_name'])
     except KeyError:
-        return render_template('errors/error.html', error_message=f"Specified parameters aren't valid")
+        return render_template('errors/error.html', error_message="Specified parameters aren't valid")
     
     if len(upload_limit) > 31 or len(target_user_name) > 100:
-        return render_template('errors/error.html', error_message=f"Specified parameters are too large")
+        return render_template('errors/error.html', error_message="Specified parameters are too large")
 
     try:
         upload_limit = int(upload_limit)
     except ValueError:
-        return render_template('errors/error.html', error_message=f"Specified parameters aren't valid")
+        return render_template('errors/error.html', error_message="Specified parameters aren't valid")
 
     user = get_user_from_users(target_user_name)
     if not user:
-        return render_template('errors/error.html', error_message=f"Your user couldn't be found in the database")
+        return render_template('errors/error.html', error_message="Your user couldn't be found in the database")
 
     if not user.set_user_upload_limit(upload_limit):
-        return render_template('errors/error.html', error_message=f"Upload limit {upload_limit} isn't valid")
+        return render_template('errors/error.html', error_message="Upload limit {upload_limit} isn't valid")
 
     return redirect(url_for('management_users'))
 
