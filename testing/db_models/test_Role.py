@@ -58,6 +58,3 @@ class TestRoleModel(unittest.TestCase):
         self.assertIsNotNone(retrieved_entry)
         self.assertEqual(retrieved_entry.name, "default")
         self.assertEqual(retrieved_entry.id, 1)
-
-if __name__ == "__main__":
-    unittest.main()

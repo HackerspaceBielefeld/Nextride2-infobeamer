@@ -44,6 +44,3 @@ class TestSanitizeFile(unittest.TestCase):
             result = sanitize_file(file_object, 100)
             self.assertFalse(result)
             self.assertIn("Error: Unidentified image:", res_stdout.getvalue())
-
-if __name__ == '__main__':
-    unittest.main()

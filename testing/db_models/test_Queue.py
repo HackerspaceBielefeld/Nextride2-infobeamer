@@ -62,6 +62,3 @@ class TestQueueModel(unittest.TestCase):
         self.assertEqual(retrieved_entry.file_path, "/path/to/sample_file.txt")
         self.assertEqual(retrieved_entry.file_password, "sample_password")
         self.assertEqual(retrieved_entry.file_owner, "sample_owner")
-
-if __name__ == "__main__":
-    unittest.main()

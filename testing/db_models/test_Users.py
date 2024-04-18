@@ -174,6 +174,3 @@ class TestUsersModel(unittest.TestCase):
         set_upload_limit = user.set_user_upload_limit(5)
         self.assertTrue(set_upload_limit)
         self.assertEqual(user.upload_limit, 5)
-
-if __name__ == "__main__":
-    unittest.main()

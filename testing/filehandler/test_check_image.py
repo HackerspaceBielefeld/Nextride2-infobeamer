@@ -47,6 +47,3 @@ class TestCheckImage(unittest.TestCase):
             result = check_image(file_object)
             self.assertFalse(result)
             self.assertIn("Error: Unidentified image:", res_stdout.getvalue())
-
-if __name__ == "__main__":
-    unittest.main()

@@ -64,8 +64,6 @@ def move_file(source: str, destination: str):
         return True
     except FileNotFoundError as e:
         logging(f"Error: Source file '{source}' not found: {e}")
-    except shutil.Error as e:
-        logging(f"Error: Failed to move file from '{source}' to '{destination}': {e}")
     return False
 
 def check_image(file):
@@ -94,14 +92,8 @@ def check_image(file):
         img = Image.open(file)
         img.verify()  # Attempt to open and verify the image file
         return True
-    except FileNotFoundError as e:
-        logging(f"Error: File not found: {e}")
-    except Image.UnidentifiedImageError as e:
-        logging(f"Error: Unidentified image: {e}")
-    except ValueError as e:
-        logging(f"Error: Invalid mode or file pointer: {e}")
-    except TypeError as e:
-        logging(f"Error: Invalid format types: {e}")
+    except (FileNotFoundError, Image.UnidentifiedImageError, ValueError, TypeError) as e:
+        logging(f"Error while checking an image: {e}")
     return False
 
 def sanitize_file(file, MAX_CONTENT_LENGTH):

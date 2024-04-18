@@ -53,5 +53,3 @@ class TestSanitizeFilename(unittest.TestCase):
         expected_output = "_"
         self.assertEqual(sanitize_filename(input_string)[8:], expected_output)
 
-if __name__ == "__main__":
-    unittest.main()

@@ -36,5 +36,3 @@ class TestSafeFile(unittest.TestCase):
     
     # Add more test cases for different scenarios
 
-if __name__ == '__main__':
-    unittest.main()
