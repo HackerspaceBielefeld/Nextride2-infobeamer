@@ -317,16 +317,22 @@ def management_update_upload_limit():
         return render_template('errors/error.html', error_message=f"You aren't allowed to access this page")
     
     upload_limit = sanitize_string(request.form['upload_limit'])
-    target_user_name = sanitize_string(request.form['target_user_name'])
+    target_user_name = sanitize_string(request.form['target_user_name'])    
+    try:
+        upload_limit = sanitize_string(request.form['upload_limit'])
+        target_user_name = sanitize_string(request.form['target_user_name'])
+    except KeyError:
+        return render_template('errors/error.html', error_message=f"Specified parameters aren't valid")
+    
     if len(upload_limit) > 31 or len(target_user_name) > 100:
         return render_template('errors/error.html', error_message=f"Specified parameters are too large")
-    
+
     try:
         upload_limit = int(upload_limit)
-    except (KeyError, ValueError) as e:
-        return render_template('errors/error.html', error_message=f"Specified upload limit isn't valid")
+    except ValueError:
+        return render_template('errors/error.html', error_message=f"Specified parameters aren't valid")
 
-    user = get_user_from_users(session['user_name'])
+    user = get_user_from_users(target_user_name)
     if not user:
         return render_template('errors/error.html', error_message=f"Your user couldn't be found in the database")
 
