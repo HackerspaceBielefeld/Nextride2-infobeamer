@@ -1,3 +1,6 @@
+[![Build Chain](https://github.com/HackerspaceBielefeld/Nextride2-infobeamer/actions/workflows/ci.yml/badge.svg)](https://github.com/HackerspaceBielefeld/Nextride2-infobeamer/actions/workflows/ci.yml)
+
+
 # Nextride2-infobeamer
 Nextride2-infobeamer is an extension for [Nextride2](https://github.com/HackerspaceBielefeld/Nextride2) and implements a simple solution to display images on screens running Nextride.
 N2i allows you to fetch a schedule and create a queue from the url elements. Those ressources are than itteratively displayed on the Nextride screens.
