@@ -315,9 +315,7 @@ def management_update_upload_limit():
 
     if not check_access(session['user_name'], 9):
         return render_template('errors/error.html', error_message=f"You aren't allowed to access this page")
-    
-    upload_limit = sanitize_string(request.form['upload_limit'])
-    target_user_name = sanitize_string(request.form['target_user_name'])    
+      
     try:
         upload_limit = sanitize_string(request.form['upload_limit'])
         target_user_name = sanitize_string(request.form['target_user_name'])
