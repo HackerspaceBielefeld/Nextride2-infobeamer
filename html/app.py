@@ -207,9 +207,11 @@ def upload_result():
 @app.route('/upload/approve')
 @login_required
 def approve_upload():
-    file_name = sanitize_string(request.args.get('file_name'))
-    file_password = request.args.get('file_password')
-    if not file_name: return redirect(url_for('index'))
+    try:
+        file_name = sanitize_string(request.args.get('file_name'))
+        file_password = request.args.get('file_password')
+    except KeyError:
+        return render_template('errors/error.html', error_message="Specified parameters aren't valid")
 
     if file_password is not None:
         file_password = sanitize_string(file_password)
