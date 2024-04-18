@@ -43,4 +43,4 @@ class TestSanitizeFile(unittest.TestCase):
         with patch('sys.stdout', new_callable=StringIO) as res_stdout:
             result = sanitize_file(file_object, 100)
             self.assertFalse(result)
-            self.assertIn("Error: Unidentified image:", res_stdout.getvalue())
+            self.assertIn("Error while checking an image:", res_stdout.getvalue())

@@ -46,4 +46,4 @@ class TestCheckImage(unittest.TestCase):
         with patch('sys.stdout', new_callable=StringIO) as res_stdout:
             result = check_image(file_object)
             self.assertFalse(result)
-            self.assertIn("Error: Unidentified image:", res_stdout.getvalue())
+            self.assertIn("Error while checking an image:", res_stdout.getvalue())
