@@ -241,9 +241,9 @@ def delete_image():
         return render_template('error/blocked.html', support_url=os.environ.get('SUPPORT_URL'))
 
     # Check and prepare URL parameters
-    if not request.form['filename']:
+    if not request.form['file_name']:
         return error_page("Specified parameters aren't valid")
-    file_name = sanitize_string(request.form['filename'])
+    file_name = sanitize_string(request.form['file_name'])
     if len(file_name) > 100:
         return error_page("Specified parameters are too large")
 
