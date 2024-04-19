@@ -84,10 +84,11 @@ app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER')
 app.config['QUEUE_FOLDER'] = os.environ.get('QUEUE_FOLDER')
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5MB limit
 
+#TODO Check what cookie flags are needed. Try to use golden cookie if possible
 # Set custom session cookie flags
-#app.config['SESSION_COOKIE_SECURE'] = True
-#app.config['SESSION_COOKIE_HTTPONLY'] = True
-#app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 
 oauth = OAuth(app)
 github = oauth.register(
