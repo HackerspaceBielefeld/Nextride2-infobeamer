@@ -361,12 +361,12 @@ def error_page(error_message: str):
     return render_template('errors/error.html', error_message=error_message)
 
 @app.errorhandler(404)
-def page_not_found():
-    return render_template('errors/404.html'), 404
+def page_not_found(e):
+    return error_page(f"404 - Page not found"), 404
 
 @app.errorhandler(405)
-def page_not_found():
-    return render_template('errors/405.html'), 405
+def page_wrong_method(e):
+    return error_page(f"405 - Method Not Allowed"), 405
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
