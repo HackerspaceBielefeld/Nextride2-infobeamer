@@ -185,7 +185,7 @@ def upload_file():
     # Check and prepare the URL parameters
     if not request.files['file']:
         return error_page("Specified file is not valid")
-    file = sanitize_file(file, app.config['MAX_CONTENT_LENGTH'])
+    file = sanitize_file(request.files['file'], app.config['MAX_CONTENT_LENGTH'])
 
     # If the file isn't valid the upload_result page will not find a file in the session
     # and so return an error message indicating the upload wasn't successful.
@@ -357,7 +357,7 @@ def favicon():
     return send_from_directory(app.root_path, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 def error_page(error_message: str):
-    error_message = sanitize_string(error_message)
+    error_message = sanitize_string(error_message, extend_allowd_chars=True)
     return render_template('errors/error.html', error_message=error_message)
 
 @app.errorhandler(404)
