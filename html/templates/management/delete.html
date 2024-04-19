@@ -26,6 +26,7 @@
 
     <h1>All Images:</h1>
     {% for username, images in all_images.items() %}
+    {% if images.queue or images.uploads %}
     <h1 style="color: white;">{{ username }}</h1>
     {% if images.queue %}
     <h2>Queue Images:</h2>
@@ -121,6 +122,7 @@
         </div>
         {% endfor %}
     </div> 
+    {% endif %}
     {% endif %}
     {% endfor %}
     <footer>

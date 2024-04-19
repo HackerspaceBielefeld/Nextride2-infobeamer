@@ -216,6 +216,7 @@ def approve_upload():
     file_name = sanitize_string(request.args.get('file_name'))
     if len(file_name) > 100:
         return error_page("Specified parameters are too large")
+    file_password = None
     if request.args.get('file_password'):
         file_password = sanitize_string(request.args.get('file_password'))
         if len(file_password) > 64:

@@ -26,6 +26,7 @@
 
     <h1>Queue Images:</h1>
     {% for username, images in all_images.items() %}
+    {% if images.queue|length > 0%}
     <h1 style="color: white;">{{ username }}</h1>
     <div class="image-container">
         {% for i in range(0, images.queue|length, 3) %}
@@ -38,9 +39,9 @@
                 <div class="image-item">
                     <div class="image-wrapper">
                         <img src="{{ url_for('static', filename='queue/' + image1) }}" alt="{{ image1 }}">
-                        <form action="{{ url_for('delete_image') }}" method="post">
-                            <input type="hidden" name="filename" value="{{ image1 }}">
-                            <button type="submit" class="delete-button">Delete</button>
+                        <form action="{{ url_for('approve_upload') }}" method="GET">
+                            <input type="hidden" name="file_name" value="{{ image1 }}">
+                            <button type="submit" class="approve-button">Approve</button>
                         </form>
                     </div>                    
                 </div>
@@ -51,7 +52,7 @@
                         <img src="{{ url_for('static', filename='queue/' + image2) }}" alt="{{ image2 }}">
                         <form action="{{ url_for('approve_upload') }}" method="GET">
                             <input type="hidden" name="file_name" value="{{ image2 }}">
-                            <button type="submit" class="delete-button">Delete</button>
+                            <button type="submit" class="approve-button">Approve</button>
                         </form>
                     </div>                    
                 </div>
@@ -62,7 +63,7 @@
                         <img src="{{ url_for('static', filename='queue/' + image3) }}" alt="{{ image3 }}">
                         <form action="{{ url_for('approve_upload') }}" method="GET">
                             <input type="hidden" name="file_name" value="{{ image3 }}">
-                            <button type="submit" class="delete-button">Delete</button>
+                            <button type="submit" class="approve-button">Approve</button>
                         </form>
                     </div>                    
                 </div>
@@ -71,6 +72,7 @@
         </div>
         {% endfor %}
     </div> 
+    {% endif %}
     {% endfor %}
     <footer>
         <a href="{{ url_for('index') }}">Home</a> | <a href="{{ url_for('faq') }}">FAQ</a>
