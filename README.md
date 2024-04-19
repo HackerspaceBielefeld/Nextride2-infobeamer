@@ -3,7 +3,7 @@
 # Nextride2-infobeamer
 Nextride2-infobeamer is an extension for [Nextride2](https://github.com/HackerspaceBielefeld/Nextride2) and implements a simple solution to display images on screens running Nextride.
 N2i allows you to fetch a schedule and create a queue from the url elements. Those ressources are than itteratively displayed on the Nextride screens.
-N2i also implements a CMS for user uploaded date. This can be used to allow guests and visitors to upload slides/ads thay want to share.
+N2i also implements a CMS for user uploaded date. This can be used to allow guests and visitors to upload slides/ads they want to share.
 
 ## CMS Setup 
 1. Clone the repository
@@ -19,7 +19,7 @@ N2i also implements a CMS for user uploaded date. This can be used to allow gues
 11. Enter the html folder again and start the application with `python app.py`
 
 ### Additional Steps
-* You can Customize the favicong by changing the file `favicon.ico` in the HTML folder
+* You can Customize the favicong by changing the file `html/favicon.ico`
 
 ## Nextride2 Setup(for development)
 Setting up Nextride2 is not necessary in order to use the CMS. 

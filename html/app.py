@@ -205,7 +205,6 @@ def upload_result():
     return render_template('upload_result.html',
                             file=uploaded_file, status="File upload was successful")
 
-# TODO Return something better than "File approved"
 # TODO Check if email approval is necessary as it reduces the security.
 # No access check but adding one would make the email approval obsolete.
 @app.route('/upload/approve')
@@ -228,7 +227,7 @@ def approve_upload():
         return error_page("File not approved")
     elif check_access(session['user_name'], 6) and file_password is None:
         if approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password, admin=True):
-            return "File approved"
+            return redirect(url_for('management_approve'))
         return error_page("File not approved")
 
     return error_page("You are not allowed to approve files")
@@ -270,8 +269,6 @@ def management_users():
     users_data = get_users_data_for_dashboard()
     return render_template('management/users.html', users_data=users_data)
 
-# TODO Logic error! This only returns own images from queue
-# TODO Show the to approve images like on the delete pages, listed by name
 @app.route('/management/approve')
 @login_required
 def management_approve():
@@ -281,8 +278,9 @@ def management_approve():
     user = get_user_from_users(session['user_name'])
     if not user: return redirect(url_for('login'))
 
-    queued_images = user.get_user_files_queue()
-    return render_template('management/approve.html', queued_images=queued_images)
+    all_images = get_all_images_for_all_users(queue_only=True)
+
+    return render_template('management/approve.html', all_images=all_images)
 
 @app.route('/management/delete')
 @login_required
@@ -369,4 +367,4 @@ def page_wrong_method(e):
     return error_page(f"405 - Method Not Allowed"), 405
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

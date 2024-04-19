@@ -227,13 +227,16 @@ def delete_file(file_name:str):
     return False
 
 
-def get_all_images_for_all_users():
+def get_all_images_for_all_users(queue_only=False):
     all_images = {}
     all_users = Users.query.all()
 
     for user in all_users:
         username = user.name
         queue_images = user.get_user_files_queue()
+        if queue_only:
+            all_images[username] = {'queue': queue_images}
+            continue
         upload_images = user.get_user_files_uploads()
         all_images[username] = {'queue': queue_images, 'uploads': upload_images}
 
