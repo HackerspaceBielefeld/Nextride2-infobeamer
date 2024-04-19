@@ -1,3 +1,6 @@
+UPLOAD_FOLDER="static/uploads"
+QUEUE_FOLDER="static/queue"
+
 FLASK_SECRET_KEY=ChooseSomeSecretKeyHere
 GITHUB_CLIENT_ID= 
 GITHUB_CLIENT_SECRET=

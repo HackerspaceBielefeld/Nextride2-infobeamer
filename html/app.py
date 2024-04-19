@@ -78,9 +78,10 @@ with app.app_context():
     db.create_all()
     create_roles()
 
+# Configure flask app with parameters from .env file
 app.secret_key = os.environ.get('FLASK_SECRET_KEY')
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
-app.config['QUEUE_FOLDER'] = 'static/queue'
+app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER')
+app.config['QUEUE_FOLDER'] = os.environ.get('QUEUE_FOLDER')
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5MB limit
 
 oauth = OAuth(app)
@@ -90,7 +91,7 @@ github = oauth.register(
     client_secret=os.environ.get('GITHUB_CLIENT_SECRET'),
     authorize_url='https://github.com/login/oauth/authorize',
     access_token_url='https://github.com/login/oauth/access_token',
-    client_kwargs={'scope': 'user:email'},
+    client_kwargs={'scope': 'user:name'},
 )
 
 def login_required(view):
@@ -100,10 +101,11 @@ def login_required(view):
     """
     @wraps(view)
     def decorated_view(*args, **kwargs):
-        if 'token' not in session:
-            # Redirect to the login route if the user is not authenticated
+        # Redirect to the login route if the user do not have a session
+        if not session.get('token'):
             return redirect(url_for('login', next=request.url))
 
+        # If username from session don't dissolve to a user obj, return index page
         user = get_user_from_users(session['user_name'])
         if not user:
             return redirect(url_for('index'))
@@ -121,25 +123,27 @@ def login():
 def auth():
     token = github.authorize_access_token()
     if not token:
-        return "Login failed."
+        return error_page("Login failed")
 
     session['token'] = token
     user = github.get('https://api.github.com/user', token=token)
     if not user.ok:
-        return "Failed to fetch user data from GitHub."
+        return error_page("Failed to fetch user data from GitHub")
 
     user_data = user.json()
     session['user_data'] = user_data
     session['user_name'] = user_data['login']
-
+    
+    # If a user already exist in the DB, uodate his role in session and redirect to dashboard
     user = get_user_from_users(user_data['login'])
     if user:
         session['user_role'] = user.role.id
         return redirect(url_for('dashboard'))
 
+    # User do not exist yet and gets added to the DB
     if add_user_to_users(user_data['login']):
         return redirect(url_for('dashboard'))
-    return "User couldn't be added to the database"
+    return error_page("User couldn't be added to the database")
 
 
 @app.route('/logout')
@@ -148,7 +152,7 @@ def logout():
         session.clear()
         return render_template('logout.html')
     else:
-        return "Stop making weird requests"
+        return error_page("You are already logged out")
 
 @app.route('/')
 def index():
@@ -175,28 +179,25 @@ def dashboard():
 @app.route('/upload', methods=['POST'])
 @login_required
 def upload_file():
-    if request.method != 'POST':
-        return redirect(url_for('index'))
-
     if not check_access(session['user_name'], 1):
         return render_template('error/blocked.html', support_url=os.environ.get('SUPPORT_URL'))
 
-    file = request.files['file']
-    if not file:
-        return redirect(url_for('index'))
-
+    # Check and prepare the URL parameters
+    if not request.files['file']:
+        return error_page("Specified file is not valid")
     file = sanitize_file(file, app.config['MAX_CONTENT_LENGTH'])
+
+    # If the file isn't valid the upload_result page will not find a file in the session
+    # and so return an error message indicating the upload wasn't successful.
     if file != False:        
         if safe_file(file,app.config['QUEUE_FOLDER'], session['user_name']):
-            # Store the filename in the session if upload was successful
             session['uploaded_file'] = file.filename
-
     return redirect(url_for('upload_result'))
 
+# TODO Update the upload_result page
 @app.route('/upload/result')
 @login_required
 def upload_result():
-    # Get the filename from the session
     uploaded_file = session.get('uploaded_file', None)
     if uploaded_file is None:
         return render_template('upload_result.html',
@@ -204,52 +205,60 @@ def upload_result():
     return render_template('upload_result.html',
                             file=uploaded_file, status="File upload was successful")
 
+# TODO Return something better than "File approved"
+# TODO Check if email approval is necessary as it reduces the security.
+# No access check but adding one would make the email approval obsolete.
 @app.route('/upload/approve')
 @login_required
 def approve_upload():
-    try:
-        file_name = sanitize_string(request.args.get('file_name'))
-        file_password = request.args.get('file_password')
-    except KeyError:
-        return render_template('errors/error.html', error_message="Specified parameters aren't valid")
+    # Check and prepare the URL parameters
+    if not request.args.get('file_name'):
+        return error_page("Specified parameters aren't valid")
+    file_name = sanitize_string(request.args.get('file_name'))
+    if len(file_name) > 100:
+        return error_page("Specified parameters are too large")
+    if request.args.get('file_password'):
+        file_password = sanitize_string(request.args.get('file_password'))
+        if len(file_password) > 64:
+            return error_page("Specified parameters are too large")
 
     if file_password is not None:
-        file_password = sanitize_string(file_password)
         if approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password):
             return "File approved"
-        return "File not approved"
-    elif check_access(session['user_name'], 9) and file_password is None:
+        return error_page("File not approved")
+    elif check_access(session['user_name'], 6) and file_password is None:
         if approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password, admin=True):
             return "File approved"
-        return "File not approved"
-    else: return "You are not allowed to approve files"
+        return error_page("File not approved")
+
+    return error_page("You are not allowed to approve files")
 
 @app.route('/delete_image', methods=['POST'])
 @login_required
 def delete_image():
-    if request.method != 'POST':
-        return redirect(url_for('index'))
-
+    # Access check is needed to prevent blocked users from deleting their images
     if not check_access(session['user_name'], 1):
         return render_template('error/blocked.html', support_url=os.environ.get('SUPPORT_URL'))
 
+    # Check and prepare URL parameters
     if not request.form['filename']:
-        return redirect(url_for('index'))
-
+        return error_page("Specified parameters aren't valid")
     file_name = sanitize_string(request.form['filename'])
+    if len(file_name) > 100:
+        return error_page("Specified parameters are too large")
 
     user = get_user_from_users(session['user_name'])
     if not user: return redirect(url_for('login'))
 
-    if not check_access(session['user_name'], 9):
+    if not check_access(session['user_name'], 6):
         queue_files = user.get_user_files_queue()
         if not file_name in queue_files:
             uploads_files = user.get_user_files_uploads()
             if not file_name in uploads_files:
-                return "User who sent the request to delete {file_name} isn't its owner"
+                return error_page("You can not delete the requested image because you are not its owner")
 
     if not delete_file(file_name):
-        return "Error while deleting image"
+        return error_page("Error while deleting the file")
     return redirect(url_for('dashboard'))
 
 @app.route('/management/users')
@@ -261,6 +270,8 @@ def management_users():
     users_data = get_users_data_for_dashboard()
     return render_template('management/users.html', users_data=users_data)
 
+# TODO Logic error! This only returns own images from queue
+# TODO Show the to approve images like on the delete pages, listed by name
 @app.route('/management/approve')
 @login_required
 def management_approve():
@@ -288,59 +299,52 @@ def management_delete():
 @app.route('/management/set_role', methods=['POST'])
 @login_required
 def management_set_role():
-    if request.method != 'POST':
-        return render_template('errors/error.html', error_message="Wrong HTTP Method")
-
     if not check_access(session['user_name'], 9):
-        return render_template('errors/error.html', error_message="You aren't allowed to access this page")
+        return error_page("You are not allowed to access this page")
 
-    try:
-        role_name = sanitize_string(request.form['role_name'])
-        target_user_name = sanitize_string(request.form['target_user_name'])    
-    except KeyError as e:
-        logging(f"KeyError for url parameters: {e}")
-        return render_template('index.html')
-    
+    # Check and prepare URL parameters
+    if not request.form['role_name'] or not request.form['target_user_name']:
+        return error_page("Specified parameters aren't valid")
+    role_name = sanitize_string(request.form['role_name'])
+    target_user_name = sanitize_string(request.form['target_user_name'])    
+
     if len(role_name) > 10 or len(target_user_name) > 100:
-        return render_template('errors/error.html', error_message="Specified parameters are too large")
+        return error_page("Specified parameters are too large")
 
     user = get_user_from_users(target_user_name)
     if not user: return redirect(url_for('login'))
 
     if not user.set_user_role(role_name):
-        return render_template('errors/error.html', error_message="Role wasn't changed")
+        return error_page("An error occured - The role was not changed")
 
     return redirect(url_for('management_users'))
 
 @app.route('/management/update_upload_limit', methods=['POST'])
 @login_required
 def management_update_upload_limit():
-    if request.method != 'POST':
-        return render_template('errors/error.html', error_message="Wrong HTTP Method")
-
     if not check_access(session['user_name'], 9):
-        return render_template('errors/error.html', error_message="You aren't allowed to access this page")
-    
-    try:
-        upload_limit = sanitize_string(request.form['upload_limit'])
-        target_user_name = sanitize_string(request.form['target_user_name'])
-    except KeyError:
-        return render_template('errors/error.html', error_message="Specified parameters aren't valid")
-    
-    if len(upload_limit) > 31 or len(target_user_name) > 100:
-        return render_template('errors/error.html', error_message="Specified parameters are too large")
+        return error_page("You are not allowed to access this page")
+
+    # Check and prepare URL parameters
+    if not request.form['upload_limit'] or not request.form['target_user_name']:
+        return error_page("Specified parameters aren't valid")
+    upload_limit = sanitize_string(request.form['upload_limit'])
+    target_user_name = sanitize_string(request.form['target_user_name'])
+
+    if len(upload_limit) > 12 or len(target_user_name) > 100:
+        return error_page("Specified parameters are too large")
 
     try:
         upload_limit = int(upload_limit)
     except ValueError:
-        return render_template('errors/error.html', error_message="Specified parameters aren't valid")
+        return error_page("Specified parameters aren't valid")
 
     user = get_user_from_users(target_user_name)
     if not user:
-        return render_template('errors/error.html', error_message="Your user couldn't be found in the database")
+        return error_page("Your user couldn't be found in the database")
 
     if not user.set_user_upload_limit(upload_limit):
-        return render_template('errors/error.html', error_message="Upload limit {upload_limit} isn't valid")
+        return error_page("Specified upload limit could not be set")
 
     return redirect(url_for('management_users'))
 
@@ -351,6 +355,10 @@ def faq():
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(app.root_path, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+def error_page(error_message: str):
+    error_message = sanitize_string(error_message)
+    return render_template('errors/error.html', error_message=error_message)
 
 @app.errorhandler(404)
 def page_not_found():
