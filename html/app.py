@@ -367,11 +367,15 @@ def error_page(error_message: str):
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return error_page(f"404 - Page not found"), 404
+    return error_page("404 - Page not found"), 404
 
 @app.errorhandler(405)
 def page_wrong_method(e):
-    return error_page(f"405 - Method Not Allowed"), 405
+    return error_page("405 - Method Not Allowed"), 405
+
+@app.error_handler(413)
+def req_entity_to_large(e):
+    return error_page(f"413 - File is larger than '{app.config['MAX_CONTENT_LENGTH']}'"), 413
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,3 +1,5 @@
+# TODO allow to turn email notifications off
+# TODO Add field to .env for the base url so the email approval link works
 """
 Email Handling Module
 
@@ -46,6 +48,7 @@ def sent_mail(subject, body, filename=False):
     # Load environment variables from .env file
     load_dotenv()
 
+    if not os.environ.get('ACTIVATE_EMAIL_APPROVAL'): return True
     sender_email = os.environ.get('SENDER_EMAIL')
     password = os.environ.get('EMAIL_PASSWORD')
     smtp_server = os.environ.get('SMTP_SERVER')
@@ -109,7 +112,7 @@ def sent_email_approval_request(file_name:str, file_password:str, uploaded_file:
     body = "A new file was uploaded. It's currently in the approval queue " \
         "and needs to be allowed by you"    
     body += f"\n\nFilename: {file_name}"
-    body += f"\n\nApprove: http://127.0.0.1:5000/upload/approve?" \
+    body += f"\n\nApprove: {os.environ.get('BASE_URL')}/upload/approve?" \
         f"file_name={file_name}&file_password={file_password}"
     if not sent_mail(subject, body, uploaded_file):
         return False
