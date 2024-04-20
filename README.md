@@ -5,7 +5,7 @@ Nextride2-infobeamer is an extension for [Nextride2](https://github.com/Hackersp
 N2i allows you to fetch a schedule and create a queue from the url elements. Those ressources are than itteratively displayed on the Nextride screens.
 N2i also implements a CMS for user uploaded date. This can be used to allow guests and visitors to upload slides/ads they want to share.
 
-![home](home.png "home") ![user management](management_users.png "user management")
+![home](assets/home.png "home") ![user management](assets/management_users.png "user management")
 
 ## CMS Setup 
 1. Clone the repository
