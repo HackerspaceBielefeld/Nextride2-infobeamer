@@ -84,14 +84,18 @@ def sanitize_string(content:str, extend_allowd_chars=False):
     sanitized_content = re.sub(f'[^{pattern}]', "", content)
     return sanitized_content
 
-def check_file_exist(file_path:str):
+def check_path_valid(file_path:str):
     """
-    Check if a file exists at the specified file path.
+    Check if a file exists at the specified file path
+    and if the path is secure.
 
     Args:
         file_path (str): The path to the file to check.
 
     Returns:
-        bool: True if the file exists, False otherwise.
+        bool: True if the file exists and is secure, False otherwise.
     """
+    if file_path.count(".") > 1:
+        return False
+
     return os.path.exists(file_path)
