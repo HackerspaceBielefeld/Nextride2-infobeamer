@@ -29,6 +29,7 @@ from email.mime.text import MIMEText
 
 from dotenv import load_dotenv
 
+from helper import check_file_exist
 
 def sent_mail(subject, body, filename=False):
     """
@@ -66,7 +67,7 @@ def sent_mail(subject, body, filename=False):
     # Add body to email
     message.attach(MIMEText(body, "plain"))
 
-    if filename:
+    if filename and check_file_exist(filename):
         # Open PDF file in binary mode
         with open(filename, "rb") as attachment:
             # Add file as application/octet-stream

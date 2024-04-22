@@ -377,4 +377,4 @@ def req_entity_to_large(e):
     return error_page(f"413 - File is larger than '{app.config['MAX_CONTENT_LENGTH']}'"), 413
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
