@@ -66,7 +66,7 @@ def hash_sha_512(to_hash:str):
     Returns:
         str: Hashed string in hex.
     """
-    return hashlib.sha512(to_hash.encode("utf-8")).hexdigest()
+    return hashlib.sha3_512(to_hash.encode("utf-8")).hexdigest()
 
 def sanitize_string(content:str, extend_allowd_chars=False):
     """
@@ -95,6 +95,8 @@ def get_file_path(base_dir:str, file_name:str):
     Returns:
         bool: True if the file exists and is secure, False otherwise.
     """
+    print(base_dir)
+    print(file_name)
 
     try:
         file_path = os.path.normpath(os.path.join(base_dir, file_name))
