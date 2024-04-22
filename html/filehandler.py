@@ -28,7 +28,7 @@ import os
 from PIL import Image
 
 from helper import generate_random_string, generate_secret_token, sanitize_string
-from helper import logging, hash_sha_512
+from helper import logging, hash_sha_512, get_file_path
 from db_file_helper import check_global_upload_limit
 from db_file_helper import remove_file_from_queue, remove_file_from_db
 from db_file_helper import add_file_to_queue
@@ -164,10 +164,13 @@ def safe_file(file, QUEUE_FOLDER, user_name):
         logging("A file with the same name is already in the db")
         return False
 
+    file_path = get_file_path(QUEUE_FOLDER, file.filename)
+    if not file_path:
+        logging("An error occured while crafting the path where to safe the file")
+        return False
+
     file_password = generate_secret_token()
     file_password_hashed = hash_sha_512(file_password)
-
-    file_path = os.path.join(QUEUE_FOLDER, file.filename)
 
     if not add_file_to_queue(file.filename, file_path, file_password_hashed, user_name):
         logging("File wasn't saved in the queue because no db entry could be created")
@@ -175,7 +178,7 @@ def safe_file(file, QUEUE_FOLDER, user_name):
 
     try:
         file.save(file_path)
-        if not sent_email_approval_request(file.filename, file_password):
+        if not sent_email_approval_request(file.filename, file_password, file_path):
             logging("Failed to sent a file approval email")
             return False
         return True

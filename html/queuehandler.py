@@ -8,7 +8,7 @@ from db_file_helper import (get_file_from_queue,add_file_to_uploads,
     remove_file_from_queue, remove_file_from_uploads)
 from filehandler import move_file
 from emailhandler import sent_email_error_message
-from helper import logging, hash_sha_512, check_file_exist
+from helper import logging, hash_sha_512, check_path_valid
 
 def approve_file(file_name, uploads_path:str, file_password:str, admin=False):
     """
@@ -33,12 +33,12 @@ def approve_file(file_name, uploads_path:str, file_password:str, admin=False):
         logging("No db entry for requested file, nothing approved")
         return False
 
-    if not check_file_exist(file_path):
+    if not check_path_valid(file_path):
         logging(f"The requested file does not exist: {file_path}, "
                 "but a database entry for the file exists.")
         error_message = ("While trying to approve a file, a database inconsistency was detected. "
-                         "The file requested to be approved has a database entry but does not "
-                         "exist in the queue folder.")
+            "The file requested to be approved has a database entry but does not "
+            "exist in the queue folder.")
         sent_email_error_message("Database inconsistence", error_message)
 
     if not admin:

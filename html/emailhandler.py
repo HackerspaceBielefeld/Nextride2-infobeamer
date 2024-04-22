@@ -29,16 +29,14 @@ from email.mime.text import MIMEText
 
 from dotenv import load_dotenv
 
-from helper import check_path_valid
-
-def sent_mail(subject, body, filename=False):
+def sent_mail(subject, body, file_path=False):
     """
     Sends an email.
 
     Args:
         subject (str): The subject of the email.
         body (str): The body of the email.
-        filename (bool, optional): The filename to attach (default is False).
+        file_path (bool, optional): The filename to attach (default is False).
 
     Returns:
         bool: True if the email was sent successfully, False otherwise.
@@ -56,9 +54,6 @@ def sent_mail(subject, body, filename=False):
     smtp_server = os.environ.get('SMTP_SERVER')
     receiver_email = os.environ.get('RECEIVER_EMAIL')
 
-    queue_path = os.environ.get('UPLOAD_FOLDER')
-
-
     # Create a multipart message and set headers
     message = MIMEMultipart()
     message["From"] = sender_email
@@ -69,9 +64,9 @@ def sent_mail(subject, body, filename=False):
     # Add body to email
     message.attach(MIMEText(body, "plain"))
 
-    if filename and check_path_valid(os.path.join(queue_path, filename)):
+    if file_path:
         # Open PDF file in binary mode
-        with open(os.path.join(queue_path, filename), "rb") as attachment:
+        with open(file_path, "rb") as attachment:
             # Add file as application/octet-stream
             # Email client can usually download this automatically as attachment
             part = MIMEBase("application", "octet-stream")
@@ -81,7 +76,7 @@ def sent_mail(subject, body, filename=False):
         encoders.encode_base64(part)
 
         # Add header as key/value pair to attachment part
-        filename = filename.rsplit("/",1)[1]
+        filename = file_path.rsplit("/",1)[1]
         part.add_header(
             "Content-Disposition",
             f"attachment; filename= {filename}",
@@ -99,7 +94,7 @@ def sent_mail(subject, body, filename=False):
 
     return True
 
-def sent_email_approval_request(file_name:str, file_password:str):
+def sent_email_approval_request(file_name:str, file_password:str, uploaded_file:str):
     """
     Sends an email approval request for a new upload.
 
@@ -117,7 +112,7 @@ def sent_email_approval_request(file_name:str, file_password:str):
     body += f"\n\nFilename: {file_name}"
     body += f"\n\nApprove: {os.environ.get('BASE_URL')}/upload/approve?" \
         f"file_name={file_name}&file_password={file_password}"
-    if not sent_mail(subject, body, file_name):
+    if not sent_mail(subject, body, uploaded_file):
         return False
     return True
 
