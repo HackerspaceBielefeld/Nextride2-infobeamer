@@ -43,7 +43,7 @@
                 <div class="image-item">
                     <div class="image-wrapper">
                         <img src="{{ url_for('static', filename='queue/' + image1) }}" alt="{{ image1 }}">
-                        <form action="{{ url_for('delete_image') }}" method="post">
+                        <form action="{{ url_for('delete_image') }}" method="POST">
                             <input type="hidden" name="filename" value="{{ image1 }}">
                             <button type="submit" class="delete-button">Delete</button>
                         </form>
@@ -54,7 +54,7 @@
                 <div class="image-item">
                     <div class="image-wrapper">
                         <img src="{{ url_for('static', filename='queue/' + image2) }}" alt="{{ image2 }}">
-                        <form action="{{ url_for('delete_image') }}" method="post">
+                        <form action="{{ url_for('delete_image') }}" method="POST">
                             <input type="hidden" name="filename" value="{{ image2 }}">
                             <button type="submit" class="delete-button">Delete</button>
                         </form>
@@ -65,7 +65,7 @@
                 <div class="image-item">
                     <div class="image-wrapper">
                         <img src="{{ url_for('static', filename='queue/' + image3) }}" alt="{{ image3 }}">
-                        <form action="{{ url_for('delete_image') }}" method="post">
+                        <form action="{{ url_for('delete_image') }}" method="POST">
                             <input type="hidden" name="filename" value="{{ image3 }}">
                             <button type="submit" class="delete-button">Delete</button>
                         </form>
@@ -90,7 +90,7 @@
                 <div class="image-item">
                     <div class="image-wrapper">
                         <img src="{{ url_for('static', filename='uploads/' + image1) }}" alt="{{ image1 }}">
-                        <form action="{{ url_for('delete_image') }}" method="post">
+                        <form action="{{ url_for('delete_image') }}" method="POST">
                             <input type="hidden" name="filename" value="{{ image1 }}">
                             <button type="submit" class="delete-button">Delete</button>
                         </form>
@@ -101,7 +101,7 @@
                 <div class="image-item">
                     <div class="image-wrapper">
                         <img src="{{ url_for('static', filename='uploads/' + image2) }}" alt="{{ image2 }}">
-                        <form action="{{ url_for('delete_image') }}" method="post">
+                        <form action="{{ url_for('delete_image') }}" method="POST">
                             <input type="hidden" name="filename" value="{{ image2 }}">
                             <button type="submit" class="delete-button">Delete</button>
                         </form>
@@ -112,7 +112,7 @@
                 <div class="image-item">
                     <div class="image-wrapper">
                         <img src="{{ url_for('static', filename='uploads/' + image3) }}" alt="{{ image3 }}">
-                        <form action="{{ url_for('delete_image') }}" method="post">
+                        <form action="{{ url_for('delete_image') }}" method="POST">
                             <input type="hidden" name="filename" value="{{ image3 }}">
                             <button type="submit" class="delete-button">Delete</button>
                         </form>

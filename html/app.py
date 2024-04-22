@@ -211,8 +211,6 @@ def upload_result():
     return render_template('upload_result.html',
                             file=uploaded_file, status="File upload was successful")
 
-# TODO Check if email approval is necessary as it reduces the security.
-# No access check but adding one would make the email approval obsolete.
 @app.route('/upload/approve')
 @login_required
 def approve_upload():

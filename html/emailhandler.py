@@ -1,5 +1,3 @@
-# TODO allow to turn email notifications off
-# TODO Add field to .env for the base url so the email approval link works
 """
 Email Handling Module
 
@@ -48,7 +46,10 @@ def sent_mail(subject, body, filename=False):
     # Load environment variables from .env file
     load_dotenv()
 
-    if not os.environ.get('ACTIVATE_EMAIL_APPROVAL'): return True
+    # Return if ACTIVATE_EMAIL_APPROVAL in .env isn't True
+    send_mails = os.environ.get('ACTIVATE_EMAIL_APPROVAL')
+    if send_mails != "True" or send_mails != "true": return True
+
     sender_email = os.environ.get('SENDER_EMAIL')
     password = os.environ.get('EMAIL_PASSWORD')
     smtp_server = os.environ.get('SMTP_SERVER')
