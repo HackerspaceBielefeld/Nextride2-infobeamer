@@ -56,6 +56,8 @@ def sent_mail(subject, body, filename=False):
     smtp_server = os.environ.get('SMTP_SERVER')
     receiver_email = os.environ.get('RECEIVER_EMAIL')
 
+    queue_path = os.environ.get('UPLOAD_FOLDER')
+
 
     # Create a multipart message and set headers
     message = MIMEMultipart()
@@ -67,9 +69,9 @@ def sent_mail(subject, body, filename=False):
     # Add body to email
     message.attach(MIMEText(body, "plain"))
 
-    if filename and check_file_exist(filename):
+    if filename and check_file_exist(os.path.join(queue_path, filename)):
         # Open PDF file in binary mode
-        with open(filename, "rb") as attachment:
+        with open(os.path.join(queue_path, filename), "rb") as attachment:
             # Add file as application/octet-stream
             # Email client can usually download this automatically as attachment
             part = MIMEBase("application", "octet-stream")
@@ -97,14 +99,13 @@ def sent_mail(subject, body, filename=False):
 
     return True
 
-def sent_email_approval_request(file_name:str, file_password:str, uploaded_file:str):
+def sent_email_approval_request(file_name:str, file_password:str):
     """
     Sends an email approval request for a new upload.
 
     Args:
         file_name (str): The name of the uploaded file.
         file_password (str): The password associated with the file.
-        uploaded_file (str): The path to the uploaded file.
 
     Returns:
         bool: True if the email was sent successfully, False otherwise.
@@ -116,7 +117,7 @@ def sent_email_approval_request(file_name:str, file_password:str, uploaded_file:
     body += f"\n\nFilename: {file_name}"
     body += f"\n\nApprove: {os.environ.get('BASE_URL')}/upload/approve?" \
         f"file_name={file_name}&file_password={file_password}"
-    if not sent_mail(subject, body, uploaded_file):
+    if not sent_mail(subject, body, file_name):
         return False
     return True
 

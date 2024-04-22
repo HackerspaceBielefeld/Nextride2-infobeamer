@@ -164,9 +164,10 @@ def safe_file(file, QUEUE_FOLDER, user_name):
         logging("A file with the same name is already in the db")
         return False
 
-    file_path = os.path.join(QUEUE_FOLDER, file.filename)
     file_password = generate_secret_token()
     file_password_hashed = hash_sha_512(file_password)
+
+    file_path = os.path.join(QUEUE_FOLDER, file.filename)
 
     if not add_file_to_queue(file.filename, file_path, file_password_hashed, user_name):
         logging("File wasn't saved in the queue because no db entry could be created")
@@ -174,7 +175,7 @@ def safe_file(file, QUEUE_FOLDER, user_name):
 
     try:
         file.save(file_path)
-        if not sent_email_approval_request(file.filename, file_password, file_path):
+        if not sent_email_approval_request(file.filename, file_password):
             logging("Failed to sent a file approval email")
             return False
         return True
