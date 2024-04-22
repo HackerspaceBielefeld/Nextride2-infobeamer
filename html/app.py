@@ -88,7 +88,8 @@ app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5MB limit
 # Set custom session cookie flags
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_SAMESITE'] = 'lax'
+
 
 oauth = OAuth(app)
 github = oauth.register(
@@ -371,7 +372,7 @@ def page_not_found(e):
 def page_wrong_method(e):
     return error_page("405 - Method Not Allowed"), 405
 
-@app.error_handler(413)
+@app.errorhandler(413)
 def req_entity_to_large(e):
     return error_page(f"413 - File is larger than '{app.config['MAX_CONTENT_LENGTH']}'"), 413
 
