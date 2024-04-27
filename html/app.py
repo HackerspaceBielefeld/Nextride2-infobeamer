@@ -90,7 +90,6 @@ app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'lax'
 
-
 oauth = OAuth(app)
 github = oauth.register(
     name='github',

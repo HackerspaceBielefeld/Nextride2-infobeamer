@@ -105,7 +105,4 @@ def get_file_path(base_dir:str, file_name:str):
     if file_path.count(".") > 1:
         return False
 
-    if not os.path.exists(file_path):
-        return False
-    
     return file_path
