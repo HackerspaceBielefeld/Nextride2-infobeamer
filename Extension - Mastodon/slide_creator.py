@@ -26,6 +26,8 @@ def slide_creator(toot):
     date = toot['created_at'].strftime('%d.%m.%y-%H:%M')
     content_chunks = split_string_into_chunks(toot['content'])
     tags = "#" + toot['tags'][0]['name']
+    tags = " ".join(["#" + tag['name'] for tag in toot['tags']])
+    tag_chunks = split_string_into_chunks(tags)
 
     font = ImageFont.truetype("consola.ttf", 128)
     content_font = ImageFont.truetype("consola.ttf", 104)
@@ -42,10 +44,12 @@ def slide_creator(toot):
         draw.text(content_position, content, fill="white", font=content_font)
         content_position = (content_position[0], content_position[1] + 104)
         tag_position = (tag_position[0], tag_position[1] + 104)
-    draw.text(tag_position, tags, fill="white", font=content_font)
-
+    for i, tag in enumerate(tag_chunks):
+        draw.text(tag_position, tag, fill="white", font=content_font)
+        tag_position = (tag_position[0], tag_position[1] + 104)
+        if i == 6: break # Check to not flood the slide with tags
 
     pp = fetch_and_resize_image(toot['account']['avatar'], (400,400))
     image = place_pp(image, pp, (300, 300))
 
-    image.save("./toots/1.png")
+    image.save(f"toots/{toot['account']['username']}.png")

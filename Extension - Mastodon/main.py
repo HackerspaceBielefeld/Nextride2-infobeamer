@@ -5,10 +5,10 @@ import pandas as pd
 from filter import filter_main
 from slide_creator import slide_creator
 
-hashtag = 'coffee'
+hashtag = 'apple'
 URL = f'https://mastodon.social/api/v1/timelines/tag/{hashtag}'
 params = {
-    'limit': 2
+    'limit': 1
 }
 
 r = requests.get(URL, params=params)
@@ -32,7 +32,6 @@ for index, row in filtered_toots_df.iterrows():
     print(row['tags'])
     print(row['uri'])
     #print(row['media_attachments'])
-    break
     print("#################\n")
 
 
