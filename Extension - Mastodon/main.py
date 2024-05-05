@@ -5,10 +5,10 @@ import pandas as pd
 from filter import filter_main
 from slide_creator import slide_creator
 
-hashtag = 'twitch'
+hashtag = 'apple'
 URL = f'https://mastodon.social/api/v1/timelines/tag/{hashtag}'
 params = {
-    'limit': 1
+    'limit': 5
 }
 
 r = requests.get(URL, params=params)
@@ -25,12 +25,13 @@ one_hour_ago = pd.Timestamp.now(tz='Europe/Berlin') - pd.Timedelta(hours=1)
 filtered_toots_df = filter_main(toots_df, one_hour_ago)
 
 for index, row in filtered_toots_df.iterrows():
-    slide_creator(row)
+    if type(row['account']) == float: continue
+    print(row['uri'])
     print(row['account']['username'])
     print(row['account']['avatar'])
     print(row['created_at'])
     print(row['tags'])
-    print(row['uri'])
+    slide_creator(row)
     #print(row['media_attachments'])
     print("#################\n")
 

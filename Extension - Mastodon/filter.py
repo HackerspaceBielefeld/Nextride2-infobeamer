@@ -16,15 +16,12 @@ def adjust_content(content: str):
     content = html_to_text(content)
 
     content.strip(" ")
+    if len(content) >= 250:
+        content = content[:247] + "..."
 
-    if len(content) > 400:
-        content = content[:297] + "..."
-
-    content += " :thumbsup:"
     content = emoji.emojize(content, language='alias')
     
     content = content.encode('unicode-escape').decode('unicode-escape')
-    print(content)
     return content
 
 

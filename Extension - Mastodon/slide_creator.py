@@ -2,23 +2,20 @@ from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 import requests
 
-def split_string_into_chunks(text, chunk_size=25):
+def split_string_into_chunks(text, chunk_size=35):
     chunks = []
     tmp_text = text[0:chunk_size].strip()
-    if len(tmp_text) >= 25 and " " in tmp_text[0:chunk_size-5]:
+    if len(tmp_text) >= chunk_size and " " in tmp_text[0:chunk_size-5]:
         splitted_text = tmp_text.rsplit(" ", 1)[0]
         chunks.append(splitted_text)
         chunks_tmp = split_string_into_chunks(text[len(splitted_text)+1:])
         for chunk in chunks_tmp: chunks.append(chunk)
     else:
         chunks.append(tmp_text)
-
         if len(text) > chunk_size:
             chunks_tmp = split_string_into_chunks(text[chunk_size:])
             for chunk in chunks_tmp: chunks.append(chunk)
     return chunks
-
-    #return [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
 
 def fetch_and_resize_image(url, target_size):
     response = requests.get(url)
@@ -39,12 +36,12 @@ def slide_creator(toot):
 
     username = toot['account']['username']
     date = toot['created_at'].strftime('%d.%m.%y-%H:%M')
-    content_chunks = split_string_into_chunks(toot['content'][:300])
+    content_chunks = split_string_into_chunks(toot['content'])
     tags = " ".join(["#" + tag['name'] for tag in toot['tags']])
     tag_chunks = split_string_into_chunks(tags)
 
     font = ImageFont.truetype("consola.ttf", 128)
-    content_font = ImageFont.truetype("consola.ttf", 104)
+    content_font = ImageFont.truetype("./Symbola.ttf", 104)
 
     username_position = (800,300)
     date_position = (800, 435)
@@ -67,4 +64,4 @@ def slide_creator(toot):
     pp = fetch_and_resize_image(toot['account']['avatar'], (400,400))
     image = place_pp(image, pp, (300, 300))
 
-    image.save(f"toots/{toot['account']['username']}.png")
+    image.save(f"toots/{toot['id']}.png")
