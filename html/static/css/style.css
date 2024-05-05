@@ -208,6 +208,10 @@ th, td {
     width: 50%; /* Both forms will take 50% of the width by default */
 }
 
+.extension-management{
+    text-align: center;
+}
+
 @media (max-width: 600px) {
     .menu {
         display: block;

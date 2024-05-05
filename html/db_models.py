@@ -286,17 +286,20 @@ class Users(db.Model):
             return False
         return True
 
+
 def create_roles():
     # Check if the roles already exist
     existing_admin = Role.query.filter_by(name='admin').first()
+    existing_moderator = Role.query.filter_by(name='moderator').first()
     existing_default = Role.query.filter_by(name='default').first()
+    existing_block = Role.query.filter_by(name='block').first()    
 
     # Create new roles only if they don't exist
     if not existing_admin:
         admin = Role(id=9, name='admin')
         db.session.add(admin)
 
-    if not existing_admin:
+    if not existing_moderator:
         moderator = Role(id=6, name='moderator')
         db.session.add(moderator)
 
@@ -304,15 +307,15 @@ def create_roles():
         default = Role(id=1, name='default')
         db.session.add(default)
 
-    if not existing_default:
+    if not existing_block:
         block = Role(id=0, name='block')
         db.session.add(block)
 
     db.session.commit()
 
 
-### Config ###
-class Config(db.Model):
+### Extension ###
+class Extension(db.Model):
     """
     Model for config table.
 
@@ -321,39 +324,40 @@ class Config(db.Model):
         extension_name (str): Name of the extension.
         active (bool): True if extension is active, false otherwise.
     """
-    __tablename__ = 'config'
+    __tablename__ = 'extension'
     id = db.Column(db.Integer, primary_key=True)
     extension_name = db.Column(db.String(50), unique=True)
     active = db.Column(db.Boolean)
 
-    def is_active(extension_name: str):
-        extension = Config.query.filter_by(name=extension_name).first()
-        if not extension:
-            logging("Extension do not exist")
+    def is_active(self):
+        return self.active
+
+    def activate(self):
+        self.active = True
+
+        if not commit_db_changes():
+            logging("Error committing changes to the database.")
             return False
-
-        if extension.active == True:
-            return True
-        return False
-
-    def activate(extension_name: str):
-        extension = Config.query.filter_by(name=extension_name).first()
-        if not extension:
-            logging("Extension do not exist")
-            return False
-
-        extension.active = True
         return True
     
-    def deactivate(extension_name: str):
-        extension = Config.query.filter_by(name=extension_name).first()
-        if not extension:
-            logging("Extension do not exist")
-            return False
+    def deactivate(self):
+        self.active = False
 
-        extension.active = False
+        if not commit_db_changes():
+            logging("Error committing changes to the database.")
+            return False
         return True
 
+def create_extensions():
+    # Check if the extension already exist
+    existing_mastodon = Extension.query.filter_by(extension_name='mastodon').first()    
+
+    # Create new extensions only if they don't exist
+    if not existing_mastodon:
+        mastodon = Extension(extension_name='mastodon', active=False)
+        db.session.add(mastodon)
+
+    db.session.commit()
 
 ### Mastodon Extension ###
 class Mastodon(db.Model):

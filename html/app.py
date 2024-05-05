@@ -57,9 +57,9 @@ from functools import wraps
 
 from filehandler import sanitize_file, safe_file, delete_file, get_all_images_for_all_users
 from queuehandler import approve_file
-from db_models import db, create_roles
+from db_models import db, create_roles, create_extensions
 from db_user_helper import add_user_to_users, get_user_from_users, get_users_data_for_dashboard
-from db_config_helper import get_extensions_info_from_config, get_extensions_from_config
+from db_extension_helper import get_extensions_info_from_extensions, get_extensions_from_extensions
 from helper import logging, sanitize_string
 
 from role_based_access import check_access
@@ -78,6 +78,7 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
     create_roles()
+    create_extensions()
 
 # Configure flask app with parameters from .env file
 app.secret_key = os.environ.get('FLASK_SECRET_KEY')
@@ -330,6 +331,7 @@ def management_update_upload_limit():
         return error_page("You are not allowed to access this page")
 
     # Check and prepare URL parameters
+    #TODO Update all parameter checks to use .get()
     if not request.form['upload_limit'] or not request.form['target_user_name']:
         return error_page("Specified parameters aren't valid")
     upload_limit = sanitize_string(request.form['upload_limit'])
@@ -353,40 +355,41 @@ def management_update_upload_limit():
     return redirect(url_for('management_users'))
 
 
-@app.route('/management/config')
+@app.route('/management/extensions')
 @login_required
-def management_config():
+def management_extensions():
     if not check_access(session['user_name'], 9):
         return error_page("You are not allowed to access this page")
     
-    extension_config = get_extensions_info_from_config()
+    extension_config = get_extensions_info_from_extensions()
 
-    return render_template('management/delete.html', extension_config=extension_config)
+    return render_template('management/extension.html', extension_config=extension_config)
 
 @app.route('/management/update_extensions', methods=['POST'])
 @login_required
-def management_config():
+def management_update_extensions():
     if not check_access(session['user_name'], 9):
         return error_page("You are not allowed to access this page")
 
-    # Check and prepare URL parameters
-    if not request.form['selected_extensions']:
-        return error_page("Specified parameters aren't valid")
+    req_extensions = request.form.get('selected_extensions')
+    if not req_extensions: req_extensions = []
+    else: req_extensions = req_extensions.split(",")
 
     selected_extensions = []
-    for extension in request.form['selected_extensions']:
+    for extension in req_extensions:
         extension = sanitize_string(extension)
         if len(extension) > 10:
             return error_page("Specified parameters are too large")
         selected_extensions.append(extension)
 
-    for extension in get_extensions_from_config():
+    for extension in get_extensions_from_extensions():
+        print(extension.extension_name)
         if extension.extension_name in selected_extensions: 
-            if not extension.activate(): return error_page("While updating the extensions, an error occured")
+            extension.activate()
         else: 
-            if not extension.deactivate(): return error_page("While updating the extensions, an error occured")
+            extension.deactivate()
 
-    return redirect(url_for('management_config'))
+    return redirect(url_for('management_extensions'))
 
 
 @app.route('/faq')
@@ -414,4 +417,4 @@ def req_entity_to_large(e):
     return error_page(f"413 - File is larger than '{app.config['MAX_CONTENT_LENGTH']}'"), 413
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
