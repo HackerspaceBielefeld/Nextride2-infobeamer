@@ -5,7 +5,7 @@ import pandas as pd
 from filter import filter_main
 from slide_creator import slide_creator
 
-hashtag = 'apple'
+hashtag = 'twitch'
 URL = f'https://mastodon.social/api/v1/timelines/tag/{hashtag}'
 params = {
     'limit': 1

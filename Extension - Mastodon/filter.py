@@ -18,7 +18,7 @@ def adjust_content(content: str):
     content.strip(" ")
 
     if len(content) > 400:
-        content = content[:397] + "..."
+        content = content[:297] + "..."
 
     content += " :thumbsup:"
     content = emoji.emojize(content, language='alias')
