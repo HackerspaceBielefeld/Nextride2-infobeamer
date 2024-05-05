@@ -309,3 +309,63 @@ def create_roles():
         db.session.add(block)
 
     db.session.commit()
+
+
+### Config ###
+class Config(db.Model):
+    """
+    Model for config table.
+
+    Attributes:
+        id (int): The primary key.
+        extension_name (str): Name of the extension.
+        active (bool): True if extension is active, false otherwise.
+    """
+    __tablename__ = 'config'
+    id = db.Column(db.Integer, primary_key=True)
+    extension_name = db.Column(db.String(50), unique=True)
+    active = db.Column(db.Boolean)
+
+    def is_active(extension_name: str):
+        extension = Config.query.filter_by(name=extension_name).first()
+        if not extension:
+            logging("Extension do not exist")
+            return False
+
+        if extension.active == True:
+            return True
+        return False
+
+    def activate(extension_name: str):
+        extension = Config.query.filter_by(name=extension_name).first()
+        if not extension:
+            logging("Extension do not exist")
+            return False
+
+        extension.active = True
+        return True
+    
+    def deactivate(extension_name: str):
+        extension = Config.query.filter_by(name=extension_name).first()
+        if not extension:
+            logging("Extension do not exist")
+            return False
+
+        extension.active = False
+        return True
+
+
+### Mastodon Extension ###
+class Mastodon(db.Model):
+    """
+    Model for mastodon table containing informations about mastodon slides.
+
+    Attributes:
+        id (int): The primary key.
+        file_name (str): Name of the slide.
+        creation_time (str): Time of slide creation.
+    """
+    __tablename__ = 'mastodon'
+    id = db.Column(db.Integer(), primary_key=True)
+    file_name = db.Column(db.String(50), unique=True)
+    creation_time = db.Column(db.String(50))

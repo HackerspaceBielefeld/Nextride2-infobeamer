@@ -1,6 +1,7 @@
 # Self added - folders and files
 html/static/uploads/*
 html/static/queue/*
+Extension - Mastodon/toots/*
 *.db
 
 # Byte-compiled / optimized / DLL files

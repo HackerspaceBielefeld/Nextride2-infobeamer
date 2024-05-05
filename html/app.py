@@ -59,6 +59,7 @@ from filehandler import sanitize_file, safe_file, delete_file, get_all_images_fo
 from queuehandler import approve_file
 from db_models import db, create_roles
 from db_user_helper import add_user_to_users, get_user_from_users, get_users_data_for_dashboard
+from db_config_helper import get_extensions_info_from_config, get_extensions_from_config
 from helper import logging, sanitize_string
 
 from role_based_access import check_access
@@ -350,6 +351,43 @@ def management_update_upload_limit():
         return error_page("Specified upload limit could not be set")
 
     return redirect(url_for('management_users'))
+
+
+@app.route('/management/config')
+@login_required
+def management_config():
+    if not check_access(session['user_name'], 9):
+        return error_page("You are not allowed to access this page")
+    
+    extension_config = get_extensions_info_from_config()
+
+    return render_template('management/delete.html', extension_config=extension_config)
+
+@app.route('/management/update_extensions', methods=['POST'])
+@login_required
+def management_config():
+    if not check_access(session['user_name'], 9):
+        return error_page("You are not allowed to access this page")
+
+    # Check and prepare URL parameters
+    if not request.form['selected_extensions']:
+        return error_page("Specified parameters aren't valid")
+
+    selected_extensions = []
+    for extension in request.form['selected_extensions']:
+        extension = sanitize_string(extension)
+        if len(extension) > 10:
+            return error_page("Specified parameters are too large")
+        selected_extensions.append(extension)
+
+    for extension in get_extensions_from_config():
+        if extension.extension_name in selected_extensions: 
+            if not extension.activate(): return error_page("While updating the extensions, an error occured")
+        else: 
+            if not extension.deactivate(): return error_page("While updating the extensions, an error occured")
+
+    return redirect(url_for('management_config'))
+
 
 @app.route('/faq')
 def faq():
