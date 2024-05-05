@@ -25,7 +25,7 @@ def adjust_content(content: str):
     return content
 
 
-def filter_main(toots_df, not_older_then):  
+def filter(toots_df, not_older_then):  
     # Filter toots that are not older than one hour
     toots_df = toots_df[toots_df['created_at'] >= not_older_then]
 

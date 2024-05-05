@@ -50,7 +50,7 @@ def slide_creator(toot):
 
     draw.text(username_position, username, fill="white", font=font)
     draw.text(date_position, date, fill="white", font=font)
-    
+
     for content in content_chunks:
         draw.text(content_position, content, fill="white", font=content_font)
         content_position = (content_position[0], content_position[1] + 104)
