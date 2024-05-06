@@ -59,7 +59,7 @@ from filehandler import sanitize_file, safe_file, delete_file, get_all_images_fo
 from queuehandler import approve_file
 from db_models import db, create_roles, create_extensions
 from db_user_helper import add_user_to_users, get_user_from_users, get_users_data_for_dashboard
-from db_extension_helper import get_extensions_info_from_extensions, get_extensions_from_extensions
+from db_extension_helper import get_extensions_from_extensions
 from db_extension_mastodon_helper import add_mastodon_tag, get_all_mastodon_tags, get_mastodon_tag_by_name, update_mastodon_tag
 from helper import logging, sanitize_string
 
@@ -362,9 +362,9 @@ def management_extensions():
     if not check_access(session['user_name'], 9):
         return error_page("You are not allowed to access this page")
     
-    extension_config = get_extensions_info_from_extensions()
+    extensions = get_extensions_from_extensions()
 
-    return render_template('management/extension.html', extension_config=extension_config)
+    return render_template('management/extension.html', extensions=extensions)
 
 @app.route('/management/update_extensions', methods=['POST'])
 @login_required
@@ -384,10 +384,9 @@ def management_update_extensions():
         selected_extensions.append(extension)
 
     for extension in get_extensions_from_extensions():
-        print(extension.extension_name)
-        if extension.extension_name in selected_extensions: 
+        if extension.name in selected_extensions: 
             extension.activate()
-        else: 
+        else:
             extension.deactivate()
 
     return redirect(url_for('management_extensions'))
@@ -405,10 +404,9 @@ def management_extension_mastodon():
 @app.route('/management/extensions/mastodon', methods=['POST'])
 @login_required
 def update_extension_mastodon():
-    #TODO Check edgecases and security issues
     if not check_access(session['user_name'], 9):
         return error_page("You are not allowed to access this page")
-    
+
     req_tags = request.form.get('tags')
     req_limit = request.form.get('limit')
 
@@ -416,11 +414,11 @@ def update_extension_mastodon():
         return error_page("Specified parameters aren't valid")
 
     try:
-        req_limit = int(req_limit)
+        limit = int(req_limit)
     except ValueError:
         return error_page("Specified parameters aren't valid")
 
-    if len(req_tags) > 500 or req_limit < 0 or req_limit > 20:
+    if len(req_tags) > 500 or limit < 0 or limit > 20:
         return error_page("Specified parameters are too large or limit is less than zero")
 
     unsanitized_tags = req_tags.split("\n")
@@ -431,12 +429,11 @@ def update_extension_mastodon():
         
         tag_elem = get_mastodon_tag_by_name(tag)
         if tag_elem:
-            update_mastodon_tag(tag_elem.name, req_limit)
-        elif not add_mastodon_tag(tag, req_limit):
+            update_mastodon_tag(tag_elem.name, limit)
+        elif not add_mastodon_tag(tag, limit):
             return error_page("An error occured while adding a new Tag")
 
     return redirect(url_for('management_extension_mastodon'))
-
 
 @app.route('/faq')
 def faq():

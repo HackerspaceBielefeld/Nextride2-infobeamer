@@ -106,7 +106,6 @@ def add_user_to_users(user_name: str, user_upload_amount=0,
 
     admin_users = os.environ.get('ADMIN_USERS').split(',')
     if user.name in admin_users:
-        print("1")
         if not user.set_user_role("admin"):
             logging("User role couldn't be set as admin")
             return False

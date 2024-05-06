@@ -15,8 +15,3 @@ def get_extensions_from_extensions():
     extensions = Extension.query.all()
     if not extensions: return []
     return extensions
-
-def get_extensions_info_from_extensions():
-    extensions = Extension.query.all()
-    if not extensions: return []
-    return [(extension.extension_name, extension.active) for extension in extensions]

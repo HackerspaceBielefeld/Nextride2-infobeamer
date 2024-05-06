@@ -18,6 +18,10 @@ def get_all_mastodon_tags():
     return tags
 
 def add_mastodon_tag(tag_name: str, tag_limit: int):
+    if get_mastodon_tag_by_name(tag_name):
+        logging(f"Tag with the same name already exist in the mastodon table")
+        return False
+
     try:
         tag = Mastodon(tag_name, tag_limit)
         db.session.add(tag)

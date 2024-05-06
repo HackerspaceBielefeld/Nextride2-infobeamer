@@ -326,8 +326,9 @@ class Extension(db.Model):
     """
     __tablename__ = 'extension'
     id = db.Column(db.Integer, primary_key=True)
-    extension_name = db.Column(db.String(50), unique=True)
-    active = db.Column(db.Boolean)
+    name = db.Column(db.String(50), unique=True)
+    managable = db.Column(db.Boolean, nullable=False)
+    active = db.Column(db.Boolean, nullable=False)
 
     def activate(self):
         self.active = True
@@ -348,11 +349,16 @@ class Extension(db.Model):
 
 def create_extensions():
     # Check if the extension already exist
-    existing_mastodon = Extension.query.filter_by(extension_name='mastodon').first()    
+    existing_cms = Extension.query.filter_by(name="cms").first()
+    existing_mastodon = Extension.query.filter_by(name='mastodon').first()    
 
     # Create new extensions only if they don't exist
+    if not existing_cms:
+        cms = Extension(name='cms', managable=False, active=False)
+        db.session.add(cms)
+
     if not existing_mastodon:
-        mastodon = Extension(extension_name='mastodon')
+        mastodon = Extension(name='mastodon', managable=True, active=False)
         db.session.add(mastodon)
 
     db.session.commit()

@@ -31,10 +31,12 @@
     <div class="extension-container">
         <div class="extension-management">
             <form action="/management/update_extensions" method="post">
-                {% for extension_name, active in extension_config %}
-                <input type="checkbox" id="{{ extension_name }}" name="selected_extensions" value="{{ extension_name }}" {% if active %}checked{% endif %}>
-                <label for="{{ extension_name }}">{{ extension_name }}</label>
-                <a href="/management/extensions/{{ extension_name }}">[manage]</a>
+                {% for extension in extensions %}
+                <input type="checkbox" id="{{ extension.name }}" name="selected_extensions" value="{{ extension.name }}" {% if extension.active %}checked{% endif %}>
+                <label for="{{ extension.name }}">{{ extension.name }}</label>
+                {% if extension.managable %}
+                <a href="/management/extensions/{{ extension.name }}">[manage]</a>
+                {% endif %}
                 <br><br>
                 {% endfor %}
 
