@@ -12,10 +12,13 @@
             <nav class="menu">
                 <a href="{{ url_for('index') }}" {% if request.path == url_for('index') %}class="selected"{% endif %}>Home</a>
                 <a href="{{ url_for('dashboard') }}" {% if request.path == url_for('dashboard') %}class="selected"{% endif %}>Dashboard</a>
+                {% if session['user_role'] >= 6 %}
                 <a href="{{ url_for('management_approve') }}" {% if request.path == url_for('management_approve') %}class="selected"{% endif %}>Approve</a>
                 <a href="{{ url_for('management_delete') }}" {% if request.path == url_for('management_delete') %}class="selected"{% endif %}>Delete files</a>
+                {% endif %}
                 {% if session['user_role'] >= 9 %}
                 <a href="{{ url_for('management_users') }}" {% if request.path == url_for('management_users') %}class="selected"{% endif %}>Users</a>
+                <a href="{{ url_for('management_extensions') }}" {% if request.path == url_for('management_extensions') %}class="selected"{% endif %}>Extensions</a>
                 {% endif %}
                 <a class="logout-button" href="{{ url_for('logout') }}">Logout</a>
             </nav>
@@ -84,11 +87,11 @@
         </table>
         <script>
             const copyToClipboard = async (text) => {
-              try {
-                await navigator.clipboard.writeText(text);
-              } catch (err) {
-                console.error('Failed to copy: ', err);
-              }
+                try {
+                    await navigator.clipboard.writeText(text);
+                } catch (err) {
+                    console.error('Failed to copy: ', err);
+                }
             }
         </script>
     </div>

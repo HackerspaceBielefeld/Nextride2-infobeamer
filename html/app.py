@@ -60,6 +60,7 @@ from queuehandler import approve_file
 from db_models import db, create_roles, create_extensions
 from db_user_helper import add_user_to_users, get_user_from_users, get_users_data_for_dashboard
 from db_extension_helper import get_extensions_info_from_extensions, get_extensions_from_extensions
+from db_extension_mastodon_helper import add_mastodon_tag, get_all_mastodon_tags, get_mastodon_tag_by_name, update_mastodon_tag
 from helper import logging, sanitize_string
 
 from role_based_access import check_access
@@ -397,29 +398,42 @@ def management_extension_mastodon():
     if not check_access(session['user_name'], 9):
         return error_page("You are not allowed to access this page")
     
-    #TODO Return previusly entered config
-    #extension_config = get_extensions_info_from_extensions()
+    tags = get_all_mastodon_tags()
 
-    return render_template('management/extensions/mastodon.html')
+    return render_template('management/extensions/mastodon.html', tags=tags)
 
 @app.route('/management/extensions/mastodon', methods=['POST'])
 @login_required
 def update_extension_mastodon():
+    #TODO Check edgecases and security issues
     if not check_access(session['user_name'], 9):
         return error_page("You are not allowed to access this page")
     
-    #TODO handle limit parameter
-    if not request.form.get('tags'):
+    req_tags = request.form.get('tags')
+    req_limit = request.form.get('limit')
+
+    if not req_tags or not req_limit:
         return error_page("Specified parameters aren't valid")
 
-    if len(request.form.get('tags')) > 500:
-        return error_page("Specified parameters are too large")
+    try:
+        req_limit = int(req_limit)
+    except ValueError:
+        return error_page("Specified parameters aren't valid")
 
-    unsanitized_tags = request.form.get('tags').split("\n")
-    sanitized_tags = []
+    if len(req_tags) > 500 or req_limit < 0 or req_limit > 20:
+        return error_page("Specified parameters are too large or limit is less than zero")
+
+    unsanitized_tags = req_tags.split("\n")
     for tag in unsanitized_tags:
         tag = sanitize_string(tag)
-        if len(tag) != 0: sanitized_tags.append(tag)
+        
+        if len(tag) == 0: continue
+        
+        tag_elem = get_mastodon_tag_by_name(tag)
+        if tag_elem:
+            update_mastodon_tag(tag_elem.name, req_limit)
+        elif not add_mastodon_tag(tag, req_limit):
+            return error_page("An error occured while adding a new Tag")
 
     return redirect(url_for('management_extension_mastodon'))
 

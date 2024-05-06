@@ -364,10 +364,22 @@ class Mastodon(db.Model):
 
     Attributes:
         id (int): The primary key.
-        file_name (str): Name of the slide.
-        creation_time (str): Time of slide creation.
+        tag_name (str): The hashtag.
+        creation_time (int): Maximum limit of slides for the hashtag.
     """
     __tablename__ = 'mastodon'
     id = db.Column(db.Integer(), primary_key=True)
-    file_name = db.Column(db.String(50), unique=True)
-    creation_time = db.Column(db.String(50))
+    name = db.Column(db.String(50), unique=True)
+    limit = db.Column(db.Integer)
+
+    def __init__(self, tag_name: str, tag_limit: int):
+        self.name = tag_name
+        self.limit = tag_limit
+
+    def set_limit(self, new_limit: int):
+        self.limit = new_limit
+        
+        if not commit_db_changes():
+            logging("Error committing changes to the database.")
+            return False
+        return True
