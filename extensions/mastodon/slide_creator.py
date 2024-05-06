@@ -1,6 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 import requests
+import os
 
 def split_string_into_chunks(text, chunk_size=35):
     chunks = []
@@ -30,7 +31,7 @@ def place_pp(slide, pp, position):
     slide.paste(pp, position)
     return slide
 
-def slide_creator(toot):
+def slide_creator(toot, destination_path:str):
     image = Image.open("slide.png")
     draw = ImageDraw.Draw(image)
 
@@ -64,4 +65,4 @@ def slide_creator(toot):
     pp = fetch_and_resize_image(toot['account']['avatar'], (400,400))
     image = place_pp(image, pp, (300, 300))
 
-    image.save(f"toots/{toot['id']}.png")
+    image.save(os.path.join(destination_path,f"{toot['id']}.png"))

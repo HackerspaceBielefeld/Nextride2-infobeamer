@@ -6,7 +6,7 @@ import re
 def html_to_text(content):
     soup = BeautifulSoup(content, 'html.parser')
     text = soup.get_text(separator=' ')
-    
+
     return text.strip(" ")
 
 def adjust_content(content: str):
