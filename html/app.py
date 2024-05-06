@@ -191,7 +191,7 @@ def upload_file():
         return render_template('error/blocked.html', support_url=os.environ.get('SUPPORT_URL'))
 
     # Check and prepare the URL parameters
-    if not request.files['file']:
+    if not request.files.get('file'):
         return error_page("Specified file is not valid")
     file = sanitize_file(request.files['file'], app.config['MAX_CONTENT_LENGTH'])
 
@@ -247,9 +247,9 @@ def delete_image():
         return render_template('error/blocked.html', support_url=os.environ.get('SUPPORT_URL'))
 
     # Check and prepare URL parameters
-    if not request.form['file_name']:
+    if not request.form.get('file_name'):
         return error_page("Specified parameters aren't valid")
-    file_name = sanitize_string(request.form['file_name'])
+    file_name = sanitize_string(request.form.get('file_name'))
     if len(file_name) > 100:
         return error_page("Specified parameters are too large")
 
@@ -308,10 +308,10 @@ def management_set_role():
         return error_page("You are not allowed to access this page")
 
     # Check and prepare URL parameters
-    if not request.form['role_name'] or not request.form['target_user_name']:
+    if not request.form.get('role_name') or not request.form.get('target_user_name'):
         return error_page("Specified parameters aren't valid")
-    role_name = sanitize_string(request.form['role_name'])
-    target_user_name = sanitize_string(request.form['target_user_name'])    
+    role_name = sanitize_string(request.form.get('role_name'))
+    target_user_name = sanitize_string(request.form.get('target_user_name'))    
 
     if len(role_name) > 10 or len(target_user_name) > 100:
         return error_page("Specified parameters are too large")
@@ -332,10 +332,10 @@ def management_update_upload_limit():
 
     # Check and prepare URL parameters
     #TODO Update all parameter checks to use .get()
-    if not request.form['upload_limit'] or not request.form['target_user_name']:
+    if not request.form.get('upload_limit') or not request.form.get('target_user_name'):
         return error_page("Specified parameters aren't valid")
-    upload_limit = sanitize_string(request.form['upload_limit'])
-    target_user_name = sanitize_string(request.form['target_user_name'])
+    upload_limit = sanitize_string(request.form.get('upload_limit'))
+    target_user_name = sanitize_string(request.form.get('target_user_name'))
 
     if len(upload_limit) > 12 or len(target_user_name) > 100:
         return error_page("Specified parameters are too large")
@@ -390,6 +390,38 @@ def management_update_extensions():
             extension.deactivate()
 
     return redirect(url_for('management_extensions'))
+
+@app.route('/management/extensions/mastodon')
+@login_required
+def management_extension_mastodon():
+    if not check_access(session['user_name'], 9):
+        return error_page("You are not allowed to access this page")
+    
+    #TODO Return previusly entered config
+    #extension_config = get_extensions_info_from_extensions()
+
+    return render_template('management/extensions/mastodon.html')
+
+@app.route('/management/extensions/mastodon', methods=['POST'])
+@login_required
+def update_extension_mastodon():
+    if not check_access(session['user_name'], 9):
+        return error_page("You are not allowed to access this page")
+    
+    #TODO handle limit parameter
+    if not request.form.get('tags'):
+        return error_page("Specified parameters aren't valid")
+
+    if len(request.form.get('tags')) > 500:
+        return error_page("Specified parameters are too large")
+
+    unsanitized_tags = request.form.get('tags').split("\n")
+    sanitized_tags = []
+    for tag in unsanitized_tags:
+        tag = sanitize_string(tag)
+        if len(tag) != 0: sanitized_tags.append(tag)
+
+    return redirect(url_for('management_extension_mastodon'))
 
 
 @app.route('/faq')

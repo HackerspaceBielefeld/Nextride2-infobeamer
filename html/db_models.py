@@ -329,9 +329,6 @@ class Extension(db.Model):
     extension_name = db.Column(db.String(50), unique=True)
     active = db.Column(db.Boolean)
 
-    def is_active(self):
-        return self.active
-
     def activate(self):
         self.active = True
 
@@ -348,13 +345,14 @@ class Extension(db.Model):
             return False
         return True
 
+
 def create_extensions():
     # Check if the extension already exist
     existing_mastodon = Extension.query.filter_by(extension_name='mastodon').first()    
 
     # Create new extensions only if they don't exist
     if not existing_mastodon:
-        mastodon = Extension(extension_name='mastodon', active=False)
+        mastodon = Extension(extension_name='mastodon')
         db.session.add(mastodon)
 
     db.session.commit()

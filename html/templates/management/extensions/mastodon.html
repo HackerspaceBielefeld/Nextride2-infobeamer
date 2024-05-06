@@ -24,16 +24,17 @@
     <div class="head-container">
     </div>
 
-    <h1>Extensions</h1>
+    <h1>Mastodon fetcher</h1>
     <div class="extension-container">
         <div class="extension-management">
-            <form action="/management/update_extensions" method="post">
-                {% for extension_name, active in extension_config %}
-                <input type="checkbox" id="{{ extension_name }}" name="selected_extensions" value="{{ extension_name }}" {% if active %}checked{% endif %}>
-                <label for="{{ extension_name }}">{{ extension_name }}</label><br><br>
-                {% endfor %}
+            <form action="/management/extensions/mastodon" method="post">
+                <label for="tags">Configuration:</label><br>
+                <textarea id="tags" name="tags" rows="8" cols="30" maxlength="500"></textarea><br>
 
-                <button type="submit" class="green-button">Update extensions</button>
+                <label for="limit">Limit:</label><br>
+                <input type="number" id="limit" name="limit" min="0" max="20" step="1" value="10"><br>
+
+                <button type="submit" class="green-button">Update configuration</button>
             </form>
         </div>
     </div>
