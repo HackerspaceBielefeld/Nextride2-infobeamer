@@ -2,6 +2,7 @@
 Module for user role management.
 """
 from db_user_helper import get_user_from_users
+from db_extension_helper import get_extension_from_config
 
 from helper import logging
 
@@ -47,6 +48,10 @@ def check_moderator(user_name: str):
     return True
 
 
+def cms_active():
+    cms = get_extension_from_config("cms")
+    return cms.active
+
 def check_access(user_name: str, min_req_role_id: int):
     """
     Check if a user has a role thats allowed for access based on the
@@ -61,6 +66,10 @@ def check_access(user_name: str, min_req_role_id: int):
     user = get_user_from_users(user_name)
     if not user:
         logging("User couldn't be found")
+        return False
+
+    if not cms_active():
+        if user.role.id >= 10: return True
         return False
 
     if user.role.id >= min_req_role_id:

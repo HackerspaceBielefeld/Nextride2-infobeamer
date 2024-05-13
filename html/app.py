@@ -63,7 +63,7 @@ from db_extension_helper import get_extensions_from_extensions
 from db_extension_mastodon_helper import add_mastodon_tag, get_all_mastodon_tags, get_mastodon_tag_by_name, update_mastodon_tag
 from helper import logging, sanitize_string
 
-from role_based_access import check_access
+from role_based_access import check_access, cms_active
 
 # Load environment variables from .env file
 load_dotenv()
@@ -203,7 +203,6 @@ def upload_file():
             session['uploaded_file'] = file.filename
     return redirect(url_for('upload_result'))
 
-# TODO Update the upload_result page
 @app.route('/upload/result')
 @login_required
 def upload_result():
@@ -332,7 +331,6 @@ def management_update_upload_limit():
         return error_page("You are not allowed to access this page")
 
     # Check and prepare URL parameters
-    #TODO Update all parameter checks to use .get()
     if not request.form.get('upload_limit') or not request.form.get('target_user_name'):
         return error_page("Specified parameters aren't valid")
     upload_limit = sanitize_string(request.form.get('upload_limit'))

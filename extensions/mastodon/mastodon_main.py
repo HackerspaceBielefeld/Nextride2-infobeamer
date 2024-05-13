@@ -24,3 +24,4 @@ def create_slides(hashtag:str, limit:int, destination_path: str):
     for index, row in filtered_toots_df.iterrows():
         if type(row['account']) == float: continue
         slide_creator(row, destination_path)
+

@@ -41,7 +41,7 @@ def slide_creator(toot, destination_path:str):
     tags = " ".join(["#" + tag['name'] for tag in toot['tags']])
     tag_chunks = split_string_into_chunks(tags)
 
-    font = ImageFont.truetype("consola.ttf", 128)
+    font = ImageFont.truetype("./Symbola.ttf", 128)
     content_font = ImageFont.truetype("./Symbola.ttf", 104)
 
     username_position = (800,300)
