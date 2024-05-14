@@ -354,7 +354,7 @@ def create_extensions():
 
     # Create new extensions only if they don't exist
     if not existing_cms:
-        cms = Extension(name='cms', managable=False, active=False)
+        cms = Extension(name='cms', managable=False, active=True)
         db.session.add(cms)
 
     if not existing_mastodon:

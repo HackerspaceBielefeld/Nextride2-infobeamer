@@ -69,7 +69,7 @@ def check_access(user_name: str, min_req_role_id: int):
         return False
 
     if not cms_active():
-        if user.role.id >= 10: return True
+        if user.role.id >= 9: return True
         return False
 
     if user.role.id >= min_req_role_id:

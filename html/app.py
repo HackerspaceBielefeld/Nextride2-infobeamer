@@ -87,8 +87,7 @@ app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER')
 app.config['QUEUE_FOLDER'] = os.environ.get('QUEUE_FOLDER')
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5MB limit
 
-#TODO Check what cookie flags are needed. Try to use golden cookie if possible
-# Set custom session cookie flags
+# Cookie flags
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'lax'
@@ -108,6 +107,7 @@ def login_required(view):
     Decorator function to protect routes that require authentication.
     Redirects unauthenticated users to the login page.
     """
+
     @wraps(view)
     def decorated_view(*args, **kwargs):
         # Redirect to the login route if the user do not have a session
@@ -130,11 +130,11 @@ def login():
 
 @app.route('/auth')
 def auth():
+
     token = github.authorize_access_token()
     if not token:
         return error_page("Login failed")
 
-    session['token'] = token
     user = github.get('https://api.github.com/user', token=token)
     if not user.ok:
         return error_page("Failed to fetch user data from GitHub")
@@ -146,8 +146,17 @@ def auth():
     # If a user already exist in the DB, uodate his role in session and redirect to dashboard
     user = get_user_from_users(user_data['login'])
     if user:
+        if not cms_active() and user.role.id < 9:
+            return redirect(url_for('index'))
+        
+        session['token'] = token
         session['user_role'] = user.role.id
         return redirect(url_for('dashboard'))
+
+    if not cms_active():
+        return redirect(url_for('index'))
+    
+    session['token'] = token
 
     # User do not exist yet and gets added to the DB
     if add_user_to_users(user_data['login']):

@@ -42,5 +42,6 @@ Please use the latest release for a stable and secure version of N2i.
 General:
 * Setup more unittests
 * Fix marked todos in code
-* Implement CMS deactivation
+* Split db_models into different files
+* Move mastodon db model in extension
 * Add documentation and fix docstrings
