@@ -386,6 +386,7 @@ def management_update_extensions():
     selected_extensions = []
     for extension in req_extensions:
         extension = sanitize_string(extension)
+        print(len(extension))
         if len(extension) > 10:
             return error_page("Specified parameters are too large")
         selected_extensions.append(extension)
