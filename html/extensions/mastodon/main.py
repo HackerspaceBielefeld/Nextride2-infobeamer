@@ -4,8 +4,10 @@ import pandas as pd
 
 from filter import filter
 from slide_creator import slide_creator
+from db_extension_mastodon_helper import get_all_mastodon_tags
 
-def create_slides(hashtag:str, limit:int, destination_path: str):
+def create_slides(hashtag:str, limit:int):
+
     URL = f'https://mastodon.social/api/v1/timelines/tag/{hashtag}'
 
     r = requests.get(URL, params={'limit': limit})
@@ -23,5 +25,14 @@ def create_slides(hashtag:str, limit:int, destination_path: str):
 
     for index, row in filtered_toots_df.iterrows():
         if type(row['account']) == float: continue
-        slide_creator(row, destination_path)
+        slide_creator(row, "./images")
 
+
+def main():
+    for tag in get_all_mastodon_tags():
+        hashtag = tag.name
+        limit = tag.limit
+        create_slides(hashtag, limit)
+
+if __name__ == '__main__':
+    main()

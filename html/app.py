@@ -47,10 +47,10 @@ Author:
 """
 
 import os
+import sys
 
 from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
 from authlib.integrations.flask_client import OAuth
-#from flask_sqlalchemy import SQLAlchemy
 
 from dotenv import load_dotenv
 from functools import wraps
@@ -60,10 +60,11 @@ from queuehandler import approve_file
 from db_models import db, create_roles, create_extensions
 from db_user_helper import add_user_to_users, get_user_from_users, get_users_data_for_dashboard
 from db_extension_helper import get_extensions_from_extensions
-from db_extension_mastodon_helper import add_mastodon_tag, get_all_mastodon_tags, get_mastodon_tag_by_name, update_mastodon_tag
 from helper import logging, sanitize_string
 
 from role_based_access import check_access, cms_active
+
+import importlib.util
 
 # Load environment variables from .env file
 load_dotenv()
@@ -91,6 +92,22 @@ app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5MB limit
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'lax'
+
+#TODO Cleanup bluprints
+# Ensure the extensions folder is in the PYTHONPATH
+extensions_folder = os.path.join(os.path.dirname(__file__), 'extensions')
+sys.path.insert(0, extensions_folder)
+
+# Load extensions
+for extension_name in os.listdir(extensions_folder):
+    extension_path = os.path.join(extensions_folder, extension_name)
+    if os.path.isdir(extension_path):
+        spec = importlib.util.spec_from_file_location(extension_name, os.path.join(extension_path, 'routes.py'))
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        app.register_blueprint(module.blueprint, url_prefix=f'/management/extensions/{extension_name}')
+
 
 oauth = OAuth(app)
 github = oauth.register(
@@ -379,14 +396,11 @@ def management_update_extensions():
     if not check_access(session['user_name'], 9):
         return error_page("You are not allowed to access this page")
 
-    req_extensions = request.form.get('selected_extensions')
-    if not req_extensions: req_extensions = []
-    else: req_extensions = req_extensions.split(",")
+    req_extensions = request.form.getlist('selected_extensions')
 
     selected_extensions = []
     for extension in req_extensions:
         extension = sanitize_string(extension)
-        print(len(extension))
         if len(extension) > 10:
             return error_page("Specified parameters are too large")
         selected_extensions.append(extension)
@@ -399,49 +413,6 @@ def management_update_extensions():
 
     return redirect(url_for('management_extensions'))
 
-@app.route('/management/extensions/mastodon')
-@login_required
-def management_extension_mastodon():
-    if not check_access(session['user_name'], 9):
-        return error_page("You are not allowed to access this page")
-    
-    tags = get_all_mastodon_tags()
-
-    return render_template('management/extensions/mastodon.html', tags=tags)
-
-@app.route('/management/extensions/mastodon', methods=['POST'])
-@login_required
-def update_extension_mastodon():
-    if not check_access(session['user_name'], 9):
-        return error_page("You are not allowed to access this page")
-
-    req_tags = request.form.get('tags')
-    req_limit = request.form.get('limit')
-
-    if not req_tags or not req_limit:
-        return error_page("Specified parameters aren't valid")
-
-    try:
-        limit = int(req_limit)
-    except ValueError:
-        return error_page("Specified parameters aren't valid")
-
-    if len(req_tags) > 500 or limit < 0 or limit > 20:
-        return error_page("Specified parameters are too large or limit is less than zero")
-
-    unsanitized_tags = req_tags.split("\n")
-    for tag in unsanitized_tags:
-        tag = sanitize_string(tag)
-        
-        if len(tag) == 0: continue
-        
-        tag_elem = get_mastodon_tag_by_name(tag)
-        if tag_elem:
-            update_mastodon_tag(tag_elem.name, limit)
-        elif not add_mastodon_tag(tag, limit):
-            return error_page("An error occured while adding a new Tag")
-
-    return redirect(url_for('management_extension_mastodon'))
 
 @app.route('/faq')
 def faq():
