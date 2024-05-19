@@ -28,9 +28,13 @@ def get_image_urls(url):
 
 
 def main():
-    image_urls = get_image_urls("http://127.0.0.1:5000/")
+    import time
+    image_urls = get_image_urls(os.environ.get('BASE_URL'))
     for image in image_urls:
-        infobeamer_main("255.255.255.255", 10, image)
+        print(image)
+        for i in range(3):
+            infobeamer_main("255.255.255.255", 5, image)
+        time.sleep(5)
 
 if __name__ == '__main__':
     main()
