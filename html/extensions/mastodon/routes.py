@@ -1,23 +1,10 @@
 from flask import Blueprint, session, render_template, request, redirect, url_for
-import sys
-import os
-
-#TODO Cleanup bluprints
-# Ensure the extension directory is in the PYTHONPATH
-current_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, current_dir)
-from db_extension_mastodon_helper import add_mastodon_tag, get_all_mastodon_tags, get_mastodon_tag_by_name, update_mastodon_tag
-
-# Ensure the parent directory of app.py is in the PYTHONPATH
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-
-# Now import the check_access function
+from extensions.mastodon.db_extension_mastodon_helper import add_mastodon_tag, get_all_mastodon_tags, get_mastodon_tag_by_name, update_mastodon_tag
 from helper import sanitize_string
 from role_based_access import check_access
 
-from flask import Blueprint
-
-blueprint = Blueprint('mastodon', __name__)
+# Define Blueprint
+blueprint = Blueprint('mastodon', __name__, template_folder='extensions/mastodon/templates')
 
 @blueprint.route('/')
 #@login_required
@@ -27,9 +14,9 @@ def management_extension_mastodon():
     
     tags = get_all_mastodon_tags()
 
-    return render_template('management/extensions/mastodon.html', tags=tags)
+    return render_template('mastodon.html', tags=tags)
 
-@blueprint.route('/', methods=['POST'])
+@blueprint.route('/update', methods=['POST'])
 #@login_required
 def update_extension_mastodon():
     if not check_access(session['user_name'], 9):

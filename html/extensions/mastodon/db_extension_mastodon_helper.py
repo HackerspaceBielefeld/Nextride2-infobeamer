@@ -40,6 +40,7 @@ def get_conn():
     current_dir = os.getcwd()
 
     # Set the database path based on the context
+    print(current_dir)
     if current_dir.endswith('/html/extensions/mastodon'):
         db_path = "./instance/mastodon.db"
     else:
