@@ -93,7 +93,6 @@ app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'lax'
 
-#TODO Cleanup bluprints
 # Ensure the extensions folder is in the PYTHONPATH
 extensions_folder = os.path.join(os.path.dirname(__file__), 'extensions')
 sys.path.insert(0, extensions_folder)
@@ -108,6 +107,9 @@ for extension_name in os.listdir(extensions_folder):
 
         app.register_blueprint(module.blueprint, url_prefix=f'/management/extensions/{extension_name}')
 
+# create_folder
+os.mkdir("static/uploads")
+os.mkdir("static/queue")
 
 oauth = OAuth(app)
 github = oauth.register(

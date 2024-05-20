@@ -32,7 +32,7 @@ def place_pp(slide, pp, position):
     return slide
 
 def slide_creator(toot, destination_path:str):
-    image = Image.open("assets/slide.png")
+    image = Image.open("extensions/mastodon/assets/slide.png")
     draw = ImageDraw.Draw(image)
 
     username = toot['account']['username']
@@ -41,8 +41,8 @@ def slide_creator(toot, destination_path:str):
     tags = " ".join(["#" + tag['name'] for tag in toot['tags']])
     tag_chunks = split_string_into_chunks(tags)
 
-    font = ImageFont.truetype("./assets/Symbola.ttf", 128)
-    content_font = ImageFont.truetype("./assets/Symbola.ttf", 104)
+    font = ImageFont.truetype("extensions/mastodon/assets/Symbola.ttf", 128)
+    content_font = ImageFont.truetype("extensions/mastodon/assets/Symbola.ttf", 104)
 
     username_position = (800,300)
     date_position = (800, 435)

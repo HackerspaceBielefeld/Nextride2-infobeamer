@@ -1,3 +1,4 @@
+import os
 import json
 import requests
 import pandas as pd
@@ -25,10 +26,15 @@ def create_slides(hashtag:str, limit:int):
 
     for index, row in filtered_toots_df.iterrows():
         if type(row['account']) == float: continue
-        slide_creator(row, "../../static/uploads")
+        slide_creator(row, "static/uploads")
 
+def remove_old_images():
+    for image in os.listdir("static/uploads"):
+        if image.split("_", 1)[0] == "mastodon":
+            os.remove(os.path.join("static/uploads/", image))
 
 def main():
+    remove_old_images()
     for tag in get_all_mastodon_tags():
         hashtag = tag.name
         limit = tag.limit

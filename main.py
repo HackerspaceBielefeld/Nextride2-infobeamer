@@ -1,8 +1,9 @@
-import os
-from infobeamer import infobeamer_main
-
-import requests
 from bs4 import BeautifulSoup
+import requests
+import time
+import os
+
+from infobeamer import infobeamer_main
 
 def get_image_urls(url):
     try:
@@ -26,16 +27,15 @@ def get_image_urls(url):
 
     return img_urls
 
-
 def main():
-    import time
-    image_urls = get_image_urls("")
-    for image in image_urls:
-        print(image)
-        for i in range(3):
-            duration = 5
-            infobeamer_main("255.255.255.255", duration, image)
-        time.sleep(duration)
+    while(1):
+        image_urls = get_image_urls("")
+        for image in image_urls:
+            print(image)
+            for i in range(3):
+                duration = 5
+                infobeamer_main("255.255.255.255", duration, image)
+            time.sleep(duration)
 
 if __name__ == '__main__':
     main()
