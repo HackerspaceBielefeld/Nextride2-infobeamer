@@ -1,0 +1,13 @@
+[Unit]
+Description=Nextride2-infobeamer
+After=network.target
+
+[Service]
+User=default
+Group=default
+WorkingDirectory=<path/to/Nextride2-infobeamer>
+ExecStart=/usr/bin/python3 <path/to/Nextride2-infobeamer/main.py>
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

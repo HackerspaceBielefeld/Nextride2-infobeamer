@@ -23,7 +23,7 @@ N2i also implements a CMS for user uploaded date. This can be used to allow gues
 11. Enter the html folder again and start the application with `python app.py`
 
 ### Additional Steps
-* You can Customize the favicong by changing the file `html/favicon.ico`
+* You can Customize the favicon by changing the file `html/favicon.ico`
 
 ## Nextride2 Setup(for development)
 Setting up Nextride2 is not necessary in order to use the CMS. 
@@ -40,9 +40,7 @@ Please use the latest release for a stable and secure version of N2i.
 
 ## Todos
 General:
-* Allow activation of multiple extensions
 * Split db_models into different files
-* Move mastodon db model in extension
 * Add documentation and fix docstrings
 * Setup more unittests
 

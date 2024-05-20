@@ -29,12 +29,13 @@ def get_image_urls(url):
 
 def main():
     import time
-    image_urls = get_image_urls(os.environ.get('BASE_URL'))
+    image_urls = get_image_urls("")
     for image in image_urls:
         print(image)
         for i in range(3):
-            infobeamer_main("255.255.255.255", 5, image)
-        time.sleep(5)
+            duration = 5
+            infobeamer_main("255.255.255.255", duration, image)
+        time.sleep(duration)
 
 if __name__ == '__main__':
     main()

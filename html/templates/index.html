@@ -15,7 +15,7 @@
     </div>
 </header>
 <body> 
-    <h2>Active Images:</h2>
+    <h1>Active images:</h1>
     <div class="image-container">
         {% for i in range(0, uploaded_images|length, 3) %}
         <div class="image-table">
@@ -40,6 +40,36 @@
                 {% endif %}
             </div>
         </div>
+        {% endfor %}
+    </div> 
+
+    <div class="image-container">
+        {% for extension, images in extension_images.items() %}
+        <h2>{{ extension }}</h2>
+        {% for i in range(0, images|length, 3) %}
+        <div class="image-table">
+            {% set image1 = images[i] %}
+            {% set image2 = images[i+1] if i+1 < images|length else None %}
+            {% set image3 = images[i+2] if i+2 < images|length else None %}
+            <div class="image-row">
+                {% if image1 %}
+                <div class="image-item">
+                    <img src="{{ url_for('static', filename='uploads/' + image1) }}" alt="{{ image1 }}">
+                </div>
+                {% endif %}
+                {% if image2 %}
+                <div class="image-item">
+                    <img src="{{ url_for('static', filename='uploads/' + image2) }}" alt="{{ image2 }}">
+                </div>
+                {% endif %}
+                {% if image3 %}
+                <div class="image-item">
+                    <img src="{{ url_for('static', filename='uploads/' + image3) }}" alt="{{ image3 }}">
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
         {% endfor %}
     </div> 
 </body>

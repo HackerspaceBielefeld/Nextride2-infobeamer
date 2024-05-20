@@ -20,12 +20,12 @@ def create_slides(hashtag:str, limit:int):
     toots_df['created_at'] = pd.to_datetime(toots_df['created_at']).dt.tz_convert('Europe/Berlin')
 
     # Filter toots
-    one_hour_ago = pd.Timestamp.now(tz='Europe/Berlin') - pd.Timedelta(hours=1)
+    one_hour_ago = pd.Timestamp.now(tz='Europe/Berlin') - pd.Timedelta(hours=3)
     filtered_toots_df = filter(toots_df, one_hour_ago)
 
     for index, row in filtered_toots_df.iterrows():
         if type(row['account']) == float: continue
-        slide_creator(row, "./images")
+        slide_creator(row, "../../static/uploads")
 
 
 def main():

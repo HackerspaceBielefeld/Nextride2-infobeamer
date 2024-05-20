@@ -65,4 +65,4 @@ def slide_creator(toot, destination_path:str):
     pp = fetch_and_resize_image(toot['account']['avatar'], (400,400))
     image = place_pp(image, pp, (300, 300))
 
-    image.save(os.path.join("images",f"{toot['id']}.png"))
+    image.save(os.path.join(destination_path,f"mastodon_{toot['id']}.png"))

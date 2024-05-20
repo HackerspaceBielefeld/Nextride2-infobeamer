@@ -29,7 +29,7 @@
 
     <h1>Queue Images:</h1>
     {% for username, images in all_images.items() %}
-    {% if images.queue|length > 0%}
+    {% if images.queue|length > 0 %}
     <h1 style="color: white;">{{ username }}</h1>
     <div class="image-container">
         {% for i in range(0, images.queue|length, 3) %}

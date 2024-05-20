@@ -191,8 +191,22 @@ def logout():
 
 @app.route('/')
 def index():
-    uploaded_images = os.listdir(app.config['UPLOAD_FOLDER'])
-    return render_template('index.html', uploaded_images=uploaded_images)
+    uploads = os.listdir(app.config['UPLOAD_FOLDER'])
+
+    extensions = os.listdir(extensions_folder)
+    extension_images = {}
+    uploaded_images = []
+
+    for image in uploads:
+        extension = image.split("_", 1)[0]
+        if extension in extensions:
+            if extension not in extension_images:
+                extension_images[extension] = []
+            extension_images[extension].append(image)
+        else:
+            uploaded_images.append(image)
+
+    return render_template('index.html', uploaded_images=uploaded_images, extension_images=extension_images)
 
 @app.route('/dashboard')
 @login_required
