@@ -108,8 +108,8 @@ for extension_name in os.listdir(extensions_folder):
         app.register_blueprint(module.blueprint, url_prefix=f'/management/extensions/{extension_name}')
 
 # create_folder
-os.mkdir("static/uploads")
-os.mkdir("static/queue")
+os.makedirs("static/uploads", exist_ok=True)
+os.makedirs("static/queue", exist_ok=True)
 
 oauth = OAuth(app)
 github = oauth.register(
