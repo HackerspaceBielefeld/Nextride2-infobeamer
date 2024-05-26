@@ -34,7 +34,7 @@ def main(cms_url:str):
         for image in image_urls:
             print(image)
             for i in range(3):
-                duration = 5
+                duration = 7
                 infobeamer_main("255.255.255.255", duration, image)
             time.sleep(duration)
 
