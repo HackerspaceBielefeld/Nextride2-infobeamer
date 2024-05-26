@@ -19,7 +19,4 @@ def main():
     
     time.sleep(600) #update the extensions every 10 min
 
-
-
-
 main()

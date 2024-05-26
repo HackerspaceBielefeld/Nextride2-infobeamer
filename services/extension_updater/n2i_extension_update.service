@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=PATH_TO_HTML_FOLDER
-ExecStart=/usr/bin/python3 PATH_TO_N2i_UPDATE_SCRIPT
+ExecStart=/usr/bin/python3 ../services/extension_updater/n2i_extension_update.py
 RestartSec=2
 Restart=on-failure
 Type=simple
