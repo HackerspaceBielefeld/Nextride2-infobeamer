@@ -3,11 +3,11 @@ Description=Nextride2-infobeamer-extension-updater
 After=network.target
 
 [Service]
-User=default
-Group=default
-WorkingDirectory=<path/to/Nextride2-infobeamer/html>
-ExecStart=/usr/bin/python3 <path/to/n2i_update.py>
-Restart=always
+WorkingDirectory=PATH_TO_HTML_FOLDER
+ExecStart=/usr/bin/python3 PATH_TO_N2i_UPDATE_SCRIPT
+RestartSec=2
+Restart=on-failure
+Type=simple
 
 [Install]
 WantedBy=multi-user.target

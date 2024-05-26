@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import argparse
 import requests
 import time
 import os
@@ -27,9 +28,9 @@ def get_image_urls(url):
 
     return img_urls
 
-def main():
+def main(cms_url:str):
     while(1):
-        image_urls = get_image_urls("")
+        image_urls = get_image_urls(cms_url)
         for image in image_urls:
             print(image)
             for i in range(3):
@@ -38,5 +39,8 @@ def main():
             time.sleep(duration)
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='N2i runner')
+    parser.add_argument('-c', '--cms', required=True, help='URL of the CMS whichs content to display')
+    args = parser.parse_args()
+    main(args.cms)
 

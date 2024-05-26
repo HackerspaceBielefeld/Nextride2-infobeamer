@@ -3,6 +3,7 @@ html/static/uploads/*
 html/static/queue/*
 Extension - Mastodon/toots/*
 *.db
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

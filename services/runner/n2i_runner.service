@@ -3,11 +3,9 @@ Description=Nextride2-infobeamer
 After=network.target
 
 [Service]
-User=default
-Group=default
-WorkingDirectory=<path/to/Nextride2-infobeamer/html>
-ExecStart=/usr/bin/python3 <path/to/Nextride2-infobeamer/html/main.py>
+ExecStart=/usr/bin/python3 <path/to/Nextride2-infobeamer/html/services/runner/main.py> -cms CMS_URL
 Restart=always
+Type=simple
 
 [Install]
 WantedBy=multi-user.target

@@ -33,12 +33,14 @@ def remove_old_images():
         if image.split("_", 1)[0] == "mastodon":
             os.remove(os.path.join("static/uploads/", image))
 
+
+
 def main():
     remove_old_images()
     for tag in get_all_mastodon_tags():
         hashtag = tag.name
         limit = tag.limit
-        create_slides(hashtag, limit)
+        create_slides(hashtag, limit, uploads_path)
 
 if __name__ == '__main__':
     main()
