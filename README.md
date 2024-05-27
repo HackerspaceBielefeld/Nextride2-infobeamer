@@ -9,21 +9,6 @@ N2i also implements a CMS for user uploaded date. This can be used to allow gues
 |------------|------------|
 | <img src="assets/home.png" width="1920"/> | <img src="assets/management_users.png" width="1920"/> |
 
-## CMS Setup 
-1. Clone the repository
-2. Create a new github OAuth application [here](https://github.com/settings/applications/new)
-3. Choose a name, the url to the index page and a description
-4. As Authorization callback URL use http://yourdomain.tld/auth (http://127.0.0.1/auth for local development)
-5. Register the app
-6. Create a file named `.env` in the `html` folder.
-7. Enter the information based on the sample file `dot_env_example`.
-8. Create a virtual enviroment with: `python -m venv .venv` in the main project folder
-9. Activate the venv with: `source .venv/bin/activate`(linux)
-10. Install the necessary requirements with `pip install -r requirements.txt`
-11. Enter the html folder again and start the application with `python app.py`
-
-### Additional Steps
-* You can Customize the favicon by changing the file `html/favicon.ico`
 
 ## Nextride2 Setup(for development)
 Setting up Nextride2 is not necessary in order to use the CMS. 
@@ -41,7 +26,8 @@ Please use the latest release for a stable and secure version of N2i.
 ## Todos
 General:
 * Split db_models into different files
-* Add documentation and fix docstrings
+* Setup sphinx documentation
+* Add documentation
 * Setup more unittests
 
 Extensions:

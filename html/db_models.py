@@ -1,27 +1,5 @@
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-instance-attributes
-"""
-Database Models Module
-
-This module defines the database models for various tables used in the application.
-
-Classes:
-    - Uploads: Model for the 'uploads' table.
-    - Queue: Model for the 'queue' table.
-    - Role: Model for the 'roles' table.
-    - Users: Model for the 'users' table.
-
-Functions:
-    - commit_db_changes(): Commits the changes to the database session.
-
-Dependencies:
-    - json: Provides functions for working with JSON data.
-    - flask_sqlalchemy: Provides SQLAlchemy integration with Flask.
-    - helper.logging: Custom logging function for error handling.
-
-Exceptions:
-    - SQLAlchemyError: Base class for all SQLAlchemy-related errors.
-"""
 
 import json
 import os
@@ -34,12 +12,6 @@ from helper import logging
 db = SQLAlchemy()
 
 def commit_db_changes():
-    """
-    Commit the changes to the database session.
-
-    Returns:
-        bool: True if the changes were committed successfully, False otherwise.
-    """
     try:
         db.session.commit()
     except SQLAlchemyError as e:
@@ -49,15 +21,6 @@ def commit_db_changes():
     return True
 
 class Uploads(db.Model):
-    """
-    Model for uploads table.
-
-    Attributes:
-        id (int): The primary key.
-        file_name (str): The name of the file.
-        file_path (str): The path to the file.
-        file_owner (str): The owner of the file.
-    """
     __tablename__ = 'uploads'
     id = db.Column(db.Integer, primary_key=True)
     file_name = db.Column(db.String(100), nullable=False)
@@ -65,16 +28,6 @@ class Uploads(db.Model):
     file_owner = db.Column(db.String(100), nullable=False)
 
 class Queue(db.Model):
-    """
-    Model for queue table.
-
-    Attributes:
-        id (int): The primary key.
-        file_name (str): The name of the file.
-        file_path (str): The path to the file.
-        file_password (str): The password associated with the file.
-        file_owner (str): The owner of the file.
-    """
     __tablename__ = 'queue'
     id = db.Column(db.Integer, primary_key=True)
     file_name = db.Column(db.String(100), nullable=False)
@@ -83,30 +36,11 @@ class Queue(db.Model):
     file_owner = db.Column(db.String(100), nullable=False)
 
 class Role(db.Model):
-    """
-    Model for roles table.
-
-    Attributes:
-        id (int): The primary key.
-        name (str): The name of the role.
-    """
     __tablename__ = 'roles'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(50), unique=True)
 
 class Users(db.Model):
-    """
-    Model for users table.
-
-    Attributes:
-        id (int): The primary key.
-        user_name (str): The name of the user.
-        user_upload_amount (int): The number of uploads by the user.
-        user_upload_limit (int): The upload limit for the user.
-        user_role (Role): The role of the user.
-        user_files_queue (str): JSON representation of files in the queue.
-        user_files_uploads (str): JSON representation of uploaded files.
-    """
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -118,16 +52,6 @@ class Users(db.Model):
     files_uploads = db.Column(db.String)
 
     def __init__(self, user_name, user_upload_amount, user_upload_limit, user_files):
-        """
-        Initialize a new User.
-
-        Args:
-            user_name (str): The name of the user.
-            user_upload_amount (int): The number of uploads by the user.
-            user_upload_limit (int): The upload limit for the user.
-            user_role (Role): The role of the user.
-            user_files (list): The list of files associated with the user.
-        """
         self.name = user_name
         self.upload_amount = user_upload_amount
         self.upload_limit = user_upload_limit
@@ -136,34 +60,12 @@ class Users(db.Model):
         self.files_uploads = json.dumps(user_files)
 
     def get_user_files_queue(self):
-        """
-        Get the files in the user's queue.
-
-        Returns:
-            list: The list of files in the user's queue.
-        """
         return json.loads(self.files_queue) if self.files_queue else []
 
     def get_user_files_uploads(self):
-        """
-        Get the files uploaded by the user.
-
-        Returns:
-            list: The list of files uploaded by the user.
-        """
         return json.loads(self.files_uploads) if self.files_uploads else []
 
     def set_user_files(self, files:list, uploads=False):
-        """
-        Set the files associated with the user.
-
-        Args:
-            files (list): The list of files to associate with the user.
-            uploads (bool, optional): Whether the files are uploads (default is False).
-
-        Returns:
-            bool: True if the files were set successfully, False otherwise.
-        """
         amount_queue = len(self.get_user_files_queue())
         amount_uploads = len(self.get_user_files_uploads())
         if uploads:
@@ -186,16 +88,6 @@ class Users(db.Model):
         return True
 
     def add_user_file(self, file:str, uploads=False):
-        """
-        Add a file to the user's queue or uploads.
-
-        Args:
-            file (str): The file to add.
-            uploads (bool, optional): Whether the file is an upload (default is False).
-
-        Returns:
-            bool: True if the file was added successfully, False otherwise.
-        """
         if self.upload_amount >= self.upload_limit:
             logging("Upload limit already reached")
             return False
@@ -213,16 +105,6 @@ class Users(db.Model):
         return True
 
     def remove_user_file(self, file:str, uploads=False):
-        """
-        Remove a file from the user's queue or uploads.
-
-        Args:
-            file (str): The file to remove.
-            uploads (bool, optional): Whether the file is an upload (default is False).
-
-        Returns:
-            bool: True if the file was removed successfully, False otherwise.
-        """
         if uploads:
             files = self.get_user_files_uploads()
         else:
@@ -244,16 +126,6 @@ class Users(db.Model):
         return True
 
     def set_user_role(self, new_role_name: str):
-        """
-        Set a new role for the user.
-
-        Args:
-            new_role_name (str): The name of the new role to assign to the user.
-
-        Returns:
-            bool: True if the role was set successfully, False otherwise.
-        """
-
         # Check if the role exists in the database
         new_role = Role.query.filter_by(name=new_role_name).first()
 
@@ -316,14 +188,6 @@ def create_roles():
 
 ### Extension ###
 class Extension(db.Model):
-    """
-    Model for config table.
-
-    Attributes:
-        id (int): The primary key.
-        extension_name (str): Name of the extension.
-        active (bool): True if extension is active, false otherwise.
-    """
     __tablename__ = 'extension'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True)
@@ -348,44 +212,21 @@ class Extension(db.Model):
 
 
 def create_extensions():
-    # Check if the extension already exist
+    # Add the CMS as an extension to be able to de-/activate it
     existing_cms = Extension.query.filter_by(name="cms").first()
-    existing_mastodon = Extension.query.filter_by(name='mastodon').first()    
-
-    # Create new extensions only if they don't exist
     if not existing_cms:
         cms = Extension(name='cms', managable=False, active=True)
         db.session.add(cms)
 
-    if not existing_mastodon:
-        mastodon = Extension(name='mastodon', managable=True, active=False)
-        db.session.add(mastodon)
 
-    db.session.commit()
+    # Itterate over the extensions folder to add them to the extension table
+    for extension_name in os.listdir("extensions"):
+        extension_elem = Extension.query.filter_by(name=extension_name).first()    
 
-### Mastodon Extension ###
-class Mastodon(db.Model):
-    """
-    Model for mastodon table containing informations about mastodon slides.
-
-    Attributes:
-        id (int): The primary key.
-        tag_name (str): The hashtag.
-        creation_time (int): Maximum limit of slides for the hashtag.
-    """
-    __tablename__ = 'mastodon'
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(50), unique=True)
-    limit = db.Column(db.Integer)
-
-    def __init__(self, tag_name: str, tag_limit: int):
-        self.name = tag_name
-        self.limit = tag_limit
-
-    def set_limit(self, new_limit: int):
-        self.limit = new_limit
-        
-        if not commit_db_changes():
-            logging("Error committing changes to the database.")
-            return False
-        return True
+        if not extension_elem:
+            if "templates" in os.listdir(os.path.join("extensions", extension_name)):
+                extension_elem = Extension(name=extension_name, managable=True, active=False)
+            else:
+                extension_elem = Extension(name=extension_name, managable=False, active=False)
+            db.session.add(extension_elem)
+            db.session.commit()
