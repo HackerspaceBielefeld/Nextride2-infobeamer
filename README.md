@@ -10,15 +10,6 @@ N2i also implements a CMS for user uploaded date. This can be used to allow gues
 | <img src="assets/home.png" width="1920"/> | <img src="assets/management_users.png" width="1920"/> |
 
 
-## Nextride2 Setup(for development)
-Setting up Nextride2 is not necessary in order to use the CMS. 
-In order to setup nextride2 for testing and development, do the following steps:
-1. Clone the repository
-2. Open it with Android Studio
-3. Rename the file constants.example.dart > constants.dart
-4. configure the constants.
-5. Run the application e.g. for linux
-
 ## Restrictions
 Please note! As N2i is currently under development not all features work reliable.
 Please use the latest release for a stable and secure version of N2i.

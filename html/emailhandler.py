@@ -1,23 +1,3 @@
-"""
-Email Handling Module
-
-This module provides functions for sending various types of emails, including standard emails,
-approval requests for new uploads, and error messages.
-
-Functions:
-    - sent_mail(subject, body, filename=False): Sends an email.
-    - sent_email_approval_request(file_name, file_password, uploaded_file): Sends an
-        email approval request for a new upload.
-    - sent_email_error_message(subject, message): Sends an email error message.
-
-Dependencies:
-    - smtplib: Provides functions for sending emails.
-    - ssl: Provides support for secure socket layer (SSL) connections.
-    - os: Provides functions for interacting with the operating system.
-    - email: Provides functionality for constructing and formatting email messages.
-    - dotenv: Provides support for loading environment variables from .env files.
-"""
-
 import smtplib
 import ssl
 import os
@@ -30,18 +10,6 @@ from email.mime.text import MIMEText
 from dotenv import load_dotenv
 
 def sent_mail(subject, body, file_path=False):
-    """
-    Sends an email.
-
-    Args:
-        subject (str): The subject of the email.
-        body (str): The body of the email.
-        file_path (bool, optional): The filename to attach (default is False).
-
-    Returns:
-        bool: True if the email was sent successfully, False otherwise.
-    """
-
     # Load environment variables from .env file
     load_dotenv()
 
@@ -95,17 +63,6 @@ def sent_mail(subject, body, file_path=False):
     return True
 
 def sent_email_approval_request(file_name:str, file_password:str, uploaded_file:str):
-    """
-    Sends an email approval request for a new upload.
-
-    Args:
-        file_name (str): The name of the uploaded file.
-        file_password (str): The password associated with the file.
-
-    Returns:
-        bool: True if the email was sent successfully, False otherwise.
-    """
-
     subject = "[N2i] Approve new upload"
     body = "A new file was uploaded. It's currently in the approval queue " \
         "and needs to be allowed by you"    
@@ -117,17 +74,6 @@ def sent_email_approval_request(file_name:str, file_password:str, uploaded_file:
     return True
 
 def sent_email_error_message(subject:str, message:str):
-    """
-    Sends an email error message.
-
-    Args:
-        subject (str): The subject of the error message.
-        message (str): The error message.
-
-    Returns:
-        bool: True if the email was sent successfully, False otherwise.
-    """
-
     subject = "[N2i] Error: " + subject
     body = '''An error occured. This mail was sent because the error might
     be critical and need a fast review.\n\nError: ''' + message

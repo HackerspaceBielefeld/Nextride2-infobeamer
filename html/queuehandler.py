@@ -1,7 +1,3 @@
-"""
-Module for handling file queue operations.
-"""
-
 import os
 
 from db_file_helper import (get_file_from_queue,add_file_to_uploads,
@@ -11,19 +7,6 @@ from emailhandler import sent_email_error_message
 from helper import logging, hash_sha_512
 
 def approve_file(file_name, uploads_path:str, file_password:str, admin=False):
-    """
-    Approves a file from the queue.
-
-    Args:
-        file_name (str): The name of the file to approve.
-        uploads_path (str): The path where approved files are stored.
-        file_password (str): The password associated with the file.
-        admin (bool, optional): Whether the approval is done by an admin. Defaults to False.
-
-    Returns:
-        bool: True if the file was successfully approved, False otherwise.
-    """
-
     file_to_approve = get_file_from_queue(file_name)
     file_name = file_to_approve.file_name
     file_owner = file_to_approve.file_owner
