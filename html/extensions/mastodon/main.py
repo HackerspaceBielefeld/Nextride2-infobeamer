@@ -34,7 +34,6 @@ def remove_old_images():
             os.remove(os.path.join("static/uploads/", image))
 
 
-
 def main():
     remove_old_images()
     for tag in get_all_mastodon_tags():

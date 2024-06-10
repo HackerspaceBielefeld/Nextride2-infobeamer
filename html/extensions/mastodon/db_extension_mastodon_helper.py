@@ -42,13 +42,15 @@ def get_conn():
     # Set the database path based on the context
     print(current_dir)
     if current_dir.endswith('/html/extensions/mastodon'):
-        db_path = "./instance/mastodon.db"
+        db_path = "./instance"
     else:
-        db_path = "./extensions/mastodon/instance/mastodon.db"
+        db_path = "./extensions/mastodon/instance"
 
 
     create_table = False
     if not os.path.exists(db_path):
+        os.mkdirs(db_path, exist_ok=True)
+        os.path.join(db_path, "mastodon.db")
         create_table = True
 
     conn = None
