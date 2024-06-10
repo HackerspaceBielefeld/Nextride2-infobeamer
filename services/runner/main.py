@@ -29,14 +29,15 @@ def get_image_urls(url):
     return img_urls
 
 def main(cms_url:str):
+    duration = 7
     while(1):
         image_urls = get_image_urls(cms_url)
         for image in image_urls:
             print(image)
             for i in range(3):
-                duration = 7
                 infobeamer_main("255.255.255.255", duration, image)
             time.sleep(duration)
+        time.sleep(duration)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='N2i runner')

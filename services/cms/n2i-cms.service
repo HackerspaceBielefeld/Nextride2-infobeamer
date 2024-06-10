@@ -1,0 +1,12 @@
+[Unit]
+Description=uWSGI instance to serve the nextride2 cms
+After=network.target
+
+[Service]
+Group=www-data
+WorkingDirectory=PATH_TO_HTML_FOLDER
+Environment="PATH=PATH_TO_NEXTRIDE2-INFOBEAMERL_FOLDER/.venv/bin"
+ExecStart=uwsgi --ini uwsgi.ini
+
+[Install]
+WantedBy=multi-user.target

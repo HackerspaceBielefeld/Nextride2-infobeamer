@@ -6,6 +6,7 @@ from db_extension_helper import get_extension_from_config
 
 from helper import logging
 
+
 def check_admin(user_name: str):
     user = get_user_from_users(user_name)
     if not user:
