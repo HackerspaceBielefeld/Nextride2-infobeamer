@@ -6,8 +6,8 @@ After=network.target
 User=www-data
 Group=www-data
 WorkingDirectory=PATH_TO_HTML_FOLDER
-Environment="PATH=PATH_TO_NEXTRIDE2-INFOBEAMER_FOLDER/.venv/bin"
-ExecStart=PATH_TO_NEXTRIDE2-INFOBEAMER_FOLDER/.venv/bin/uwsgi --ini PATH_TO_HTML_FOLDER/uwsgi.ini
+Environment="PATH=PATH_TO_N2i_FOLDER/.venv/bin"
+ExecStart=PATH_TO_N2i_FOLDER/.venv/bin/uwsgi --ini PATH_TO_HTML_FOLDER/uwsgi.ini
 
 [Install]
 WantedBy=multi-user.target
