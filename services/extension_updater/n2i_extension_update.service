@@ -3,8 +3,10 @@ Description=Nextride2-infobeamer-extension-updater
 After=network.target
 
 [Service]
+User=www-data
+Group=www-data
 WorkingDirectory=PATH_TO_HTML_FOLDER
-ExecStart=/usr/bin/python3 ../services/extension_updater/n2i_extension_update.py
+ExecStart=/bin/bash -c 'source PATH_TO_N2i_FOLDER/.venv/bin/activate && exec python3 ../ser>
 RestartSec=2
 Restart=on-failure
 Type=simple

@@ -17,7 +17,7 @@ class Extension(Base):
 
 def check_extensions_active(extension_name: str):
     # Replace 'sqlite:///path/to/your_database.db' with your actual database URL
-    DATABASE_URL = 'sqlite:///instance/uploads.db'
+    DATABASE_URL = 'sqlite:///instance/uploads.sqlite'
     # Create an engine
     engine = create_engine(DATABASE_URL)
     # Create a configured "Session" class
@@ -40,12 +40,12 @@ def main():
 
     for extension in extensions:
         if not check_extensions_active(extension):
-            time.sleep(60)
+            continue
 
         extension_main_path = extensions_path + "/" + extension + "/main.py"
-        commands = '''
+        commands = f'''
         source ../.venv/bin/activate
-        python {extension_main_path}
+        python3 {extension_main_path}
         '''
         process = subprocess.Popen('/bin/bash', stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
         out, err = process.communicate(commands)

@@ -39,7 +39,7 @@ def main():
     for tag in get_all_mastodon_tags():
         hashtag = tag.name
         limit = tag.limit
-        create_slides(hashtag, limit, uploads_path)
+        create_slides(hashtag, limit)
 
 if __name__ == '__main__':
     main()

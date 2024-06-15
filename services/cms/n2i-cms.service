@@ -3,7 +3,7 @@ Description=uWSGI instance to serve the nextride2 cms
 After=network.target
 
 [Service]
-User=USER_NAME
+User=www-data
 Group=www-data
 WorkingDirectory=PATH_TO_HTML_FOLDER
 Environment="PATH=PATH_TO_NEXTRIDE2-INFOBEAMER_FOLDER/.venv/bin"
