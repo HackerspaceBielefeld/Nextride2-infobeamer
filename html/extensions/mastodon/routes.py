@@ -9,6 +9,11 @@ blueprint = Blueprint('mastodon', __name__, template_folder='extensions/mastodon
 @blueprint.route('/')
 #@login_required
 def management_extension_mastodon():
+    try:
+        user_name = session['user_name']
+    except KeyError:
+        return error_page("You are not allowed to access this page")
+    
     if not check_access(session['user_name'], 9):
         return error_page("You are not allowed to access this page")
     
@@ -16,9 +21,15 @@ def management_extension_mastodon():
 
     return render_template('mastodon.html', tags=tags)
 
+
 @blueprint.route('/update', methods=['POST'])
 #@login_required
 def update_extension_mastodon():
+    try:
+        user_name = session['user_name']
+    except KeyError:
+        return error_page("You are not allowed to access this page")
+
     if not check_access(session['user_name'], 9):
         return error_page("You are not allowed to access this page")
 
