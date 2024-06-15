@@ -40,7 +40,7 @@ def main():
 
     for extension in extensions:
         if not check_extensions_active(extension):
-            continue
+            time.sleep(60)
 
         extension_main_path = extensions_path + "/" + extension + "/main.py"
         commands = '''
@@ -53,4 +53,6 @@ def main():
     
     time.sleep(600) #update the extensions every 10 min
 
-main()
+
+if __name__ == "__main__":
+    main()

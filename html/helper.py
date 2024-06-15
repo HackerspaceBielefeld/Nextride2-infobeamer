@@ -68,9 +68,13 @@ def hash_sha_512(to_hash:str):
     """
     return hashlib.sha3_512(to_hash.encode("utf-8")).hexdigest()
 
-def sanitize_string(content:str, extend_allowd_chars=False):
+def sanitize_string(content:str, extend_allowed_chars=False):
     """
     Remove all characters that are not whitelisted.
+    Allow: a-z, A-Z, 0-9, underscore, score, dot
+    
+    Output for error messages might use the extend_allowed_chars parameter
+    in order to allow spaces.
 
     Args:
         content (str): The string to sanitize.
@@ -86,18 +90,17 @@ def sanitize_string(content:str, extend_allowd_chars=False):
 
 def get_file_path(base_dir:str, file_name:str):
     """
-    Check if a file exists at the specified file path
-    and if the path is secure.
+    Construct a normalized filepath and return it.
+    In case of an error or multiple dots in the path, return False
 
     Args:
-        file_path (str): The path to the file to check.
+        base_dir (str): The path to the file to construct a path for.
+        file_name (str): The filename with which the path ends.
 
     Returns:
-        bool: True if the file exists and is secure, False otherwise.
+        str: normalized path on success
+        bool: False on error
     """
-    print(base_dir)
-    print(file_name)
-
     try:
         file_path = os.path.normpath(os.path.join(base_dir, file_name))
     except: return False

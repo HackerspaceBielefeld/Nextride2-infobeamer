@@ -73,7 +73,7 @@ def remove_file_from_queue(file_name: str):
         db.session.commit()
         return upload
     except SQLAlchemyError as e:
-        print(f"An error occurred while removing file from the queue table: {e}")
+        logging(f"An error occurred while removing file from the queue table: {e}")
         return False
 
 
@@ -124,7 +124,7 @@ def remove_file_from_uploads(file_name: str):
         db.session.commit()
         return upload
     except SQLAlchemyError as e:
-        print(f"An error occurred while removing file from the uploads table: {e}")
+        logging(f"An error occurred while removing file from the uploads table: {e}")
         return False
 
 def remove_file_from_db(file_name: str):

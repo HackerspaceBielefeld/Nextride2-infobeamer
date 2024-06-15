@@ -217,7 +217,7 @@ def create_extensions():
     if not existing_cms:
         cms = Extension(name='cms', managable=False, active=True)
         db.session.add(cms)
-
+        db.session.commit()
 
     # Itterate over the extensions folder to add them to the extension table
     for extension_name in os.listdir("extensions"):

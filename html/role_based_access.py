@@ -32,7 +32,9 @@ def check_moderator(user_name: str):
 
 def cms_active():
     cms = get_extension_from_config("cms")
-    return cms.active
+    if cms:
+        return cms.active
+    return False
 
 def check_access(user_name: str, min_req_role_id: int):
     user = get_user_from_users(user_name)

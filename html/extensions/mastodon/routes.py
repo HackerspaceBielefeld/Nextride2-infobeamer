@@ -51,5 +51,5 @@ def update_extension_mastodon():
     return redirect(url_for('mastodon.management_extension_mastodon'))
 
 def error_page(error_message: str):
-    error_message = sanitize_string(error_message, extend_allowd_chars=True)
+    error_message = sanitize_string(error_message, extend_allowed_chars=True)
     return render_template('errors/error.html', error_message=error_message)

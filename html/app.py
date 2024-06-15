@@ -392,7 +392,7 @@ def favicon():
     return send_from_directory(app.root_path, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 def error_page(error_message: str):
-    error_message = sanitize_string(error_message, extend_allowd_chars=True)
+    error_message = sanitize_string(error_message, extend_allowed_chars=True)
     return render_template('errors/error.html', error_message=error_message)
 
 @app.errorhandler(404)
