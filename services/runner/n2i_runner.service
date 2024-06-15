@@ -3,7 +3,7 @@ Description=Nextride2-infobeamer
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 PATH_TO_RUNNER_MAIN -cms CMS_URL
+ExecStart=/usr/bin/python3 PATH_TO_RUNNER_MAIN -c CMS_URL
 Restart=always
 Type=simple
 
