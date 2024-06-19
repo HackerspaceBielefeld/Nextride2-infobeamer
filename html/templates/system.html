@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<header>
+    <div class="menu-container">
+        <nav class="menu">
+            <a href="{{ url_for('index') }}" {% if request.path == url_for('index') %}class="selected"{% endif %}>Home</a>
+            <a href="{{ url_for('dashboard') }}" {% if request.path == url_for('dashboard') %}class="selected"{% endif %}>Dashboard</a>
+        </nav>
+    </div>
+</header>
+<body> 
+    <h1>System images:</h1>
+    <div class="image-container">
+        {% for i in range(0, uploaded_images|length, 3) %}
+        <div class="image-table">
+            {% set image1 = uploaded_images[i] %}
+            {% set image2 = uploaded_images[i+1] if i+1 < uploaded_images|length else None %}
+            {% set image3 = uploaded_images[i+2] if i+2 < uploaded_images|length else None %}
+            <div class="image-row">
+                {% if image1 %}
+                <div class="image-item">
+                    <img src="{{ url_for('static', filename='uploads/system/' + image1) }}" alt="{{ image1 }}">
+                </div>
+                {% endif %}
+                {% if image2 %}
+                <div class="image-item">
+                    <img src="{{ url_for('static', filename='uploads/system/' + image2) }}" alt="{{ image2 }}">
+                </div>
+                {% endif %}
+                {% if image3 %}
+                <div class="image-item">
+                    <img src="{{ url_for('static', filename='uploads/system/' + image3) }}" alt="{{ image3 }}">
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div> 
+</body>
+<footer>
+    <a href="{{ url_for('index') }}">Home</a> | <a href="{{ url_for('faq') }}">FAQ</a>
+    <p>Nextride-infobeamer by Inflac | Hackerspace-Bielefeld e.V.</p>
+</footer>
+</html>

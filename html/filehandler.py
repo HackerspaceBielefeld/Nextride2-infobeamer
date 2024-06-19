@@ -245,3 +245,22 @@ def get_all_images_for_all_users(queue_only=False):
         all_images[username] = {'queue': queue_images, 'uploads': upload_images}
 
     return all_images
+
+def get_uploads(upload_folder:str, extensions_folder:str):
+    extension_images = {}
+    uploaded_images = []
+
+    extensions = os.listdir(extensions_folder)
+    files = os.listdir(upload_folder)
+
+    for file in files:
+        if os.path.isfile(os.path.join(upload_folder, file)):
+            extension = file.split("_", 1)[0]
+            if extension in extensions:
+                if extension not in extension_images:
+                    extension_images[extension] = []
+                extension_images[extension].append(file)
+            else:
+                uploaded_images.append(file)
+    
+    return uploaded_images, extension_images

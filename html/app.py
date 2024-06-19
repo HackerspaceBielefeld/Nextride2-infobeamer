@@ -8,7 +8,7 @@ from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
 from functools import wraps
 
-from filehandler import sanitize_file, safe_file, delete_file, get_all_images_for_all_users
+from filehandler import sanitize_file, safe_file, delete_file, get_all_images_for_all_users, get_uploads
 from queuehandler import approve_file
 from db_models import db, create_roles, create_extensions
 from db_user_helper import add_user_to_users, get_user_from_users, get_users_data_for_dashboard
@@ -61,7 +61,7 @@ for extension_name in os.listdir(extensions_folder):
         app.register_blueprint(module.blueprint, url_prefix=f'/management/extensions/{extension_name}')
 
 # create_folder
-os.makedirs("static/uploads", exist_ok=True)
+os.makedirs("static/uploads/system", exist_ok=True)
 os.makedirs("static/queue", exist_ok=True)
 
 oauth = OAuth(app)
@@ -146,22 +146,16 @@ def logout():
 
 @app.route('/')
 def index():
-    uploads = os.listdir(app.config['UPLOAD_FOLDER'])
-
-    extensions = os.listdir(extensions_folder)
-    extension_images = {}
-    uploaded_images = []
-
-    for image in uploads:
-        extension = image.split("_", 1)[0]
-        if extension in extensions:
-            if extension not in extension_images:
-                extension_images[extension] = []
-            extension_images[extension].append(image)
-        else:
-            uploaded_images.append(image)
+    uploaded_images, extension_images = get_uploads(app.config['UPLOAD_FOLDER'], extensions_folder)
 
     return render_template('index.html', uploaded_images=uploaded_images, extension_images=extension_images)
+
+@app.route('/system')
+def system():
+    system_images = os.listdir(os.path.join(app.config['UPLOAD_FOLDER'], "system"))
+
+    return render_template('system.html', uploaded_images=system_images)
+
 
 @app.route('/dashboard')
 @login_required
