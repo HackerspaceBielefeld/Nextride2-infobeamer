@@ -28,6 +28,12 @@ def get_image_urls(url):
 
     return img_urls
 
+def display_image(image:str, duration:int):
+    print(image)
+    for i in range(3):
+        infobeamer_main("255.255.255.255", duration, system_image)
+    time.sleep(duration)
+
 def main(cms_url:str):
     duration = 10
     while(1):
@@ -37,14 +43,8 @@ def main(cms_url:str):
         for i, image in enumerate(image_urls):
             if i % 5 == 0:
                 for system_image in system_image_urls:
-                    print(system_image)
-                    for i in range(3):
-                        infobeamer_main("255.255.255.255", duration, system_image)
-                    time.sleep(duration)
-            print(image)
-            for i in range(3):
-                infobeamer_main("255.255.255.255", duration, image)
-            time.sleep(duration)
+                    display_image(system_image, duration)
+        display_image(image, duration)
         time.sleep(duration)
 
 if __name__ == '__main__':
