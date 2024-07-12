@@ -8,7 +8,7 @@ blueprint = Blueprint('mastodon', __name__, template_folder='extensions/mastodon
 
 @blueprint.route('/')
 #@login_required
-def management_extension_mastodon():
+def index():
     try:
         user_name = session['user_name']
     except KeyError:
@@ -59,7 +59,7 @@ def update_extension_mastodon():
         elif not add_mastodon_tag(tag, limit):
             return error_page("An error occured while adding a new Tag")
 
-    return redirect(url_for('mastodon.management_extension_mastodon'))
+    return redirect(url_for('mastodon.index'))
 
 def error_page(error_message: str):
     error_message = sanitize_string(error_message, extend_allowed_chars=True)

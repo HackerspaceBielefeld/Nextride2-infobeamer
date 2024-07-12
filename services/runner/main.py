@@ -31,11 +31,11 @@ def get_image_urls(url):
 def display_image(image:str, duration:int):
     print(image)
     for i in range(3):
-        infobeamer_main("255.255.255.255", duration, system_image)
+        infobeamer_main("255.255.255.255", duration, image)
     time.sleep(duration)
 
 def main(cms_url:str):
-    duration = 10
+    duration = 5
     while(1):
         image_urls = get_image_urls(cms_url)
         system_image_urls = get_image_urls(cms_url + "/system")
@@ -44,8 +44,8 @@ def main(cms_url:str):
             if i % 5 == 0:
                 for system_image in system_image_urls:
                     display_image(system_image, duration)
-        display_image(image, duration)
-        time.sleep(duration)
+            display_image(image, duration)
+            time.sleep(duration)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='N2i runner')

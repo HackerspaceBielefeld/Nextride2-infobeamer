@@ -212,13 +212,6 @@ class Extension(db.Model):
 
 
 def create_extensions():
-    # Add the CMS as an extension to be able to de-/activate it
-    existing_cms = Extension.query.filter_by(name="cms").first()
-    if not existing_cms:
-        cms = Extension(name='cms', managable=False, active=True)
-        db.session.add(cms)
-        db.session.commit()
-
     # Itterate over the extensions folder to add them to the extension table
     for extension_name in os.listdir("extensions"):
         extension_elem = Extension.query.filter_by(name=extension_name).first()    

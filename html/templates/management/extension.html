@@ -35,7 +35,7 @@
                 <input type="checkbox" id="{{ extension.name }}" name="selected_extensions" value="{{ extension.name }}" {% if extension.active %}checked{% endif %}>
                 <label for="{{ extension.name }}">{{ extension.name }}</label>
                 {% if extension.managable %}
-                <a href="{{ url_for('mastodon.management_extension_mastodon') }}">[manage]</a>
+                <a href="{{ url_for(extension.name + '.index') }}">[manage]</a>
                 {% endif %}
                 <br><br>
                 {% endfor %}
