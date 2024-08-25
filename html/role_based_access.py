@@ -1,6 +1,8 @@
 """
 Module for user role management.
 """
+import os
+
 from db_user_helper import get_user_from_users
 from db_extension_helper import get_extension_from_config
 
@@ -8,15 +10,10 @@ from helper import logging
 
 
 def check_admin(user_name: str):
-    user = get_user_from_users(user_name)
-    if not user:
-        logging("User couldn't be found")
-        return False
-
-    if not user.role.name == 'admin':
-        logging(f"User {user_name} isn't an admin")
-        return False
-    return True
+    admin_users = os.environ.get('ADMIN_USERS').split(',')
+    if user_name in admin_users:
+        return True
+    return False
 
 def check_moderator(user_name: str):
     user = get_user_from_users(user_name)

@@ -29,22 +29,7 @@ def logging(message:str):
     """
     print(f"[{get_time()}]: {message}")
 
-def generate_random_string(length):
-    """
-    Generate a random string of the specified length containing uppercase and
-    lowercase letters as well as digits.
-
-    Args:
-        length (int): Length of the random string to generate.
-
-    Returns:
-        str: Random string of specified length containing uppercase and
-        lowercase letters as well as digits.
-    """
-    characters = string.ascii_letters + string.digits
-    return ''.join(random.choice(characters) for _ in range(length))
-
-def generate_secret_token(length=64):
+def generate_random_string(length=64):
     """
     Generate a secure random token.
 

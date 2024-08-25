@@ -27,7 +27,7 @@ import os
 
 from PIL import Image
 
-from helper import generate_random_string, generate_secret_token, sanitize_string
+from helper import generate_random_string, sanitize_string
 from helper import logging, hash_sha_512, get_file_path
 from db_file_helper import check_global_upload_limit
 from db_file_helper import remove_file_from_queue, remove_file_from_db
@@ -40,7 +40,7 @@ def sanitize_filename(file_name:str):
     sanitized_filename = sanitize_string(file_name)
 
     # Extend the sanitized filename with random chars to avoid colissions
-    sanitized_filename_extended = generate_random_string(8) + "_" + sanitized_filename
+    sanitized_filename_extended = generate_random_string(length=8) + "_" + sanitized_filename
     return sanitized_filename_extended
 
 def move_file(source: str, destination: str):
@@ -169,7 +169,7 @@ def safe_file(file, QUEUE_FOLDER, user_name):
         logging("An error occured while crafting the path where to safe the file")
         return False
 
-    file_password = generate_secret_token()
+    file_password = generate_random_string()
     file_password_hashed = hash_sha_512(file_password)
 
     if not add_file_to_queue(file.filename, file_path, file_password_hashed, user_name):

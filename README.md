@@ -17,10 +17,11 @@ Please use the latest release for a stable and secure version of N2i.
 
 ## Todos
 General:
-* Fix login bug if cms deactivated an user login the  first time
+* Fix bug that one image needs to be uploaded in order to make the runner functioning
+* Fix bug for the dashboard redirect after file upload
+* Add better solution for system slides
 * Renew docstings
 * Add instructions for the usage of reverseproxy
-* Fix bug that one image needs to be uploaded in order to make the runner functioning
 
 Extensions:
 * Schedule extension

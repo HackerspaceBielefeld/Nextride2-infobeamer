@@ -13,9 +13,9 @@ from queuehandler import approve_file
 from db_models import db, create_roles, create_extensions
 from db_user_helper import add_user_to_users, get_user_from_users, get_users_data_for_dashboard
 from db_extension_helper import get_extensions_from_extensions
-from helper import logging, sanitize_string
+from helper import sanitize_string
 
-from role_based_access import check_access, cms_active
+from role_based_access import check_access, cms_active, check_admin
 
 import importlib.util
 
@@ -74,37 +74,44 @@ github = oauth.register(
     client_kwargs={'scope': 'user:name'},
 )
 
-def login_required(view):
+def login_required(access_level_required=1):
     """
     Decorator function to protect routes that require authentication.
     Redirects unauthenticated users to the login page.
     """
+    def decorator(view):
+        @wraps(view)
+        def decorated_view(*args, **kwargs):
+            # Redirect to the login route if the user do not have a session
+            if not session.get('token'):
+                return redirect(url_for('login', next=request.url))
 
-    @wraps(view)
-    def decorated_view(*args, **kwargs):
-        # Redirect to the login route if the user do not have a session
-        if not session.get('token'):
-            return redirect(url_for('login', next=request.url))
+            # If username from session don't dissolve to a user obj, return index page
+            user = get_user_from_users(session['user_name'])
+            if not user:
+                return redirect(url_for('logout')) # User has a session token but no user exists in db => log him out
 
-        # If username from session don't dissolve to a user obj, return index page
-        user = get_user_from_users(session['user_name'])
-        if not user:
-            return redirect(url_for('index'))
+            session['user_role'] = user.role.id
 
-        session['user_role'] = user.role.id
-        return view(*args, **kwargs)
-    return decorated_view
+            # Check access level
+            if not check_access(user.name, access_level_required):
+                return render_template('errors/blocked.html', support_url=os.environ.get('SUPPORT_URL'))
+
+            return view(*args, **kwargs)
+        return decorated_view
+    return decorator
 
 @app.route('/login')
 def login():
     redirect_uri = url_for('auth', _external=True)
     return github.authorize_redirect(redirect_uri)
 
+
 @app.route('/auth')
 def auth():
 
     token = github.authorize_access_token()
-    if not token:
+    if not token: 
         return error_page("Login failed")
 
     user = github.get('https://api.github.com/user', token=token)
@@ -115,28 +122,35 @@ def auth():
     session['user_data'] = user_data
     session['user_name'] = user_data['login']
     
-    # If a user already exist in the DB, uodate his role in session and redirect to dashboard
     user = get_user_from_users(user_data['login'])
-    if user:
-        if not cms_active() and user.role.id < 9:
-            return redirect(url_for('index'))
-        
-        session['token'] = token
-        session['user_role'] = user.role.id
-        return redirect(url_for('dashboard'))
 
-    if not cms_active():
-        return redirect(url_for('index'))
-    
-    session['token'] = token
+    if cms_active():
+        if user:                                            # Authenticate existing user
+            session['token'] = token
+            session['user_role'] = user.role.id
+            return redirect(url_for('dashboard'))
+        else:                                               # Add a new user
+            if add_user_to_users(user_data['login']):
+                return redirect(url_for('dashboard'))
+            return error_page("User couldn't be added to the database")
+    else:
+        if user:
+            if user.role.id < 9:                            # CMS deactivated => redirect existing non admin users to index
+                return redirect(url_for('index'))
+            else:                                           # Allow existing admin users to login even CMS is deactivated
+                session['token'] = token
+                session['user_role'] = user.role.id
+                return redirect(url_for('dashboard'))
+        else:                                               # CMS deactivated and user do not exist
+            if check_admin(user_data['login']):             # CMS deactivated but user is admin => create a user
+                if add_user_to_users(user_data['login']):
+                    return redirect(url_for('dashboard'))
+                return error_page("User couldn't be added to the database")
+            else:
+                return redirect(url_for('index'))
 
-    # User do not exist yet and gets added to the DB
-    if add_user_to_users(user_data['login']):
-        return redirect(url_for('dashboard'))
-    return error_page("User couldn't be added to the database")
 
-
-@app.route('/logout')
+@app.route('/logout', methods=['GET'])
 def logout():
     if session.get('token'):
         session.clear()
@@ -144,21 +158,19 @@ def logout():
     else:
         return error_page("You are already logged out")
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     uploaded_images, extension_images = get_uploads(app.config['UPLOAD_FOLDER'], extensions_folder)
-
     return render_template('index.html', uploaded_images=uploaded_images, extension_images=extension_images)
 
-@app.route('/system')
+@app.route('/system', methods=['GET'])
 def system():
     system_images = os.listdir(os.path.join(app.config['UPLOAD_FOLDER'], "system"))
-
     return render_template('system.html', uploaded_images=system_images)
 
 
-@app.route('/dashboard')
-@login_required
+@app.route('/dashboard', methods=['GET'])
+@login_required(access_level_required=1)
 def dashboard():
     # Clear session data related to uploaded file
     session.pop('uploaded_file', None)
@@ -172,40 +184,31 @@ def dashboard():
     uploaded_images = user.get_user_files_uploads()
 
     return render_template('dashboard.html', uploaded_images=uploaded_images,
-        queued_images=queued_images)
+                            queued_images=queued_images)
 
 @app.route('/upload', methods=['POST'])
-@login_required
+@login_required(access_level_required=1)
 def upload_file():
-    if not check_access(session['user_name'], 1):
-        return render_template('error/blocked.html', support_url=os.environ.get('SUPPORT_URL'))
-
-    # Check and prepare the URL parameters
     if not request.files.get('file'):
-        return error_page("Specified file is not valid")
-    file = sanitize_file(request.files['file'], app.config['MAX_CONTENT_LENGTH'])
+        return error_page("No file selected")
+    file = sanitize_file(request.files.get('file'), app.config['MAX_CONTENT_LENGTH'])
 
     # If the file isn't valid the upload_result page will not find a file in the session
     # and so return an error message indicating the upload wasn't successful.
     if file != False:        
-        if safe_file(file,app.config['QUEUE_FOLDER'], session['user_name']):
+        if safe_file(file, app.config['QUEUE_FOLDER'], session['user_name']):
             session['uploaded_file'] = file.filename
     return redirect(url_for('upload_result'))
 
-@app.route('/upload/result')
-@login_required
+@app.route('/upload/result', methods=['GET'])
+@login_required(access_level_required=1)
 def upload_result():
     uploaded_file = session.get('uploaded_file', None)
-    if uploaded_file is None:
-        return render_template('upload_result.html',
-                                file=uploaded_file, status="File upload wasn't successful")
-    return render_template('upload_result.html',
-                            file=uploaded_file, status="File upload was successful")
+    return render_template('upload_result.html', file=uploaded_file)
 
 @app.route('/upload/approve')
-@login_required
+@login_required() #TODO Special case because of email approves
 def approve_upload():
-    # Check and prepare the URL parameters
     if not request.args.get('file_name'):
         return error_page("Specified parameters aren't valid")
     file_name = sanitize_string(request.args.get('file_name'))
@@ -230,17 +233,12 @@ def approve_upload():
 
 @app.route('/delete_image', methods=['POST'])
 @login_required
-def delete_image():
-    # Access check is needed to prevent blocked users from deleting their images
-    if not check_access(session['user_name'], 1):
-        return render_template('error/blocked.html', support_url=os.environ.get('SUPPORT_URL'))
-
-    # Check and prepare URL parameters
+def delete_image(access_level_required=1):
     if not request.form.get('file_name'):
-        return error_page("Specified parameters aren't valid")
+        return error_page("No file selected")
     file_name = sanitize_string(request.form.get('file_name'))
     if len(file_name) > 100:
-        return error_page("Specified parameters are too large")
+        return error_page("file name too long")
 
     user = get_user_from_users(session['user_name'])
     if not user: return redirect(url_for('login'))
@@ -256,47 +254,27 @@ def delete_image():
         return error_page("Error while deleting the file")
     return redirect(url_for('dashboard'))
 
-@app.route('/management/users')
-@login_required
+@app.route('/management/users', methods=['GET'])
+@login_required(access_level_required=9)
 def management_users():
-    if not check_access(session['user_name'], 9):
-        return redirect(url_for('index'))
-
     users_data = get_users_data_for_dashboard()
     return render_template('management/users.html', users_data=users_data)
 
-@app.route('/management/approve')
-@login_required
+@app.route('/management/approve', methods=['GET'])
+@login_required(access_level_required=6)
 def management_approve():
-    if not check_access(session['user_name'], 6):
-        return redirect(url_for('index'))
-
-    user = get_user_from_users(session['user_name'])
-    if not user: return redirect(url_for('login'))
-
     all_images = get_all_images_for_all_users(queue_only=True)
-
     return render_template('management/approve.html', all_images=all_images)
 
-@app.route('/management/delete')
-@login_required
+@app.route('/management/delete', methods=['GET'])
+@login_required(access_level_required=6)
 def management_delete():
-    if not check_access(session['user_name'], 6):
-        return redirect(url_for('index'))
-
-    user = get_user_from_users(session['user_name'])
-    if not user: return redirect(url_for('login'))
-
     all_images = get_all_images_for_all_users()
     return render_template('management/delete.html', all_images=all_images)
 
 @app.route('/management/set_role', methods=['POST'])
-@login_required
+@login_required(access_level_required=9)
 def management_set_role():
-    if not check_access(session['user_name'], 9):
-        return error_page("You are not allowed to access this page")
-
-    # Check and prepare URL parameters
     if not request.form.get('role_name') or not request.form.get('target_user_name'):
         return error_page("Specified parameters aren't valid")
     role_name = sanitize_string(request.form.get('role_name'))
@@ -306,7 +284,7 @@ def management_set_role():
         return error_page("Specified parameters are too large")
 
     user = get_user_from_users(target_user_name)
-    if not user: return redirect(url_for('login'))
+    if not user: return error_page("The user whichs role you're trying to modify do not exist")
 
     if not user.set_user_role(role_name):
         return error_page("An error occured - The role was not changed")
@@ -314,12 +292,8 @@ def management_set_role():
     return redirect(url_for('management_users'))
 
 @app.route('/management/update_upload_limit', methods=['POST'])
-@login_required
+@login_required(access_level_required=9)
 def management_update_upload_limit():
-    if not check_access(session['user_name'], 9):
-        return error_page("You are not allowed to access this page")
-
-    # Check and prepare URL parameters
     if not request.form.get('upload_limit') or not request.form.get('target_user_name'):
         return error_page("Specified parameters aren't valid")
     upload_limit = sanitize_string(request.form.get('upload_limit'))
@@ -334,42 +308,28 @@ def management_update_upload_limit():
         return error_page("Specified parameters aren't valid")
 
     user = get_user_from_users(target_user_name)
-    if not user:
-        return error_page("Your user couldn't be found in the database")
+    if not user: return error_page("The user whichs upload limit you're trying to modify do not exist")
 
     if not user.set_user_upload_limit(upload_limit):
-        return error_page("Specified upload limit could not be set")
+        return error_page("An error occured - The upload limit was not updated")
 
     return redirect(url_for('management_users'))
 
 
-@app.route('/management/extensions')
-@login_required
+@app.route('/management/extensions', methods=['GET'])
+@login_required(access_level_required=9)
 def management_extensions():
-    if not check_access(session['user_name'], 9):
-        return error_page("You are not allowed to access this page")
-    
     extensions = get_extensions_from_extensions()
-
     return render_template('management/extension.html', extensions=extensions)
 
 @app.route('/management/update_extensions', methods=['POST'])
-@login_required
+@login_required(access_level_required=9)
 def management_update_extensions():
-    if not check_access(session['user_name'], 9):
-        return error_page("You are not allowed to access this page")
-
     req_extensions = request.form.getlist('selected_extensions')
-
-    selected_extensions = []
-    for extension in req_extensions:
-        extension = sanitize_string(extension)
-        if len(extension) > 10:
-            return error_page("Specified parameters are too large")
-        selected_extensions.append(extension)
+    if not req_extensions: return error_page("No extensions found")
 
     for extension in get_extensions_from_extensions():
-        if extension.name in selected_extensions: 
+        if extension.name in req_extensions: 
             extension.activate()
         else:
             extension.deactivate()
@@ -377,11 +337,11 @@ def management_update_extensions():
     return redirect(url_for('management_extensions'))
 
 
-@app.route('/faq')
+@app.route('/faq', methods=['POST'])
 def faq():
     return render_template('faq.html')
 
-@app.route('/favicon.ico')
+@app.route('/favicon.ico', methods=['GET'])
 def favicon():
     return send_from_directory(app.root_path, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 

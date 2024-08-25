@@ -142,7 +142,6 @@ class Users(db.Model):
 
         # Commit changes to the database
         if not commit_db_changes():
-            logging("Error committing changes to the database.")
             return False
 
         return True
@@ -154,7 +153,6 @@ class Users(db.Model):
         self.upload_limit = new_upload_limit
 
         if not commit_db_changes():
-            logging("Error committing changes to the database.")
             return False
         return True
 
@@ -198,7 +196,6 @@ class Extension(db.Model):
         self.active = True
 
         if not commit_db_changes():
-            logging("Error committing changes to the database.")
             return False
         return True
     
@@ -206,7 +203,6 @@ class Extension(db.Model):
         self.active = False
 
         if not commit_db_changes():
-            logging("Error committing changes to the database.")
             return False
         return True
 
