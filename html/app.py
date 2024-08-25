@@ -109,7 +109,6 @@ def login():
 
 @app.route('/auth')
 def auth():
-
     token = github.authorize_access_token()
     if not token: 
         return error_page("Login failed")
@@ -232,8 +231,8 @@ def approve_upload():
     return error_page("You are not allowed to approve files")
 
 @app.route('/delete_image', methods=['POST'])
-@login_required
-def delete_image(access_level_required=1):
+@login_required(access_level_required=1)
+def delete_image():
     if not request.form.get('file_name'):
         return error_page("No file selected")
     file_name = sanitize_string(request.form.get('file_name'))
@@ -326,7 +325,7 @@ def management_extensions():
 @login_required(access_level_required=9)
 def management_update_extensions():
     req_extensions = request.form.getlist('selected_extensions')
-    if not req_extensions: return error_page("No extensions found")
+    if not req_extensions: req_extensions = []
 
     for extension in get_extensions_from_extensions():
         if extension.name in req_extensions: 

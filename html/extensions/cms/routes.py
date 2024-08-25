@@ -26,7 +26,7 @@ def update_extension_cms():
         return error_page("You are not allowed to access this page")
 
     req_cms_config = request.form.getlist('selected_setting')
-    if not req_cms_config: return error_page("No cms settings found")
+    if not req_cms_config: req_cms_config = []
 
     for setting in get_cms_config():
         if setting.name in req_cms_config:
