@@ -39,9 +39,12 @@ def main(cms_url:str):
     while(1):
         image_urls = get_image_urls(cms_url)
         system_image_urls = get_image_urls(cms_url + "/system")
-
+        
+        for system_image in system_image_urls:
+            display_image(system_image, duration)
+        
         for i, image in enumerate(image_urls):
-            if i % 5 == 0:
+            if i % 6 == 5:
                 for system_image in system_image_urls:
                     display_image(system_image, duration)
             display_image(image, duration)

@@ -17,7 +17,6 @@ Please use the latest release for a stable and secure version of N2i.
 
 ## Todos
 General:
-* Fix bug that one image needs to be uploaded in order to make the runner functioning
 * Add better solution for system slides
 * Renew docstings
 * Add instructions for the usage of reverseproxy
