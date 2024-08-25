@@ -40,6 +40,32 @@ class Role(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(50), unique=True)
 
+def create_roles():
+    # Check if the roles already exist
+    existing_admin = Role.query.filter_by(name='admin').first()
+    existing_moderator = Role.query.filter_by(name='moderator').first()
+    existing_default = Role.query.filter_by(name='default').first()
+    existing_block = Role.query.filter_by(name='block').first()    
+
+    # Create new roles only if they don't exist
+    if not existing_admin:
+        admin = Role(id=9, name='admin')
+        db.session.add(admin)
+
+    if not existing_moderator:
+        moderator = Role(id=6, name='moderator')
+        db.session.add(moderator)
+
+    if not existing_default:
+        default = Role(id=1, name='default')
+        db.session.add(default)
+
+    if not existing_block:
+        block = Role(id=0, name='block')
+        db.session.add(block)
+
+    db.session.commit()
+
 class Users(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -156,33 +182,14 @@ class Users(db.Model):
             return False
         return True
 
-
-def create_roles():
-    # Check if the roles already exist
-    existing_admin = Role.query.filter_by(name='admin').first()
-    existing_moderator = Role.query.filter_by(name='moderator').first()
-    existing_default = Role.query.filter_by(name='default').first()
-    existing_block = Role.query.filter_by(name='block').first()    
+def create_users():
+    # Check if the user already exist
+    existing_system = Role.query.filter_by(name='system').first()    
 
     # Create new roles only if they don't exist
-    if not existing_admin:
-        admin = Role(id=9, name='admin')
-        db.session.add(admin)
-
-    if not existing_moderator:
-        moderator = Role(id=6, name='moderator')
-        db.session.add(moderator)
-
-    if not existing_default:
-        default = Role(id=1, name='default')
-        db.session.add(default)
-
-    if not existing_block:
-        block = Role(id=0, name='block')
-        db.session.add(block)
-
-    db.session.commit()
-
+    if not existing_system:
+        system = Users(user_name='system', user_upload_amount=0, user_upload_limit=10000000, user_files=[])
+        db.session.add(system)
 
 ### Extension ###
 class Extension(db.Model):

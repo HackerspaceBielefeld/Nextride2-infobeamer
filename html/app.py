@@ -10,14 +10,16 @@ from functools import wraps
 
 from filehandler import sanitize_file, safe_file, delete_file, get_all_images_for_all_users, get_uploads
 from queuehandler import approve_file
-from db_models import db, create_roles, create_extensions
+from db_models import db, create_roles, create_users, create_extensions
 from db_user_helper import add_user_to_users, get_user_from_users, get_users_data_for_dashboard
 from db_extension_helper import get_extensions_from_extensions
-from helper import sanitize_string
+from helper import sanitize_string, generate_random_string
 
 from role_based_access import check_access, cms_active, check_admin
 
 import importlib.util
+
+from extensions.cms.CMSConfig import get_setting_from_config
 
 # Load environment variables from .env file
 load_dotenv()
@@ -33,6 +35,7 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
     create_roles()
+    create_users()
     create_extensions()
 
 # Configure flask app with parameters from .env file
@@ -83,8 +86,13 @@ def login_required(access_level_required=1):
         @wraps(view)
         def decorated_view(*args, **kwargs):
             # Redirect to the login route if the user do not have a session
+            login_setting = get_setting_from_config("login_active")
+            
             if not session.get('token'):
-                return redirect(url_for('login', next=request.url))
+                if login_setting.active:
+                    return redirect(url_for('login', next=request.url))
+                else:
+                    session['user_name'] = "system"
 
             # If username from session don't dissolve to a user obj, return index page
             user = get_user_from_users(session['user_name'])
@@ -92,6 +100,8 @@ def login_required(access_level_required=1):
                 return redirect(url_for('logout')) # User has a session token but no user exists in db => log him out
 
             session['user_role'] = user.role.id
+
+            print(user.name)
 
             # Check access level
             if not check_access(user.name, access_level_required):
@@ -121,7 +131,7 @@ def auth():
     session['user_data'] = user_data
     session['user_name'] = user_data['login']
     
-    user = get_user_from_users(user_data['login'])
+    user = get_user_from_users(session['user_name'])
 
     if cms_active():
         if user:                                            # Authenticate existing user
@@ -129,7 +139,7 @@ def auth():
             session['user_role'] = user.role.id
             return redirect(url_for('dashboard'))
         else:                                               # Add a new user
-            if add_user_to_users(user_data['login']):
+            if add_user_to_users(session['user_name']):
                 return redirect(url_for('dashboard'))
             return error_page("User couldn't be added to the database")
     else:
@@ -141,8 +151,8 @@ def auth():
                 session['user_role'] = user.role.id
                 return redirect(url_for('dashboard'))
         else:                                               # CMS deactivated and user do not exist
-            if check_admin(user_data['login']):             # CMS deactivated but user is admin => create a user
-                if add_user_to_users(user_data['login']):
+            if check_admin(session['user_name']):             # CMS deactivated but user is admin => create a user
+                if add_user_to_users(session['user_name']):
                     return redirect(url_for('dashboard'))
                 return error_page("User couldn't be added to the database")
             else:
@@ -197,7 +207,13 @@ def upload_file():
     if file != False:        
         if safe_file(file, app.config['QUEUE_FOLDER'], session['user_name']):
             session['uploaded_file'] = file.filename
-    return redirect(url_for('upload_result'))
+
+    approve_setting = get_setting_from_config("approve_active")
+    if not approve_setting.active:
+        if approve_file(file.filename, app.config['UPLOAD_FOLDER'], "", admin=True):
+            return redirect(url_for('dashboard'))
+    else:
+        return redirect(url_for('upload_result'))
 
 @app.route('/upload/result', methods=['GET'])
 @login_required(access_level_required=1)

@@ -97,3 +97,14 @@ def get_cms_config():
     for row in rows:
         cms_config.append(CMSConfig(row[0], row[1], row[2]))
     return cms_config
+
+def get_setting_from_config(name:str):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM CMSConfig WHERE name = ?", (name,))
+    row = cur.fetchone()
+    conn.close()
+
+    setting = CMSConfig(row[0], row[1], row[2])
+
+    return setting
