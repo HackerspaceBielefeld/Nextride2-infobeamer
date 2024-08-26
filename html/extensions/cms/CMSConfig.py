@@ -13,7 +13,7 @@ def init_table(conn):
                             active BOOLEAN NOT NULL
                             );
                             """
-    
+
     sql_add_config_entries = """
                             INSERT INTO CMSConfig (name, active)
                             VALUES (?, ?)
@@ -69,10 +69,10 @@ class CMSConfig:
                         UPDATE CMSConfig
                         SET active = ?
                         WHERE id = ?
-                        """, (True, self.id))        
+                        """, (True, self.id))
         conn.commit()
         conn.close()
-    
+
     def deactivate(self):
         conn = get_conn()
         cur = conn.cursor()
@@ -80,7 +80,7 @@ class CMSConfig:
                         UPDATE CMSConfig
                         SET active = ?
                         WHERE id = ?
-                        """, (False, self.id))        
+                        """, (False, self.id))
         conn.commit()
         conn.close()
 

@@ -20,12 +20,12 @@ def adjust_content(content: str):
         content = content[:247] + "..."
 
     content = emoji.emojize(content, language='alias')
-    
+
     content = content.encode('unicode-escape').decode('unicode-escape')
     return content
 
 
-def post_filter(toots_df, not_older_then):  
+def post_filter(toots_df, not_older_then):
     # Filter toots that are not older than one hour
     toots_df = toots_df[toots_df['created_at'] >= not_older_then]
 
@@ -39,7 +39,7 @@ def post_filter(toots_df, not_older_then):
         if row['in_reply_to_id'] or row['in_reply_to_account_id']:
             print("Removed toot because it's a reply")
             toots_df.drop(index, inplace=True)
-        
+
         # Filter for polls
         if row['poll']:
             print("Removed toot because it contains a poll")

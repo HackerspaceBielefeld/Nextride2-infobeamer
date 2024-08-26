@@ -1,7 +1,7 @@
-import requests
 import os
-
 from io import BytesIO
+
+import requests
 from PIL import Image, ImageDraw, ImageFont
 
 def split_string_into_chunks(text, chunk_size=35):

@@ -11,7 +11,7 @@ def create_slides(hashtag:str, limit:int):
 
     URL = f'https://mastodon.social/api/v1/timelines/tag/{hashtag}'
 
-    r = requests.get(URL, params={'limit': limit})
+    r = requests.get(URL, params={'limit': limit}, timeout=10)
     toots = json.loads(r.text)
 
     # Create pandas data frames from toots
@@ -24,8 +24,8 @@ def create_slides(hashtag:str, limit:int):
     one_hour_ago = pd.Timestamp.now(tz='Europe/Berlin') - pd.Timedelta(hours=3)
     filtered_toots_df = post_filter(toots_df, one_hour_ago)
 
-    for index, row in filtered_toots_df.iterrows():
-        if type(row['account']) == float: continue
+    for _, row in filtered_toots_df.iterrows():
+        if isinstance(row['account'], float): continue
         slide_creator(row, "static/uploads/")
 
 def remove_old_images():

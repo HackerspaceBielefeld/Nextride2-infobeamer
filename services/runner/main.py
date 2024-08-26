@@ -1,7 +1,7 @@
 import argparse
-import requests
 import time
 
+import requests
 from bs4 import BeautifulSoup
 
 from infobeamer import infobeamer_main

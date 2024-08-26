@@ -18,7 +18,7 @@ def index():
     user_name = session.get('user_name')
     if not check_access(user_name, 9):
         return error_page("You are not allowed to access this page")
-    
+
     tags = get_all_mastodon_tags()
 
     return render_template('mastodon.html', tags=tags)

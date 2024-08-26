@@ -64,8 +64,7 @@ def get_mastodon_tag_by_name(tag_name: str):
     if row:
         tag = Tag(row[0], row[1], row[2])
         return tag
-    else:
-        return None
+    return None
 
 def get_all_mastodon_tags():
     """ Query all tags from the Tags table """
@@ -93,7 +92,7 @@ def add_mastodon_tag(tag_name: str, tag_limit: int):
         cur = conn.cursor()
         cur.execute("INSERT INTO Tags (name, tag_limit) VALUES (?, ?)", (tag_name, tag_limit))
         conn.commit()
-    except sqlite3.Error as e:
+    except sqlite3.Error:
         return False
     return True
 
