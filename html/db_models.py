@@ -45,7 +45,7 @@ def create_roles():
     existing_admin = Role.query.filter_by(name='admin').first()
     existing_moderator = Role.query.filter_by(name='moderator').first()
     existing_default = Role.query.filter_by(name='default').first()
-    existing_block = Role.query.filter_by(name='block').first()    
+    existing_block = Role.query.filter_by(name='block').first()
 
     # Create new roles only if they don't exist
     if not existing_admin:
@@ -184,11 +184,12 @@ class Users(db.Model):
 
 def create_users():
     # Check if the user already exist
-    existing_system = Role.query.filter_by(name='system').first()    
+    existing_system = Role.query.filter_by(name='system').first()
 
     # Create new roles only if they don't exist
     if not existing_system:
-        system = Users(user_name='system', user_upload_amount=0, user_upload_limit=10000000, user_files=[])
+        system = Users(user_name='system', user_upload_amount=0, \
+                        user_upload_limit=10000000, user_files=[])
         db.session.add(system)
 
 ### Extension ###
@@ -205,7 +206,7 @@ class Extension(db.Model):
         if not commit_db_changes():
             return False
         return True
-    
+
     def deactivate(self):
         self.active = False
 
@@ -217,7 +218,7 @@ class Extension(db.Model):
 def create_extensions():
     # Itterate over the extensions folder to add them to the extension table
     for extension_name in os.listdir("extensions"):
-        extension_elem = Extension.query.filter_by(name=extension_name).first()    
+        extension_elem = Extension.query.filter_by(name=extension_name).first()
 
         if not extension_elem:
             if "templates" in os.listdir(os.path.join("extensions", extension_name)):

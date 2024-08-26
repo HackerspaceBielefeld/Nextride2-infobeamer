@@ -1,7 +1,8 @@
-from PIL import Image, ImageDraw, ImageFont
-from io import BytesIO
 import requests
 import os
+
+from io import BytesIO
+from PIL import Image, ImageDraw, ImageFont
 
 def split_string_into_chunks(text, chunk_size=35):
     chunks = []
@@ -19,7 +20,7 @@ def split_string_into_chunks(text, chunk_size=35):
     return chunks
 
 def fetch_and_resize_image(url, target_size):
-    response = requests.get(url)
+    response = requests.get(url, timeout=10)
     image = Image.open(BytesIO(response.content))
 
     image = image.convert("RGB")

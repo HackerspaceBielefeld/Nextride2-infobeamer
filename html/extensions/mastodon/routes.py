@@ -1,5 +1,11 @@
 from flask import Blueprint, session, render_template, request, redirect, url_for
-from extensions.mastodon.db_extension_mastodon_helper import add_mastodon_tag, get_all_mastodon_tags, get_mastodon_tag_by_name, update_mastodon_tag
+
+from extensions.mastodon.db_extension_mastodon_helper import add_mastodon_tag
+from extensions.mastodon.db_extension_mastodon_helper import get_all_mastodon_tags
+from extensions.mastodon.db_extension_mastodon_helper import get_mastodon_tag_by_name
+from extensions.mastodon.db_extension_mastodon_helper import update_mastodon_tag
+
+
 from helper import sanitize_string
 from role_based_access import check_access
 
@@ -9,12 +15,8 @@ blueprint = Blueprint('mastodon', __name__, template_folder='extensions/mastodon
 @blueprint.route('/')
 #@login_required
 def index():
-    try:
-        user_name = session['user_name']
-    except KeyError:
-        return error_page("You are not allowed to access this page")
-    
-    if not check_access(session['user_name'], 9):
+    user_name = session.get('user_name')
+    if not check_access(user_name, 9):
         return error_page("You are not allowed to access this page")
     
     tags = get_all_mastodon_tags()
@@ -25,12 +27,8 @@ def index():
 @blueprint.route('/update', methods=['POST'])
 #@login_required
 def update_extension_mastodon():
-    try:
-        user_name = session['user_name']
-    except KeyError:
-        return error_page("You are not allowed to access this page")
-
-    if not check_access(session['user_name'], 9):
+    user_name = session.get('user_name')
+    if not check_access(user_name, 9):
         return error_page("You are not allowed to access this page")
 
     req_tags = request.form.get('tags')

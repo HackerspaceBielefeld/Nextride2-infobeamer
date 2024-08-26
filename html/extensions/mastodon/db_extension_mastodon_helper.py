@@ -2,14 +2,14 @@ import sqlite3
 import os
 
 class Tag:
-    def __init__(self, id, name, limit):
-        self.id = id
-        self.name = name
-        self.limit = limit
-    
-    def set_limit(self, new_limit: int):
-        self.limit = new_limit
-        
+    def __init__(self, _id:int, _name:str, _limit:int):
+        self.id = _id
+        self.name = _name
+        self.limit = _limit
+
+    def set_limit(self, _new_limit: int):
+        self.limit = _new_limit
+
         # Update the limit in the database
         conn = get_conn()
         cur = conn.cursor()
@@ -36,9 +36,6 @@ def init_table(conn):
     return conn
 
 def get_conn():
-    # Determine the current working directory
-    current_dir = os.getcwd()
-
     db_path = "./extensions/mastodon/instance"
 
     create_table = False
@@ -61,7 +58,7 @@ def get_conn():
 def get_mastodon_tag_by_name(tag_name: str):
     conn = get_conn()
     cur = conn.cursor()
-    
+
     cur.execute("SELECT * FROM Tags WHERE name=?", (tag_name,))
     row = cur.fetchone()
     if row:
@@ -75,15 +72,15 @@ def get_all_mastodon_tags():
     conn = get_conn()
     cur = conn.cursor()
     cur.execute("SELECT * FROM Tags")
-    
+
     rows = cur.fetchall()
     conn.close()
     tags = []
-    
+
     for row in rows:
         tag = Tag(row[0], row[1], row[2])
         tags.append(tag)
-    
+
     return tags
 
 def add_mastodon_tag(tag_name: str, tag_limit: int):
@@ -110,20 +107,18 @@ def remove_mastodon_tag(tag_name: str):
             cur.execute("DELETE FROM Tags WHERE name=?", (tag_name,))
             conn.commit()
             return tag
-        else:
-            return False
-    except sqlite3.Error as e:
+    except sqlite3.Error:
         return False
+    return False
 
 def update_mastodon_tag(tag_name: str, tag_limit: int):
     tag = get_mastodon_tag_by_name(tag_name)
     if not tag:
         return False
-    
+
     if tag_limit == 0:
         if not remove_mastodon_tag(tag_name):
             return False
     elif not tag.set_limit(tag_limit):
         return False
     return True
-

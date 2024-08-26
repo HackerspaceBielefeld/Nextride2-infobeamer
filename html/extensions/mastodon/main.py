@@ -3,7 +3,7 @@ import json
 import requests
 import pandas as pd
 
-from filter import filter
+from post_filter import post_filter
 from slide_creator import slide_creator
 from db_extension_mastodon_helper import get_all_mastodon_tags
 
@@ -22,7 +22,7 @@ def create_slides(hashtag:str, limit:int):
 
     # Filter toots
     one_hour_ago = pd.Timestamp.now(tz='Europe/Berlin') - pd.Timedelta(hours=3)
-    filtered_toots_df = filter(toots_df, one_hour_ago)
+    filtered_toots_df = post_filter(toots_df, one_hour_ago)
 
     for index, row in filtered_toots_df.iterrows():
         if type(row['account']) == float: continue

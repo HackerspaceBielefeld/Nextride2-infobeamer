@@ -57,10 +57,10 @@ def get_conn():
     return conn
 
 class CMSConfig:
-    def __init__(self, id, name, active):
-        self.id = id
-        self.name = name
-        self.active = active
+    def __init__(self, _id:int, _name:str, _active:bool):
+        self.id = _id
+        self.name = _name
+        self.active = _active
 
     def activate(self):
         conn = get_conn()

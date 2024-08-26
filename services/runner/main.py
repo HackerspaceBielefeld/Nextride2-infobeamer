@@ -1,14 +1,14 @@
-from bs4 import BeautifulSoup
 import argparse
 import requests
 import time
-import os
+
+from bs4 import BeautifulSoup
 
 from infobeamer import infobeamer_main
 
 def get_image_urls(url):
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=10)
         response.raise_for_status()  # Check for request errors
     except requests.RequestException as e:
         print(f"Error fetching the URL: {e}")
@@ -30,7 +30,7 @@ def get_image_urls(url):
 
 def display_image(image:str, duration:int):
     print(image)
-    for i in range(3):
+    for _ in range(3):
         infobeamer_main("255.255.255.255", duration, image)
     time.sleep(duration)
 
@@ -39,10 +39,10 @@ def main(cms_url:str):
     while(1):
         image_urls = get_image_urls(cms_url)
         system_image_urls = get_image_urls(cms_url + "/system")
-        
+
         for system_image in system_image_urls:
             display_image(system_image, duration)
-        
+
         for i, image in enumerate(image_urls):
             if i % 6 == 5:
                 for system_image in system_image_urls:
@@ -52,7 +52,7 @@ def main(cms_url:str):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='N2i runner')
-    parser.add_argument('-c', '--cms', required=True, help='URL of the CMS whichs content to display')
+    parser.add_argument('-c', '--cms', required=True, \
+                        help='URL of the CMS whichs content to display')
     args = parser.parse_args()
     main(args.cms)
-

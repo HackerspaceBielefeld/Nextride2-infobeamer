@@ -3,7 +3,7 @@ from flask import Blueprint, session, render_template, request, redirect, url_fo
 from helper import sanitize_string
 from role_based_access import check_access
 
-from extensions.cms.CMSConfig import get_cms_config, get_conn
+from extensions.cms.CMSConfig import get_cms_config
 
 blueprint = Blueprint('cms', __name__, template_folder='extensions/cms/templates')
 
@@ -13,7 +13,7 @@ def index():
     user_name = session.get("user_name")
     if not check_access(user_name, 9):
         return error_page("You are not allowed to access this page")
-    
+
     config = get_cms_config()
 
     return render_template('cms.html', config=config)

@@ -1,7 +1,7 @@
+import re
 from profanity_check import predict
 from bs4 import BeautifulSoup
 import emoji
-import re
 
 def html_to_text(content):
     soup = BeautifulSoup(content, 'html.parser')
@@ -25,7 +25,7 @@ def adjust_content(content: str):
     return content
 
 
-def filter(toots_df, not_older_then):  
+def post_filter(toots_df, not_older_then):  
     # Filter toots that are not older than one hour
     toots_df = toots_df[toots_df['created_at'] >= not_older_then]
 
@@ -51,7 +51,7 @@ def filter(toots_df, not_older_then):
             toots_df.drop(index, inplace=True)
 
         if predict([row['content']]) or predict([row['account']['username']]):
-            print(f"Removed toot because it contains bad content")
+            print("Removed toot because it contains bad content")
             toots_df.drop(index, inplace=True)
 
         toots_df.at[index, 'content'] = adjust_content(row['content'])

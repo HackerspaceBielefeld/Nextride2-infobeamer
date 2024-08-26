@@ -25,7 +25,7 @@ def check_extensions_active(extension_name: str):
     session = Session()
 
     extension = session.query(Extension).filter(Extension.name == extension_name).first()
-    
+
     session.close()
 
     # Check if the extension was found and print it
@@ -47,10 +47,12 @@ def main():
         source ../.venv/bin/activate
         python3 {extension_main_path}
         '''
-        process = subprocess.Popen('/bin/bash', stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
-        out, err = process.communicate(commands)
-        print(out)
-    
+        with subprocess.Popen('/bin/bash', stdin=subprocess.PIPE, \
+                                    stdout=subprocess.PIPE, text=True) as process:
+            out, err = process.communicate(commands)
+            print(out)
+            print(err)
+
     time.sleep(600) #update the extensions every 10 min
 
 

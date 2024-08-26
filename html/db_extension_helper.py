@@ -15,4 +15,3 @@ def get_extensions_from_extensions():
     extensions = Extension.query.all()
     if not extensions: return []
     return extensions
-

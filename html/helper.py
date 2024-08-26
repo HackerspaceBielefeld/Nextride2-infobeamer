@@ -3,9 +3,7 @@ Utility functions for varous tasks of infobeamer CMS.
 """
 
 import hashlib
-import random
 import secrets
-import string
 import time
 import re
 import os

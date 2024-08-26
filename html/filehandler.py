@@ -269,5 +269,5 @@ def get_uploads(upload_folder:str, extensions_folder:str):
                 extension_images[extension].append(file)
             else:
                 uploaded_images.append(file)
-    
+
     return uploaded_images, extension_images
