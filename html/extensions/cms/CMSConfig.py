@@ -22,8 +22,9 @@ def init_table(conn):
 
     # CMS Config
     config = [
-        ('login_active', True),
-        ('approve_active', True)
+        ('login', True),
+        ('approve', True),
+        ('email_approve', False)
     ]
 
     cur = conn.cursor()

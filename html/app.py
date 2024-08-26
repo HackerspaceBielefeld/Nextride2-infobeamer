@@ -13,13 +13,13 @@ from queuehandler import approve_file
 from db_models import db, create_roles, create_users, create_extensions
 from db_user_helper import add_user_to_users, get_user_from_users, get_users_data_for_dashboard
 from db_extension_helper import get_extensions_from_extensions
-from helper import sanitize_string, generate_random_string
+from helper import sanitize_string
 
 from role_based_access import check_access, cms_active, check_admin
 
 import importlib.util
 
-from extensions.cms.CMSConfig import get_setting_from_config
+from extensions.cms.CMSConfig import get_conn, get_setting_from_config
 
 # Load environment variables from .env file
 load_dotenv()
@@ -37,6 +37,7 @@ with app.app_context():
     create_roles()
     create_users()
     create_extensions()
+    get_conn()         # Initilize the cms extensions DB
 
 # Configure flask app with parameters from .env file
 app.secret_key = os.environ.get('FLASK_SECRET_KEY')
@@ -86,7 +87,7 @@ def login_required(access_level_required=1):
         @wraps(view)
         def decorated_view(*args, **kwargs):
             # Redirect to the login route if the user do not have a session
-            login_setting = get_setting_from_config("login_active")
+            login_setting = get_setting_from_config("login")
             
             if not session.get('token'):
                 if login_setting.active:
@@ -208,7 +209,7 @@ def upload_file():
         if safe_file(file, app.config['QUEUE_FOLDER'], session['user_name']):
             session['uploaded_file'] = file.filename
 
-    approve_setting = get_setting_from_config("approve_active")
+    approve_setting = get_setting_from_config("approve")
     if not approve_setting.active:
         if approve_file(file.filename, app.config['UPLOAD_FOLDER'], "", admin=True):
             return redirect(url_for('dashboard'))
@@ -229,11 +230,12 @@ def approve_upload():
     file_name = sanitize_string(request.args.get('file_name'))
     if len(file_name) > 100:
         return error_page("Specified parameters are too large")
+    
     file_password = None
     if request.args.get('file_password'):
         file_password = sanitize_string(request.args.get('file_password'))
-        if len(file_password) > 64:
-            return error_page("Specified parameters are too large")
+        if len(file_password) > 86:
+            return error_page("Incorrect password")
 
     if file_password is not None:
         if approve_file(file_name, app.config['UPLOAD_FOLDER'], file_password):

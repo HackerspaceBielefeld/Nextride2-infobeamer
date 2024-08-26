@@ -13,10 +13,6 @@ def sent_mail(subject, body, file_path=False):
     # Load environment variables from .env file
     load_dotenv()
 
-    # Return if ACTIVATE_EMAIL_APPROVAL in .env isn't True
-    send_mails = os.environ.get('ACTIVATE_EMAIL_APPROVAL')
-    if send_mails != "True" or send_mails != "true": return True
-
     sender_email = os.environ.get('SENDER_EMAIL')
     password = os.environ.get('EMAIL_PASSWORD')
     smtp_server = os.environ.get('SMTP_SERVER')

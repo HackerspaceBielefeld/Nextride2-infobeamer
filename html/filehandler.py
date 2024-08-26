@@ -36,6 +36,8 @@ from db_file_helper import check_file_exist_in_db
 from db_models import Users
 from emailhandler import sent_email_approval_request
 
+from extensions.cms.CMSConfig import get_setting_from_config
+
 def sanitize_filename(file_name:str):
     sanitized_filename = sanitize_string(file_name)
 
@@ -178,6 +180,11 @@ def safe_file(file, QUEUE_FOLDER, user_name):
 
     try:
         file.save(file_path)
+
+        email_setting = get_setting_from_config("email_approve")
+        if not email_setting.active:
+            return True
+
         if not sent_email_approval_request(file.filename, file_password, file_path):
             logging("Failed to sent a file approval email")
             return False

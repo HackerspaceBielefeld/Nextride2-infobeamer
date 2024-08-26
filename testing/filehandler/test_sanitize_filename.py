@@ -18,7 +18,7 @@ class TestSanitizeFilename(unittest.TestCase):
         """
         input_string = "abc123_-."
         expected_output = "_abc123_-."
-        self.assertEqual(sanitize_filename(input_string)[8:], expected_output)
+        self.assertEqual(sanitize_filename(input_string)[11:], expected_output)
 
     def test_string_with_non_whitelisted_characters(self):
         """
@@ -26,7 +26,7 @@ class TestSanitizeFilename(unittest.TestCase):
         """
         input_string = "abc!@#123_$%^&"
         expected_output = "_abc123_"
-        self.assertEqual(sanitize_filename(input_string)[8:], expected_output)
+        self.assertEqual(sanitize_filename(input_string)[11:], expected_output)
 
     def test_empty_string(self):
         """
@@ -34,7 +34,7 @@ class TestSanitizeFilename(unittest.TestCase):
         """
         input_string = ""
         expected_output = "_"
-        self.assertEqual(sanitize_filename(input_string)[8:], expected_output)
+        self.assertEqual(sanitize_filename(input_string)[11:], expected_output)
 
     def test_string_with_only_non_whitelisted_characters(self):
         """
@@ -51,5 +51,5 @@ class TestSanitizeFilename(unittest.TestCase):
         input_string += "���"
 
         expected_output = "_"
-        self.assertEqual(sanitize_filename(input_string)[8:], expected_output)
+        self.assertEqual(sanitize_filename(input_string)[11:], expected_output)
 

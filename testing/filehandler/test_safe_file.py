@@ -17,6 +17,7 @@ class TestSafeFile(unittest.TestCase):
     @patch('filehandler.add_file_to_queue', return_value=True)
     @patch('filehandler.sent_email_approval_request', return_value=True)
     @patch('os.path.exists', return_value=True)
+    @patch('get_setting_from_config', return_value=False)
     def test_successful_safe_file(self, mock_check_global_upload_limit, 
         mock_check_file_exist_in_db, mock_add_file_to_queue, 
         mock_sent_email_approval_request, mock_os_path_exists):

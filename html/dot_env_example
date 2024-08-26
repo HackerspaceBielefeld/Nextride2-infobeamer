@@ -7,7 +7,6 @@ FLASK_SECRET_KEY=ChooseSomeSecretKeyHere
 GITHUB_CLIENT_ID= 
 GITHUB_CLIENT_SECRET=
 
-ACTIVATE_EMAIL_APPROVAL=False
 SENDER_EMAIL="example@example.com"
 EMAIL_PASSWORD="PasswordForMail"
 SMTP_SERVER="mail.example.com"
