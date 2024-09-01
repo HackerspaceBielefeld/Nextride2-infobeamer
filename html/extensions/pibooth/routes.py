@@ -56,14 +56,14 @@ def upload_extension_pibooth():
     req_pibooth_token = request.headers.get('token')
     req_pibooth_file = request.files.get('file')
     if not req_pibooth_token == get_token():
-        return "Token not valid"
+        return "Token not valid", 400
     elif not req_pibooth_file:
-        return "No file received"
+        return "No file received", 400
 
     file_name = sanitize_filename(req_pibooth_file.filename)
     file_path = os.path.join("static/uploads/", file_name)
     req_pibooth_file.save(file_path)
-    return "success"
+    return "success", 200
 
 def error_page(error_message: str):
     error_message = sanitize_string(error_message, extend_allowed_chars=True)
