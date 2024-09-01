@@ -47,6 +47,19 @@ th, td {
     text-align: left;
 }
 
+pre {
+    background-color: #1e1e1e;
+    color: #dcdcdc;
+    padding: 10px;
+    border-radius: 5px;
+    max-width: 50%;
+    overflow-x: scroll;
+    margin-left: 25%;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+
 
 .menu-container {
     width: 100%;
@@ -256,6 +269,11 @@ th, td {
 
 
 @media (max-width: 600px) {
+    pre {
+        max-width: 80%;
+        margin-left: 10%;
+    }
+
     .menu {
         display: block;
     }

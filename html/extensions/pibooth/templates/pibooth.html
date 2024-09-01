@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Users</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="menu-container">
+            <nav class="menu">
+                <a href="{{ url_for('index') }}" {% if request.path == url_for('index') %}class="selected"{% endif %}>Home</a>
+                <a href="{{ url_for('dashboard') }}" {% if request.path == url_for('dashboard') %}class="selected"{% endif %}>Dashboard</a>
+                {% if session['user_role'] >= 6 %}
+                <a href="{{ url_for('management_approve') }}" {% if request.path == url_for('management_approve') %}class="selected"{% endif %}>Approve</a>
+                <a href="{{ url_for('management_delete') }}" {% if request.path == url_for('management_delete') %}class="selected"{% endif %}>Delete files</a>
+                {% endif %}
+                {% if session['user_role'] >= 9 %}
+                <a href="{{ url_for('management_users') }}" {% if request.path == url_for('management_users') %}class="selected"{% endif %}>Users</a>
+                <a href="{{ url_for('management_extensions') }}" {% if request.path == url_for('management_extensions') %}class="selected"{% endif %}>Extensions</a>
+                {% endif %}
+                <a class="logout-button" href="{{ url_for('logout') }}">Logout</a>
+            </nav>
+        </div>
+    </header>
+    <div class="head-container">
+    </div>
+
+    <h1>Pibooth configuration</h1>
+    <div class="extension-container">
+        <div class="extension-management">
+            <p>Endpoint URL: <p><pre>{{ url }}</pre>
+            <p>Token: </p><pre>{{ token }}</pre>
+            <form action="/management/extensions/pibooth" method="post">
+                <button type="submit" class="green-button">Renew Token</button>
+            </form>
+        </div>
+    </div>
+</body>
+<footer>
+    <a href="{{ url_for('index') }}">Home</a> | <a href="{{ url_for('faq') }}">FAQ</a>
+    <p>Nextride2-infobeamer by Inflac | Hackerspace-Bielefeld e.V.</p>
+</footer>
+</html>
