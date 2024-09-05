@@ -1,0 +1,16 @@
+services:
+  web:
+    image: n2i-cms
+    build: .
+    container_name: n2i-cms
+    ports:
+      - "8082:5000"
+    env_file:
+      - html/.env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s

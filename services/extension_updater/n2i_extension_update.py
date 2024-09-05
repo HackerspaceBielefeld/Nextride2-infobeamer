@@ -42,7 +42,7 @@ def main():
         if not check_extensions_active(extension):
             continue
 
-        extension_main_path = extensions_path + "/" + extension + "/main.py"
+        extension_main_path = os.path.join(extensions_path, extension, "main.py")
         commands = f'''
         source ../.venv/bin/activate
         python3 {extension_main_path}
