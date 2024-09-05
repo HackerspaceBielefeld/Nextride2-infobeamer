@@ -1,0 +1,15 @@
+[Unit]
+Description=N2i Image Displayer Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/cms/runner/main.py -c cms.inflacsan.de
+WorkingDirectory=/path/to/your/script
+Restart=always
+User=cms
+Group=cms
+Environment=PYTHONUNBUFFERED=1
+type=simple
+
+[Install]
+WantedBy=multi-user.target
