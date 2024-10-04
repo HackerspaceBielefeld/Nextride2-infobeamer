@@ -1,0 +1,13 @@
+[Unit]
+Description=N2i Image Displayer Service
+After=network.target
+
+[Service]
+ExecStart=ExecStart=/usr/bin/python3 /path/to/main.py -c <CMS URL>
+User=<INSERT USER>
+Environment="DISPLAY=:0"
+Environment="XAUTHORITY=/home/pi/.Xauthority"
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

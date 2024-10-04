@@ -12,7 +12,6 @@ EMAIL_PASSWORD="PasswordForMail"
 SMTP_SERVER="mail.example.com"
 RECEIVER_EMAIL="reciever@example.com"
 
-DATABASE_NAME="uploads.sqlite"
 GLOBAL_UPLOAD_LIMIT="100"
 
 DEFAULT_USER_UPLOAD_LIMIT="5"

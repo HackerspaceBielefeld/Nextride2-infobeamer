@@ -27,7 +27,7 @@ def logging(message:str):
     """
     print(f"[{get_time()}]: {message}")
 
-def generate_random_string(length=64):
+def generate_random(length=64):
     """
     Generate a secure random token.
 

@@ -17,9 +17,15 @@ Please use the latest release for a stable and secure version of N2i.
 
 ## Todos
 General:
-* Add better solution for system slides
-* Renew docstings
+* Renew doxygen
+    * db_extension_helper.py 04.10.2024
+    * db_file_helper.py 04.10.2024
+    * db_user_helper.py 04.10.2024
+    * emailhandler.py 04.10.2024
+    * wsgi.py 04.10.2024
+    * role_based_access.py 04.10.2024
 * Add instructions for the usage of reverseproxy
+* Add better solution for system slides
 
 Extensions:
 * Schedule extension

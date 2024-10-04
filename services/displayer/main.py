@@ -1,5 +1,7 @@
+import os
 import argparse
 import pygame
+
 
 from display import display_image
 from image_fetcher import fetch_image_from_url
@@ -17,6 +19,8 @@ image_cache = {}
 
 # Main loop to fetch and display images
 def main(cms_url):
+    os.environ['DISPLAY'] = ':0'
+
     duration = 5  # Image display duration
     screen, clock = init_pygame()  # Initialize pygame once
 

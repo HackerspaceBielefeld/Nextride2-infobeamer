@@ -26,7 +26,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.environ.get('DATABASE_NAME')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///uploads.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 # initialize the app with Flask-SQLAlchemy
@@ -101,8 +101,6 @@ def login_required(access_level_required=1):
                 return redirect(url_for('logout')) # User has a session token but no user exists in db => log him out
 
             session['user_role'] = user.role.id
-
-            print(user.name)
 
             # Check access level
             if not check_access(user.name, access_level_required):
