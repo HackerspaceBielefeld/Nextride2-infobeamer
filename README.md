@@ -24,6 +24,9 @@ General:
     * emailhandler.py 04.10.2024
     * wsgi.py 04.10.2024
     * role_based_access.py 04.10.2024
+    * filehandler.py 06.10.2024
+    * helper.py 06.10.2024
+    * queuehandler 06.10.2024
 * Add instructions for the usage of reverseproxy
 * Add better solution for system slides
 

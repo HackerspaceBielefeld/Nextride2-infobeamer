@@ -1,30 +1,27 @@
 """
-File Management Module
+@file file_management.py
+@brief This module provides functions for managing files, including sanitization, validation, uploading, and deletion.
 
-This module provides functions for file management, including file sanitization,
-file existence checks, file movement, image validation, file upload handling, and file deletion.
-
-Functions:
-    - sanitize_filename(file_name): Sanitizes a file name by removing disallowed characters
-        and adding random prefixes.
-    - move_file(source, destination): Moves a file from the source path to the destination path.
-    - check_image(file): Checks if the uploaded file is an image with an accepted extension.
-    - sanitize_file(file, MAX_CONTENT_LENGTH): Sanitizes an uploaded file
-        before further processing.
-    - safe_file(file, QUEUE_FOLDER, user_name): Safely handles the upload of
-        a file to the queue folder.
-    - delete_file(file_name): Deletes a file from the filesystem and
-        its corresponding entry from the database.
+This module supports operations like sanitizing filenames, moving files, verifying image files,
+handling file uploads, and removing files from both the filesystem and the database. It includes
+logging and integrates with other services like email approval requests.
 
 Dependencies:
     - shutil: Provides functions for file operations.
     - os: Provides functions for interacting with the operating system.
     - PIL: Python Imaging Library for image processing.
+    - helper: Custom helper functions for logging, hashing, and file path management.
+    - db_file_helper: Helper functions for interacting with the database regarding file operations.
+    - emailhandler: Sends approval request emails for file uploads.
+
+@author Inflac
+@date 2024-10-06
 """
 
-import shutil
 import os
+import shutil
 
+from typing import Union
 from PIL import Image
 
 from helper import generate_random, sanitize_string
@@ -38,46 +35,61 @@ from emailhandler import sent_email_approval_request
 
 from extensions.cms.CMSConfig import get_setting_from_config
 
-def sanitize_filename(file_name:str):
+def sanitize_filename(file_name:str) -> str:
+    """
+    @brief Sanitizes a filename and adds a random 8-character prefix.
+
+    @param file_name The unsanitized filename.
+
+    @return The sanitized filename with a random 8-character prefix added.
+    """
+
     sanitized_filename = sanitize_string(file_name)
 
     # Extend the sanitized filename with random chars to avoid colissions
     sanitized_filename_extended = generate_random(length=8) + "_" + sanitized_filename
     return sanitized_filename_extended
 
-def move_file(source: str, destination: str):
+def move_file(source:str, destination:str) -> bool:
     """
-    Move a file from the source path to the destination path.
+    @brief Moves a file from the source path to the destination path.
 
-    Args:
-        source (str): The path of the source file.
-        destination (str): The path of the destination file.
+    @param source The path of the source file.
+    @param destination The path of the destination file.
 
-    Returns:
-        bool: True if the file was moved successfully, False otherwise.
+    @return True if the file was moved successfully, False otherwise.
 
-    Raises:
-        FileNotFoundError: If the source file cannot be found.
+    @exception FileNotFoundError Logs an error message if the source file cannot be found.
+    @exception PermissionError Logs an error if the file cannot be moved due to permission issues.
+    @exception OSError Logs any other errors that occur during the file move operation.
     """
+
     try:
         shutil.move(source, destination)
         logging(f"File moved from {source} to {destination}")
         return True
     except FileNotFoundError as e:
         logging(f"Error: Source file '{source}' not found: {e}")
+    except PermissionError as e:
+        logging(f"Permission error while moving file '{source}': {e}")
+    except OSError as e:
+        logging(f"Error moving file '{source}': {e}")
     return False
 
-def check_image(file):
+def check_image(file) -> bool:
     """
-    Checks if the uploaded file is an image and has an accepted file extension.
+    @brief Checks if the uploaded file is an image and has an accepted extension.
 
-    This function checks the file extension and attempts to open and verify the image file.
+    This function verifies both the file extension and the image file's validity.
 
-    Args:
-        file: The uploaded file object.
+    @param file The uploaded file object.
 
-    Returns:
-        bool: True if the file is an image and has an accepted extension, False otherwise.
+    @return True if the file is a valid image with an accepted extension, False otherwise.
+
+    @exception FileNotFoundError Logs an error if the image file is not found.
+    @exception PIL.UnidentifiedImageError Logs an error if the file is not a recognized image.
+    @exception ValueError Logs an error if the file cannot be opened.
+    @exception TypeError Logs an error if the file is of the wrong type.
     """
 
     # Check the file extension
@@ -97,27 +109,20 @@ def check_image(file):
         logging(f"Error while checking an image: {e}")
     return False
 
-def sanitize_file(file, MAX_CONTENT_LENGTH):
+def sanitize_file(file, MAX_CONTENT_LENGTH:int) -> Union[File, bool]:
     """
-    Sanitizes an uploaded file.
+    @brief Sanitizes an uploaded file and checks its validity.
 
-    This function performs several checks and sanitization steps
-    on an uploaded file before further processing:
-    * It checks the file size to be smaler than a maximum content length.
-    * The filenmae is sanitized
-    * The fileextensio is checked against a whitelist
-    * It's tested if the image can be opened to verify it's content is actually the one of an image
+    This function sanitizes the filename, verifies the file size, and checks if it is a valid image.
 
-    Args:
-        file: The uploaded file object.
-        MAX_CONTENT_LENGTH (int): The maximum allowed content length for the file.
+    @param file The uploaded file object.
+    @param MAX_CONTENT_LENGTH The maximum allowed content length.
 
-    Returns:
-        file or False: The sanitized file object if it passes all checks, False otherwise.
+    @return The sanitized file object if all checks pass, otherwise False.
     """
 
     if not file:
-        logging("Upload pressed but no file was selected")
+        logging("No file within the request")
         return False
 
     if not len(file.read()) <= MAX_CONTENT_LENGTH:
@@ -135,26 +140,22 @@ def sanitize_file(file, MAX_CONTENT_LENGTH):
     return file
 
 
-def safe_file(file, QUEUE_FOLDER, user_name):
+def safe_file(file, QUEUE_FOLDER:str, user_name:str) -> bool:
     """
-    Safely handles the upload of a file to the queue folder.
+    @brief Handles the safe upload of a file to the queue folder.
 
-    This function checks various conditions before saving the file
-    to ensure a safe and successful upload process.
-    
-    Args:
-        file (FileStorage): The file object to be saved.
-        QUEUE_FOLDER (str): The path to the queue folder where the file will be stored.
-        user_name (str): The name of the user performing the upload.
+    This function checks upload limits, ensures the filename doesn't already exist, and initiates
+    the file saving process with additional features like password hashing and email approval requests.
 
-    Returns:
-        bool: True if the file was successfully saved and
-        an email approval request was sent, False otherwise.
+    @param file The file to be uploaded.
+    @param QUEUE_FOLDER The path to the queue folder where the file will be saved.
+    @param user_name The name of the user performing the upload.
 
-    Raises:
-        FileNotFoundError: If the specified file path does not exist.
-        IsADirectoryError: If the specified file path points to a directory instead of a file.
-        PermissionError: If permission is denied while attempting to save the file.
+    @return True if the file was successfully saved and an approval email was sent, False otherwise.
+
+    @exception FileNotFoundError Logs an error if the specified file path does not exist.
+    @exception IsADirectoryError Logs an error if the specified file path points to a directory.
+    @exception PermissionError Logs an error if permission is denied while attempting to save the file.
     """
 
     if not check_global_upload_limit():
@@ -201,22 +202,18 @@ def safe_file(file, QUEUE_FOLDER, user_name):
     return False
 
 
-def delete_file(file_name:str):
+def delete_file(file_name:str) -> bool:
     """
-    Deletes a file from the filesystem and its corresponding entry from the database.
+    @brief Deletes a file from the filesystem and its entry from the database.
 
-    This function attempts to delete the specified file
-    from the filesystem and its corresponding entry from the database.
-    
-    Args:
-        file_name (str): The name of the file to be deleted.
+    This function attempts to remove the specified file from both the filesystem and the database.
 
-    Returns:
-        bool: True if the file was successfully deleted, False otherwise.
+    @param file_name The name of the file to be deleted.
 
-    Raises:
-        FileNotFoundError: If the specified file does not exist.
-        PermissionError: If permission is denied to delete the file.
+    @return True if the file was successfully deleted, False otherwise.
+
+    @exception FileNotFoundError Logs an error if the specified file does not exist.
+    @exception PermissionError Logs an error if permission is denied to delete the file.
     """
 
     file_data = remove_file_from_db(file_name)
@@ -237,27 +234,77 @@ def delete_file(file_name:str):
     return False
 
 
-def get_all_images_for_all_users(queue_only=False):
+def get_all_images_for_all_users(queue_only=False) -> dict[str, dict[str, list[str]]]:
+    """
+    @brief Retrieves all queued and uploaded images for all users.
+
+    This function fetches all users from the database and gathers their queued and uploaded images.
+    If `queue_only` is set to True, only the images in the queue will be retrieved.
+
+    @param queue_only A boolean flag indicating whether to return only queued images.
+    
+    @return A dictionary where the keys are usernames, and the values are dictionaries
+            with the user's queued and uploaded images.
+
+    @exception SQLAlchemyError Logs an error message if a database query fails.
+    @exception KeyError Logs if there are any issues accessing user information.
+    """
+
     all_images = {}
-    all_users = Users.query.all()
+    try:
+        all_users = Users.query.all()
+        logging(f"Retrieved {len(all_users)} users from the database.")
+    except SQLAlchemyError as e:
+        logging(f"An error occurred while retrieving users: {e}")
+        return all_images
 
     for user in all_users:
         username = user.name
         queue_images = user.get_user_files_queue()
+
         if queue_only:
             all_images[username] = {'queue': queue_images}
             continue
+
         upload_images = user.get_user_files_uploads()
         all_images[username] = {'queue': queue_images, 'uploads': upload_images}
 
     return all_images
 
-def get_uploads(upload_folder:str, extensions_folder:str):
+def get_uploads(upload_folder:str, extensions_folder:str) -> tuple[list[str], dict[str, list[str]]]:
+    """
+    @brief Retrieves uploaded images and categorizes them based on file extensions.
+
+    This function scans the upload folder for images and categorizes them by their extension.
+    Images with recognized extensions are added to the `extension_images` dictionary,
+    while others are placed in the `uploaded_images` list.
+
+    @param upload_folder The directory where uploaded images are stored.
+    @param extensions_folder The directory where allowed extensions are listed.
+
+    @return A tuple containing:
+        - uploaded_images: A list of image filenames that do not match any known extension.
+        - extension_images: A dictionary where keys are extensions and values are lists of image filenames.
+
+    @exception FileNotFoundError Logs an error if the upload or extensions folder is not found.
+    @exception OSError Logs any issues that arise during file system access.
+    """
+
     extension_images = {}
     uploaded_images = []
 
     extensions = os.listdir(extensions_folder)
     files = os.listdir(upload_folder)
+
+    try:
+        extensions = os.listdir(extensions_folder)
+        files = os.listdir(upload_folder)
+    except FileNotFoundError as e:
+        logging.error(f"Folder not found: {e}")
+        return uploaded_images, extension_images
+    except OSError as e:
+        logging.error(f"Error accessing file system: {e}")
+        return uploaded_images,     
 
     for file in files:
         if os.path.isfile(os.path.join(upload_folder, file)):

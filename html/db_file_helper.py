@@ -78,7 +78,7 @@ def get_file_from_queue(file_name: str) -> Union[Queue, None, bool]:
 
 def add_file_to_queue(file_name: str, file_path: str, file_password: str, file_owner: str) -> bool:
     """
-    Add a file to the queue for review.
+    @brief Add a file to the queue for review.
     
     This function adds a file to the queue by creating a new entry in the Queue table. 
     It first validates that the file owner exists and can accept the file. 
@@ -291,7 +291,7 @@ def remove_file_from_uploads(file_name: str) -> Union[Uploads, bool]:
 
 def remove_file_from_db(file_name: str) -> Union[Queue, Uploads, bool]:
     """
-    Remove a file from the database by checking both the uploads and queue tables.
+    @brief Remove a file from the database by checking both the uploads and queue tables.
 
     This function first attempts to remove a file by its name from the uploads table. 
     If the file isn't found there, it then checks the queue table. If the file is found 
@@ -323,7 +323,7 @@ def remove_file_from_db(file_name: str) -> Union[Queue, Uploads, bool]:
 
 def check_file_exist_in_db(file_name: str) -> bool:
     """
-    Check if a file exists in the uploads or queue table by file name.
+    @brief Check if a file exists in the uploads or queue table by file name.
 
     This function checks both the uploads and queue tables for the existence of a file 
     with the given name. If the file is found in either table, it logs its presence and 

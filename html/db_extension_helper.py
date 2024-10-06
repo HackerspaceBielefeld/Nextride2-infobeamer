@@ -14,11 +14,13 @@ SQLAlchemy is used for database interaction, and all exceptions are handled with
 @date 2024-10-04
 """
 
+from typing import Union
+
 from sqlalchemy.exc import SQLAlchemyError
 from db_models import Extension, db
 from helper import logging
 
-def db_get_extension(extension_name: str):
+def db_get_extension(extension_name: str) -> Union[bool, Extension]:
     """
     @brief Retrieves an extension entry by its name.
 
@@ -42,7 +44,7 @@ def db_get_extension(extension_name: str):
     
     return False
 
-def db_get_extensions():
+def db_get_extensions() -> list:
     """
     @brief Retrieves all entries from the 'Extension' table.
 
