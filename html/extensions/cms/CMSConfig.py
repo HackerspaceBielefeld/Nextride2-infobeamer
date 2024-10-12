@@ -1,7 +1,8 @@
 import sqlite3
+import logging
 import os
 
-from helper import logging
+logger = logging.getLogger()
 
 def init_table(conn):
     """ Create a database connection to a SQLite database """
@@ -32,9 +33,9 @@ def init_table(conn):
         cur.execute(sql_create_config_table)
         cur.executemany(sql_add_config_entries, config)
         conn.commit()
-        logging("CMSConfig table created successfully")
+        logger.debug("CMSConfig table created successfully")
     except sqlite3.Error as e:
-        logging(e)
+        logger.error(e)
 
 def get_conn():
     db_dir = "./extensions/cms/instance"
@@ -48,7 +49,7 @@ def get_conn():
     try:
         conn = sqlite3.connect(db_path)
     except sqlite3.Error as e:
-        logging(f"Error connecting to database: {e}")
+        logger.error(f"Error connecting to database: {e}")
         return None
 
     if create_table:

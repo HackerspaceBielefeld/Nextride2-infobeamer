@@ -7,18 +7,19 @@ SQLAlchemy is used for database interaction, and all exceptions are handled with
 
 @dependencies
 - SQLAlchemy for database ORM
-- Custom logging function from the helper module
 - Extension model from db_models
 
 @author Inflac
-@date 2024-10-04
+@date 2024
 """
 
+import logging
 from typing import Union
 
 from sqlalchemy.exc import SQLAlchemyError
 from db_models import Extension, db
-from helper import logging
+
+logger = logging.getLogger()
 
 def db_get_extension(extension_name: str) -> Union[bool, Extension]:
     """
@@ -35,12 +36,12 @@ def db_get_extension(extension_name: str) -> Union[bool, Extension]:
     try:
         extension = db.session.query(Extension).filter(Extension.name == extension_name).first()
         if extension:
-            logging(f"Extension '{extension_name}' successfully retrieved.")
+            logger.debug(f"Extension '{extension_name}' successfully retrieved.")
             return extension
         else:
-            logging(f"No extension found with the name '{extension_name}'.")
+            logger.info(f"No extension found with the name '{extension_name}'.")
     except SQLAlchemyError as e:
-        logging(f"An error occurred while retrieving extension '{extension_name}' from the database: {e}")
+        logger.error(f"An error occurred while retrieving extension '{extension_name}' from the database: {e}")
     
     return False
 
@@ -57,12 +58,12 @@ def db_get_extensions() -> list:
     try:
         extensions = db.session.query(Extension).all()
         if extensions:
-            logging(f"{len(extensions)} extensions successfully retrieved.")
+            logger.debug(f"{len(extensions)} extensions successfully retrieved.")
             return extensions
         else:
-            logging("No extensions found in the database.")
+            logger.info("No extensions found in the database.")
             return []
     except SQLAlchemyError as e:
-        logging(f"An error occurred while retrieving all extensions: {e}")
+        logger.error(f"An error occurred while retrieving all extensions: {e}")
         return []
 

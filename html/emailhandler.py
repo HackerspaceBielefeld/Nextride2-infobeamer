@@ -13,15 +13,15 @@
 - ssl for secure connections
 - Email modules for composing messages
 - Environment variables for configuration
-- Custom logging function from the helper module
 
 @author Inflac
-@date 2024-10-04
+@date 2024
 """
 
 import os
-import smtplib
 import ssl
+import smtplib
+import logging
 
 from email import encoders
 from email.mime.base import MIMEBase
@@ -29,7 +29,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from smtplib import SMTPException, SMTPHeloError, SMTPAuthenticationError, SMTPNotSupportedError, SMTPRecipientsRefused, SMTPSenderRefused, SMTPDataError
 
-from helper import logging
+logger = logging.getLogger()
+
 
 def sent_mail(subject, body, file_path=False):
     """
@@ -77,10 +78,10 @@ def sent_mail(subject, body, file_path=False):
             # Add attachment to message
             message.attach(part)
         except FileNotFoundError:
-            logging(f"Attachment file '{file_path}' not found.")
+            logger.error(f"Attachment file '{file_path}' not found.")
             return False
         except Exception as e:
-            logging(f"An error occurred while attaching the file: {e}")
+            logger.error(f"An error occurred while attaching the file: {e}")
             return False
 
     text = message.as_string()
@@ -91,27 +92,27 @@ def sent_mail(subject, body, file_path=False):
         with smtplib.SMTP_SSL(smtp_server, 465, context=context) as server:
             server.login(sender_email, password)
             server.sendmail(sender_email, receiver_email, text)
-            logging(f"Email sent successfully to {receiver_email}.")
+            logger.info(f"Email sent successfully to {receiver_email}.")
     except SMTPHeloError:
-        logging("The server didn't reply properly to the HELO greeting.")
+        logger.error("The server didn't reply properly to the HELO greeting.")
         return False
     except SMTPAuthenticationError:
-        logging("The server didn't accept the username/password combination.")
+        logger.error("The server didn't accept the username/password combination.")
         return False
     except SMTPNotSupportedError:
-        logging("The AUTH command is not supported by the server.")
+        logger.error("The AUTH command is not supported by the server.")
         return False
     except SMTPRecipientsRefused:
-        logging("The server rejected ALL recipients (no mail was sent).")
+        logger.error("The server rejected ALL recipients (no mail was sent).")
         return False
     except SMTPSenderRefused:
-        logging("The server didn't accept the sender address.")
+        logger.error("The server didn't accept the sender address.")
         return False
     except SMTPDataError:
-        logging("The server replied with an unexpected error code.")
+        logger.error("The server replied with an unexpected error code.")
         return False
     except Exception as e:
-        logging(f"An unexpected error occurred while sending email: {e}")
+        logger.error(f"An unexpected error occurred while sending email: {e}")
         return False
 
     return True

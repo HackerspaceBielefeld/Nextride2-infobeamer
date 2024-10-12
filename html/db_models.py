@@ -1,26 +1,31 @@
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-instance-attributes
 
+import logging
 import json
 import os
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
 
-from helper import logging
+logger = logging.getLogger()
 
 db = SQLAlchemy()
+
 
 def commit_db_changes():
     try:
         db.session.commit()
     except SQLAlchemyError as e:
-        logging(f"Error committing changes: {e}")
+        logger.error(f"Error committing changes: {e}")
         db.session.rollback()
         return False
     return True
 
 class Uploads(db.Model):
+    """
+
+    """
     __tablename__ = 'uploads'
     id = db.Column(db.Integer, primary_key=True)
     file_name = db.Column(db.String(100), nullable=False)
@@ -28,6 +33,8 @@ class Uploads(db.Model):
     file_owner = db.Column(db.String(100), nullable=False)
 
 class Queue(db.Model):
+    """
+    """
     __tablename__ = 'queue'
     id = db.Column(db.Integer, primary_key=True)
     file_name = db.Column(db.String(100), nullable=False)
@@ -36,6 +43,8 @@ class Queue(db.Model):
     file_owner = db.Column(db.String(100), nullable=False)
 
 class Role(db.Model):
+    """
+    """
     __tablename__ = 'roles'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(50), unique=True)
@@ -96,14 +105,14 @@ class Users(db.Model):
         amount_uploads = len(self.get_user_files_uploads())
         if uploads:
             if len(files) + amount_queue > self.upload_limit:
-                logging("Amount of files exceeds upload limit")
+                logger.info("Amount of files exceeds upload limit")
                 return False
 
             self.upload_amount = len(files) + amount_queue
             self.files_uploads = json.dumps(files)
         else:
             if len(files) + amount_uploads > self.upload_limit:
-                logging("Amount of files exceeds upload limit")
+                logger.info("Amount of files exceeds upload limit")
                 return False
 
             self.upload_amount = len(files) + amount_uploads
@@ -115,7 +124,7 @@ class Users(db.Model):
 
     def add_user_file(self, file:str, uploads=False):
         if self.upload_amount >= self.upload_limit:
-            logging("Upload limit already reached")
+            logger.info("Upload limit already reached")
             return False
 
         if uploads:
@@ -137,11 +146,11 @@ class Users(db.Model):
             files = self.get_user_files_queue()
 
         if not files:
-            logging("There aren't any files to delete")
+            logger.info("There aren't any files to delete")
             return False
 
         if file not in files:
-            logging("File to remove isn't present in the users files")
+            logger.warning("File to remove isn't present in the users files")
             return False
 
         files.remove(file)
@@ -160,7 +169,7 @@ class Users(db.Model):
             new_role = Role.query.filter_by(name="admin").first()
 
         if not new_role:
-            logging(f"Role '{new_role_name}' does not exist.")
+            logger.warning(f"Role '{new_role_name}' does not exist.")
             return False
 
         # Update the user's role

@@ -9,19 +9,21 @@
 @dependencies
 - SQLAlchemy for database ORM
 - Environment variables for configuration
-- Custom logging function from the helper module
 - Users model from db_models
 
 @author Inflac
-@date 2024-10-04
+@date 2024
 """
 
 import os
+import logging
+
 from typing import List, Dict, Union
 
 from db_models import Users, db
 from sqlalchemy.exc import SQLAlchemyError
-from helper import logging
+
+logger = logging.getLogger()
 
 
 def get_user_from_users(user_name: str) -> Union[Users, bool]:
@@ -39,13 +41,13 @@ def get_user_from_users(user_name: str) -> Union[Users, bool]:
     try:
         user = db.session.query(Users).filter(Users.name == user_name).first()
         if user:
-            logging(f"User '{user_name}' found in the users table.")
+            logger.debug(f"User '{user_name}' found in the users table.")
             return user
         else:
-            logging(f"User '{user_name}' not found in the users table.")
+            logger.debug(f"User '{user_name}' not found in the users table.")
             return False
     except SQLAlchemyError as e:
-        logging(f"An error occurred while retrieving a user from the users table: {e}")
+        logger.error(f"An error occurred while retrieving a user from the users table: {e}")
         return False
 
 def get_users_data_for_dashboard() -> List[Dict[str, Union[int, str]]]:
@@ -67,10 +69,10 @@ def get_users_data_for_dashboard() -> List[Dict[str, Union[int, str]]]:
             'user_upload_limit': user.upload_limit,
             'user_upload_amount': user.upload_amount
         } for user in users]
-        logging("Successfully retrieved users data for dashboard.")
+        logger.debug("Successfully retrieved users data for dashboard.")
         return users_data
     except SQLAlchemyError as e:
-        logging(f"An error occurred while retrieving users data: {e}")
+        logger.error(f"An error occurred while retrieving users data: {e}")
         return []
 
 
@@ -98,7 +100,7 @@ def add_user_to_users(
     user_files = user_files or []  # Default to an empty list if None
 
     if get_user_from_users(user_name):
-        logging(f"User '{user_name}' already exists in the users table.")
+        logger.warning(f"User '{user_name}' already exists in the users table.")
         return False
 
     try:
@@ -106,14 +108,14 @@ def add_user_to_users(
                         user_upload_limit=user_upload_limit, user_files=user_files)
         db.session.add(user)
         db.session.commit()
-        logging(f"User '{user_name}' added to the users table successfully.")
+        logger.info(f"User '{user_name}' added to the users table successfully.")
     except SQLAlchemyError as e:
-        logging(f"An error occurred while adding a user to the users table: {e}")
+        logger.error(f"An error occurred while adding a user to the users table: {e}")
         return False
 
     admin_users = os.environ.get('ADMIN_USERS', '').split(',')
     if user.name in admin_users and not user.set_user_role("admin"):
-        logging("Failed to set user role as admin.")
+        logger.warning("Failed to set user role as admin.")
         return False
 
     return True
@@ -136,11 +138,11 @@ def remove_user_from_users(user_name: str) -> Union[Users, bool]:
         if user:
             db.session.delete(user)
             db.session.commit()
-            logging(f"User '{user_name}' removed from the users table successfully.")
+            logger.info(f"User '{user_name}' removed from the users table successfully.")
             return user
 
-        logging(f"User '{user_name}' not found in the users table.")
+        logger.warning(f"User '{user_name}' not found in the users table.")
         return False
     except SQLAlchemyError as e:
-        logging(f"An error occurred while removing a user from the users table: {e}")
+        logger.error(f"An error occurred while removing a user from the users table: {e}")
         return False

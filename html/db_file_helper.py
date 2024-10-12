@@ -8,19 +8,22 @@ SQLAlchemy is used for database interaction, and exceptions are handled with pro
 @dependencies
 - SQLAlchemy for database ORM
 - Environment variables for configuration
-- Custom logging function from the helper module
 - Uploads and Queue models from db_models
 
 @author Inflac
-@date 2024-10-04
+@date 2024
 """
 
 import os
-from sqlalchemy.exc import SQLAlchemyError
+import logging
 from typing import Union
+
+from sqlalchemy.exc import SQLAlchemyError
+
 from db_models import Uploads, Queue, db
 from db_user_helper import get_user_from_users
-from helper import logging
+
+logger = logging.getLogger()
 
 
 def check_global_upload_limit() -> bool:
@@ -40,13 +43,13 @@ def check_global_upload_limit() -> bool:
         num_files = db.session.query(Uploads).count()
 
         if num_files >= GLOBAL_UPLOAD_LIMIT:
-            logging(f"Global upload limit of {GLOBAL_UPLOAD_LIMIT} reached. Current count: {num_files}")
+            logger.info(f"Global upload limit of {GLOBAL_UPLOAD_LIMIT} reached. Current count: {num_files}")
             return False
 
-        logging(f"Current upload count: {num_files}. Limit not reached.")
+        logger.debug(f"Current upload count: {num_files}. Limit not reached.")
         return True
     except SQLAlchemyError as e:
-        logging(f"Error while retrieving number of uploaded files: {e}")
+        logger.error(f"Error while retrieving number of uploaded files: {e}")
         return False
 
 
@@ -66,13 +69,13 @@ def get_file_from_queue(file_name: str) -> Union[Queue, None, bool]:
         file_entry = db.session.query(Queue).filter(Queue.file_name == file_name).first()
         
         if file_entry:
-            logging(f"File '{file_name}' successfully retrieved from the queue.")
+            logger.debug(f"File '{file_name}' successfully retrieved from the queue.")
             return file_entry
         else:
-            logging(f"No file with the name '{file_name}' found in the queue.")
+            logger.info(f"No file with the name '{file_name}' found in the queue.")
             return None
     except SQLAlchemyError as e:
-        logging(f"An error occurred while retrieving the file '{file_name}' from the queue: {e}")
+        logger.error(f"An error occurred while retrieving the file '{file_name}' from the queue: {e}")
         return False
 
 
@@ -97,12 +100,12 @@ def add_file_to_queue(file_name: str, file_path: str, file_password: str, file_o
     # Validate the file owner
     user = get_user_from_users(file_owner)
     if not user:
-        logging(f"File owner '{file_owner}' could not be found.")
+        logger.warning(f"File owner '{file_owner}' could not be found.")
         return False
     
     # Try adding the file to the user's file list
     if not user.add_user_file(file_name, uploads=False):
-        logging(f"Failed to add file '{file_name}' to user '{file_owner}' file table.")
+        logger.warning(f"Failed to add file '{file_name}' to user '{file_owner}' file table.")
         return False
 
     # Create a new Queue entry and add it to the session
@@ -116,10 +119,10 @@ def add_file_to_queue(file_name: str, file_path: str, file_password: str, file_o
         db.session.add(queue_entry)
         db.session.commit()
 
-        logging(f"File '{file_name}' successfully added to the queue.")
+        logger.info(f"File '{file_name}' successfully added to the queue.")
         return True
     except SQLAlchemyError as e:
-        logging(f"An error occurred while adding file '{file_name}' to the queue: {e}")
+        logger.error(f"An error occurred while adding file '{file_name}' to the queue: {e}")
         db.session.rollback()  # Rollback to undo any partial changes in case of error
         return False
 
@@ -143,18 +146,18 @@ def remove_file_from_queue(file_name: str) -> Union[Queue, bool]:
     # Retrieve the file entry from the queue
     upload = get_file_from_queue(file_name)
     if not upload:
-        logging(f"File '{file_name}' to delete was not found in the queue table.")
+        logger.warning(f"File '{file_name}' to delete was not found in the queue table.")
         return False
 
     # Retrieve the owner of the file
     user = get_user_from_users(upload.file_owner)
     if not user:
-        logging(f"File owner '{upload.file_owner}' could not be found.")
+        logger.warning(f"File owner '{upload.file_owner}' could not be found.")
         return False
 
     # Remove the file from the user's record
     if not user.remove_user_file(file_name, uploads=False):
-        logging(f"Failed to remove file '{file_name}' from the user's record in the database.")
+        logger.warning(f"Failed to remove file '{file_name}' from the user's record in the database.")
         return False
 
     # Delete the file entry from the queue table
@@ -162,10 +165,10 @@ def remove_file_from_queue(file_name: str) -> Union[Queue, bool]:
         db.session.delete(upload)
         db.session.commit()
 
-        logging(f"File '{file_name}' successfully removed from the queue.")
+        logger.info(f"File '{file_name}' successfully removed from the queue.")
         return upload
     except SQLAlchemyError as e:
-        logging(f"An error occurred while removing file '{file_name}' from the queue: {e}")
+        logger.error(f"An error occurred while removing file '{file_name}' from the queue: {e}")
         db.session.rollback()  # Rollback to undo any partial changes in case of error
         return False
 
@@ -189,14 +192,13 @@ def get_file_from_uploads(file_name: str) -> Union[Uploads, None, bool]:
         file_record = db.session.query(Uploads).filter(Uploads.file_name == file_name).first()
 
         if file_record:
-            logging(f"File '{file_name}' retrieved from the uploads table.")
+            logger.debug(f"File '{file_name}' retrieved from the uploads table.")
             return file_record
         else:
-            logging(f"File '{file_name}' not found in the uploads table.")
+            logger.warning(f"File '{file_name}' not found in the uploads table.")
             return None
-
     except SQLAlchemyError as e:
-        logging(f"An error occurred while retrieving file '{file_name}' from the uploads table: {e}")
+        logger.error(f"An error occurred while retrieving file '{file_name}' from the uploads table: {e}")
         return False
 
 
@@ -223,12 +225,12 @@ def add_file_to_uploads(file_name: str, file_path: str, file_owner: str) -> bool
     # Verify the file owner exists in the system
     user = get_user_from_users(file_owner)
     if not user:
-        logging(f"File owner '{file_owner}' couldn't be found.")
+        logger.warning(f"File owner '{file_owner}' couldn't be found.")
         return False
 
     # Try to add the file to the user's upload record
     if not user.add_user_file(file_name, uploads=True):
-        logging(f"Failed to add file '{file_name}' to user '{file_owner}' record.")
+        logger.warning(f"Failed to add file '{file_name}' to user '{file_owner}' record.")
         return False
 
     # Attempt to add the file to the uploads table in the database
@@ -236,10 +238,10 @@ def add_file_to_uploads(file_name: str, file_path: str, file_owner: str) -> bool
         new_upload = Uploads(file_name=file_name, file_path=file_path, file_owner=file_owner)
         db.session.add(new_upload)
         db.session.commit()
-        logging(f"File '{file_name}' successfully added to uploads by user '{file_owner}'.")
+        logger.info(f"File '{file_name}' successfully added to uploads by user '{file_owner}'.")
         return True
     except SQLAlchemyError as e:
-        logging(f"An error occurred while adding file '{file_name}' to the uploads table: {e}")
+        logger.error(f"An error occurred while adding file '{file_name}' to the uploads table: {e}")
         db.session.rollback()  # Rollback to undo any partial changes in case of error
         return False
 
@@ -263,28 +265,28 @@ def remove_file_from_uploads(file_name: str) -> Union[Uploads, bool]:
     # Retrieve the file from the uploads table
     upload = get_file_from_uploads(file_name)
     if not upload:
-        logging(f"File '{file_name}' was not found in the uploads table.")
+        logger.warning(f"File '{file_name}' was not found in the uploads table.")
         return False
 
     # Retrieve the user who owns the file
     user = get_user_from_users(upload.file_owner)
     if not user:
-        logging(f"File owner '{upload.file_owner}' was not found.")
+        logger.warning(f"File owner '{upload.file_owner}' was not found.")
         return False
 
     # Attempt to remove the file from the user's record
     if not user.remove_user_file(file_name, uploads=True):
-        logging(f"Failed to remove file '{file_name}' from user '{upload.file_owner}' record.")
+        logger.warning(f"Failed to remove file '{file_name}' from user '{upload.file_owner}' record.")
         return False
 
     # Try to remove the file from the uploads table in the database
     try:
         db.session.delete(upload)
         db.session.commit()
-        logging(f"File '{file_name}' successfully removed from the uploads table.")
+        logger.info(f"File '{file_name}' successfully removed from the uploads table.")
         return upload
     except SQLAlchemyError as e:
-        logging(f"An error occurred while removing file '{file_name}' from the uploads table: {e}")
+        logger.error(f"An error occurred while removing file '{file_name}' from the uploads table: {e}")
         db.session.rollback()  # Rollback to undo any partial changes in case of error
         return False
 
@@ -306,18 +308,18 @@ def remove_file_from_db(file_name: str) -> Union[Queue, Uploads, bool]:
     # Attempt to remove the file from the uploads table
     upload = remove_file_from_uploads(file_name)
     if upload:
-        logging(f"File '{file_name}' successfully removed from the uploads table.")
+        logger.info(f"File '{file_name}' successfully removed from the uploads table.")
         return upload
 
     # If the file wasn't found in uploads, attempt to remove it from the queue table
-    logging(f"File '{file_name}' not found in uploads, checking the queue table.")
+    logger.debug(f"File '{file_name}' not found in uploads, checking the queue table.")
     queue_file = remove_file_from_queue(file_name)
     if queue_file:
-        logging(f"File '{file_name}' successfully removed from the queue table.")
+        logger.info(f"File '{file_name}' successfully removed from the queue table.")
         return queue_file
 
     # If not found in either table, log an error
-    logging(f"File '{file_name}' could not be found in either the uploads or queue tables.")
+    logger.warning(f"File '{file_name}' could not be found in either the uploads or queue tables.")
     return False
 
 
@@ -337,14 +339,14 @@ def check_file_exist_in_db(file_name: str) -> bool:
 
     # Check if the file exists in the queue table
     if get_file_from_queue(file_name):
-        logging(f"File '{file_name}' exists in the queue table.")
+        logger.warning(f"File '{file_name}' exists in the queue table.")
         return True
 
     # Check if the file exists in the uploads table
     if get_file_from_uploads(file_name):
-        logging(f"File '{file_name}' exists in the uploads table.")
+        logger.warning(f"File '{file_name}' exists in the uploads table.")
         return True
 
     # If file is not found in either table, return False
-    logging(f"File '{file_name}' does not exist in either the uploads or queue tables.")
+    logger.info(f"File '{file_name}' does not exist in either the uploads or queue tables.")
     return False

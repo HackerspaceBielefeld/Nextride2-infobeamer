@@ -36,19 +36,22 @@ This file is part of a larger system where the approval of files is tied to data
 If a failure occurs during file approval, database consistency is handled, and alerts are sent to notify the system administrators.
 
 @author Inflac
-@date 2024-10-06
+@date 2024
 """
 
-from typing import Union
 import os
+import logging
+from typing import Union
 
 from db_file_helper import (get_file_from_queue, 
                             add_file_to_uploads,
                             remove_file_from_queue,
                             remove_file_from_uploads)
 from filehandler import move_file
-from emailhandler import sent_email_error_message
-from helper import logging, hash_sha_512
+from emailhandler import send_email_error_message
+from helper import hash_sha_512
+
+logger = logging.getLogger()
 
 def approve_file(file_name: str, uploads_path: str, file_password: str, admin: bool = False) -> bool:
     """
@@ -71,7 +74,7 @@ def approve_file(file_name: str, uploads_path: str, file_password: str, admin: b
     # Retrieve the file from the queue.
     file_to_approve = get_file_from_queue(file_name)
     if not file_to_approve:
-        logging("No db entry for requested file, nothing approved")
+        logger.warning("No db entry for requested file, nothing approved")
         return False
 
     file_name = file_to_approve.file_name
@@ -79,7 +82,7 @@ def approve_file(file_name: str, uploads_path: str, file_password: str, admin: b
     file_path = file_to_approve.file_path
 
     if not os.path.exists(file_path):
-        logging(f"The requested file does not exist: {file_path}, "
+        logger.warning(f"The requested file does not exist: {file_path}, "
                 "but a database entry for the file exists.")
         error_message = ("While trying to approve a file, a database inconsistency was detected. "
             "The file requested to be approved has a database entry but does not "
@@ -90,7 +93,7 @@ def approve_file(file_name: str, uploads_path: str, file_password: str, admin: b
     # Check the password if not approved by an admin.
     if not admin:
         if file_to_approve.file_password != hash_sha_512(file_password):
-            logging("The files password wasn't correct")
+            logger.info("The files password wasn't correct")
             return False
 
     # Move the file to uploads and update the database.
@@ -100,10 +103,10 @@ def approve_file(file_name: str, uploads_path: str, file_password: str, admin: b
 
     # Remove the file from the queue database.
     if not remove_file_from_queue(file_name):
-        logging("File couldn't be removed from the queue table -"
+        logger.warning("File couldn't be removed from the queue table -"
             "Now trying to remove it from uploads again")
         if not remove_file_from_uploads(file_name):
-            logging("The file couldn't be removed from the uploads table")
+            logger.warning("The file couldn't be removed from the uploads table")
             error_message = ("While trying to approve a file, it was added to the uploads table, "
                 "but while removing it from the queue table, an error occurred. "
                 "Trying to also remove it from the uploads table again failed.")
@@ -112,7 +115,7 @@ def approve_file(file_name: str, uploads_path: str, file_password: str, admin: b
 
     # Physically move the file to the uploads folder.
     if not move_file(file_path, destination_path):
-        logging("Moving the file from the queue to uploads went wrong - "
+        logger.warning("Moving the file from the queue to uploads went wrong - "
             "Database changes already done.")
         error_message = ("Moving an approved file failed."
             "Because the database entries were already made, "

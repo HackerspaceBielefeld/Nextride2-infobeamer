@@ -18,15 +18,15 @@ Please use the latest release for a stable and secure version of N2i.
 ## Todos
 General:
 * Renew doxygen
-    * db_extension_helper.py 04.10.2024
-    * db_file_helper.py 04.10.2024
-    * db_user_helper.py 04.10.2024
-    * emailhandler.py 04.10.2024
+    * db_extension_helper.py 10.10.2024
+    * db_file_helper.py 10.10.2024
+    * db_user_helper.py 10.10.2024
+    * emailhandler.py 10.10.2024
     * wsgi.py 04.10.2024
     * role_based_access.py 04.10.2024
-    * filehandler.py 06.10.2024
-    * helper.py 06.10.2024
-    * queuehandler 06.10.2024
+    * filehandler.py 10.10.2024
+    * helper.py 10.10.2024
+    * queuehandler 10.10.2024
 * Add instructions for the usage of reverseproxy
 * Add better solution for system slides
 

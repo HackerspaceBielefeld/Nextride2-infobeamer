@@ -10,30 +10,38 @@ Dependencies:
     - shutil: Provides functions for file operations.
     - os: Provides functions for interacting with the operating system.
     - PIL: Python Imaging Library for image processing.
-    - helper: Custom helper functions for logging, hashing, and file path management.
+    - helper: Custom helper functions for generating secure random strings,
+        string sanitization, hashing, and file path management.
     - db_file_helper: Helper functions for interacting with the database regarding file operations.
     - emailhandler: Sends approval request emails for file uploads.
 
 @author Inflac
-@date 2024-10-06
+@date 2024
 """
 
 import os
+import io
 import shutil
+import logging
 
 from typing import Union
 from PIL import Image
 
-from helper import generate_random, sanitize_string
-from helper import logging, hash_sha_512, get_file_path
+from helper import (generate_random,
+                    sanitize_string,
+                    hash_sha_512,
+                    get_file_path)
 from db_file_helper import check_global_upload_limit
 from db_file_helper import remove_file_from_queue, remove_file_from_db
 from db_file_helper import add_file_to_queue
 from db_file_helper import check_file_exist_in_db
 from db_models import Users
-from emailhandler import sent_email_approval_request
+from emailhandler import send_email_approval_request
 
 from extensions.cms.CMSConfig import get_setting_from_config
+
+logger = logging.getLogger()
+
 
 def sanitize_filename(file_name:str) -> str:
     """
@@ -66,14 +74,14 @@ def move_file(source:str, destination:str) -> bool:
 
     try:
         shutil.move(source, destination)
-        logging(f"File moved from {source} to {destination}")
+        logger.debug(f"File moved from {source} to {destination}")
         return True
     except FileNotFoundError as e:
-        logging(f"Error: Source file '{source}' not found: {e}")
+        logger.error(f"Error: Source file '{source}' not found: {e}")
     except PermissionError as e:
-        logging(f"Permission error while moving file '{source}': {e}")
+        logger.error(f"Permission error while moving file '{source}': {e}")
     except OSError as e:
-        logging(f"Error moving file '{source}': {e}")
+        logger.error(f"Error moving file '{source}': {e}")
     return False
 
 def check_image(file) -> bool:
@@ -94,10 +102,10 @@ def check_image(file) -> bool:
 
     # Check the file extension
     if not '.' in file.filename:
-        logging("File extension not present")
+        logger.info("File extension not present")
         return False
     if file.filename.rsplit('.', 1)[1].lower() not in ['jpg', 'jpeg', 'png', 'gif']:
-        logging("File extension not accepted")
+        logger.info("File extension not accepted")
         return False
 
     # Check if the file is actually an image
@@ -106,10 +114,10 @@ def check_image(file) -> bool:
         img.verify()  # Attempt to open and verify the image file
         return True
     except (FileNotFoundError, Image.UnidentifiedImageError, ValueError, TypeError) as e:
-        logging(f"Error while checking an image: {e}")
+        logger.error(f"Error while checking an image: {e}")
     return False
 
-def sanitize_file(file, MAX_CONTENT_LENGTH:int) -> Union[File, bool]:
+def sanitize_file(file, MAX_CONTENT_LENGTH:int) -> Union[io.TextIOWrapper, bool]:
     """
     @brief Sanitizes an uploaded file and checks its validity.
 
@@ -122,18 +130,18 @@ def sanitize_file(file, MAX_CONTENT_LENGTH:int) -> Union[File, bool]:
     """
 
     if not file:
-        logging("No file within the request")
+        logger.info("No file within the request")
         return False
 
     if not len(file.read()) <= MAX_CONTENT_LENGTH:
-        logging(f"Uploaded file is to big: {len(file.read())}")
+        logger.info(f"Uploaded file is to big: {len(file.read())}")
         return False
     file.seek(0)
 
     file.filename = sanitize_filename(file.filename)
 
     if not check_image(file):
-        logging("Uploaded file isn't an image or the extension is not allowed")
+        logger.info("Uploaded file isn't an image or the extension is not allowed")
         return False
     file.seek(0)
 
@@ -159,23 +167,23 @@ def safe_file(file, QUEUE_FOLDER:str, user_name:str) -> bool:
     """
 
     if not check_global_upload_limit():
-        logging('Global upload limit restricted the upload')
+        logger.info('Global upload limit restricted the upload')
         return False
 
     if check_file_exist_in_db(file.filename):
-        logging("A file with the same name is already in the db")
+        logger.info("A file with the same name is already in the db")
         return False
 
     file_path = get_file_path(QUEUE_FOLDER, file.filename)
     if not file_path:
-        logging("An error occured while crafting the path where to safe the file")
+        logger.warning("An error occured while crafting the path where to safe the file")
         return False
 
     file_password = generate_random()
     file_password_hashed = hash_sha_512(file_password)
 
     if not add_file_to_queue(file.filename, file_path, file_password_hashed, user_name):
-        logging("File wasn't saved in the queue because no db entry could be created")
+        logger.warning("File wasn't saved in the queue because no db entry could be created")
         return False
 
     try:
@@ -186,19 +194,19 @@ def safe_file(file, QUEUE_FOLDER:str, user_name:str) -> bool:
             return True
 
         if not sent_email_approval_request(file.filename, file_password, file_path):
-            logging("Failed to sent a file approval email")
+            logger.warning("Failed to sent a file approval email")
             return False
         return True
 
     except FileNotFoundError:
-        logging("The specified file path does not exist")
+        logger.error("The specified file path does not exist")
     except IsADirectoryError:
-        logging("The specified file path is a directory")
+        logger.error("The specified file path is a directory")
     except PermissionError:
-        logging("Permission denied while attempting to save the file")
+        logger.error("Permission denied while attempting to save the file")
 
     if not remove_file_from_queue(file.filename):
-        logging("DB entry couldn't be removed for unsaved file")
+        logger.warning("DB entry couldn't be removed for unsaved file")
     return False
 
 
@@ -218,19 +226,19 @@ def delete_file(file_name:str) -> bool:
 
     file_data = remove_file_from_db(file_name)
     if not file_data:
-        logging("Fileremove_file_from_db couldn't be removed from database")
+        logger.warning(f"File {file_name} couldn't be removed from database")
         return False
 
     file_path = file_data.file_path
 
     try:
         os.remove(file_path)
-        logging(f"File '{file_path}' deleted successfully.")
+        logger.debug(f"File '{file_path}' deleted successfully.")
         return True
     except FileNotFoundError:
-        logging(f"File '{file_path}' not found.")
+        logger.error(f"File '{file_path}' not found.")
     except PermissionError:
-        logging(f"Permission denied to delete file '{file_path}'.")
+        logger.error(f"Permission denied to delete file '{file_path}'.")
     return False
 
 
@@ -253,9 +261,9 @@ def get_all_images_for_all_users(queue_only=False) -> dict[str, dict[str, list[s
     all_images = {}
     try:
         all_users = Users.query.all()
-        logging(f"Retrieved {len(all_users)} users from the database.")
+        logger.debug(f"Retrieved {len(all_users)} users from the database.")
     except SQLAlchemyError as e:
-        logging(f"An error occurred while retrieving users: {e}")
+        logger.error(f"An error occurred while retrieving users: {e}")
         return all_images
 
     for user in all_users:
@@ -300,10 +308,10 @@ def get_uploads(upload_folder:str, extensions_folder:str) -> tuple[list[str], di
         extensions = os.listdir(extensions_folder)
         files = os.listdir(upload_folder)
     except FileNotFoundError as e:
-        logging.error(f"Folder not found: {e}")
+        logger.error(f"Folder not found: {e}")
         return uploaded_images, extension_images
     except OSError as e:
-        logging.error(f"Error accessing file system: {e}")
+        logger.error(f"Error accessing file system: {e}")
         return uploaded_images,     
 
     for file in files:

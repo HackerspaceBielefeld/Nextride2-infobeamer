@@ -13,13 +13,14 @@
 - Custom logging function from the `helper` module.
 
 @author Inflac
-@date 2024-10-04
+@date 2024
 """
 
 import os
+import logging
+
 from db_user_helper import get_user_from_users
-from db_extension_helper import get_extension_from_config
-from helper import logging
+from db_extension_helper import db_get_extension
 
 
 
@@ -33,9 +34,9 @@ def check_admin(user_name: str) -> bool:
 
     admin_users = os.environ.get('ADMIN_USERS', '').split(',')
     if user_name in admin_users:
-        logging(f"User '{user_name}' is an admin.")
+        logger.debug(f"User '{user_name}' is an admin.")
         return True
-    logging(f"User '{user_name}' is not an admin.")
+    logger.debug(f"User '{user_name}' is not an admin.")
     return False
 
 def check_moderator(user_name: str) -> bool:
@@ -48,14 +49,14 @@ def check_moderator(user_name: str) -> bool:
 
     user = get_user_from_users(user_name)
     if not user:
-        logging(f"User '{user_name}' couldn't be found.")
+        logger.info(f"User '{user_name}' couldn't be found.")
         return False
 
     if user.role.name != 'moderator':
-        logging(f"User '{user_name}' isn't a moderator.")
+        logger.info(f"User '{user_name}' isn't a moderator.")
         return False
     
-    logging(f"User '{user_name}' is a moderator.")
+    logger.debug(f"User '{user_name}' is a moderator.")
     return True
 
 
@@ -66,11 +67,11 @@ def cms_active() -> bool:
     @return True if the CMS is active, False otherwise.
     """
 
-    cms = get_extension_from_config("cms")
+    cms = db_get_extension("cms")
     if cms:
-        logging("CMS is active.")
+        logger.debug("CMS is active.")
         return cms.active
-    logging("CMS is not active.")
+    logger.debug("CMS is not active.")
     return False
 
 
@@ -84,19 +85,19 @@ def check_access(user_name: str, min_req_role_id: int) -> bool:
     """
     user = get_user_from_users(user_name)
     if not user:
-        logging(f"User '{user_name}' couldn't be found.")
+        logger.warning(f"User '{user_name}' couldn't be found.")
         return False
 
     if not cms_active():
         if user.role.id >= 9:
-            logging(f"User '{user_name}' has sufficient access (role ID: {user.role.id}).")
+            logger.debug(f"User '{user_name}' has sufficient access (role ID: {user.role.id}).")
             return True
-        logging(f"User '{user_name}' does not have sufficient access (role ID: {user.role.id}).")
+        logger.info(f"User '{user_name}' does not have sufficient access (role ID: {user.role.id}).")
         return False
 
     if user.role.id >= min_req_role_id:
-        logging(f"User '{user_name}' has sufficient access (role ID: {user.role.id}).")
+        logger.debug(f"User '{user_name}' has sufficient access (role ID: {user.role.id}).")
         return True
     
-    logging(f"User '{user_name}' does not have sufficient access (role ID: {user.role.id}).")
+    logger.info(f"User '{user_name}' does not have sufficient access (role ID: {user.role.id}).")
     return False

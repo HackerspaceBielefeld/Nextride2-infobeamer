@@ -12,7 +12,7 @@ from filehandler import sanitize_file, safe_file, delete_file, get_all_images_fo
 from queuehandler import approve_file
 from db_models import db, create_roles, create_users, create_extensions
 from db_user_helper import add_user_to_users, get_user_from_users, get_users_data_for_dashboard
-from db_extension_helper import get_extensions_from_extensions
+from db_extension_helper import db_get_extension
 from helper import sanitize_string
 
 from role_based_access import check_access, cms_active, check_admin
@@ -334,7 +334,7 @@ def management_update_upload_limit():
 @app.route('/management/extensions', methods=['GET'])
 @login_required(access_level_required=9)
 def management_extensions():
-    extensions = get_extensions_from_extensions()
+    extensions = db_get_extensions()
     return render_template('management/extension.html', extensions=extensions)
 
 @app.route('/management/update_extensions', methods=['POST'])
@@ -343,7 +343,7 @@ def management_update_extensions():
     req_extensions = request.form.getlist('selected_extensions')
     if not req_extensions: req_extensions = []
 
-    for extension in get_extensions_from_extensions():
+    for extension in db_get_extensions():
         if extension.name in req_extensions: 
             extension.activate()
         else:

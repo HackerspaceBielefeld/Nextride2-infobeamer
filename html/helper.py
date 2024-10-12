@@ -2,15 +2,15 @@
 @file helper.py
 @brief Utility functions for various tasks of the infobeamer CMS.
 
-This module provides low-level utility functions for tasks such as logging, 
-time retrieval, secure token generation, hashing, string sanitization, and 
+This module provides low-level utility functions for tasks such as time retrieval,
+secure token generation, hashing, string sanitization, and 
 file path construction. These functions are designed to be robust, reusable, 
 and can be integrated into third-party extensions.
 
 @details
 - The functions within this module are meant to be used by both internal 
     components and third-party extensions.
-- Includes functionalities for generating secure tokens, logging messages with 
+- Includes functionalities for generating secure tokens, messages with 
     timestamps, hashing data, sanitizing strings, and validating file paths.
 
 @dependencies
@@ -26,7 +26,7 @@ and can be integrated into third-party extensions.
     various contexts, beyond just the infobeamer CMS.
 
 @author Inflac
-@date 2024-10-06
+@date 2024
 """
 
 import hashlib
@@ -52,17 +52,6 @@ def get_time(format:str="%H:%M:%S") -> str:
 
     current_time = time.localtime()
     return time.strftime(format, current_time)
-
-def logging(message:str) -> None:
-    """
-    @brief Log a message with a timestamp.
-
-    @param message The message to log.
-    
-    @return None
-    """
-
-    print(f"[{get_time()}]: {message}")
 
 def generate_random(length=64) -> str:
     """
